@@ -1,17 +1,11 @@
-import Navbar from "@/components/layout/Navbar";
-import Hero from "@/components/home/Hero";
-import Ecosystem from "@/components/home/Ecosystem";
+// import Ecosystem from "@/components/home/Ecosystem";
 
-export default function Home() {
-  return (
-    <>
-      <Navbar />
+// export default function Home() {
+//   return <Ecosystem />;
+// }
 
-      <main className="min-h-screen bg-black text-white">
-        <Hero />
-        <Ecosystem />
+import EcosystemLite from "@/components/home/EcosystemLite";
 
-      </main>
-    </>
-  );
+export default function Page() {
+  return <EcosystemLite />;
 }
