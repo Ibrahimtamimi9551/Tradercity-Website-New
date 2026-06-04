@@ -17,14 +17,18 @@
 // }
 
 
-import Hero from "@/components/home/Hero";
-import EcosystemLite from "@/components/home/EcosystemLite";
+import Hero from "@/components/home/hero/Hero";
+import EcosystemLite from "@/components/home/ecosystem-lite/EcosystemLite";
+import Section3 from "@/components/home/section3/Section3";
+import Section4 from "@/components/home/section4/Section4";
 
 export default function Page() {
   return (
     <main>
       <Hero />
       <EcosystemLite />
+      <Section3 />
+      <Section4 />
     </main>
   );
 }
