@@ -33,7 +33,7 @@ export default function Section6() {
 //      <div className="relative z-10">
 //       <Section6Background />
 //       {<Section6Discord />}
-//       {/* <Section6Illustration /> */}
+ //        <Section6Illustration /> 
 //       </div>
 //     </section>
 //   );
