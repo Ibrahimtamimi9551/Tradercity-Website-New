@@ -1,4 +1,6 @@
-// EcosystemLiteContent.tsx
+
+
+//EcosystemLiteContent.tsx
 import React from 'react';
 import {
   IconChartBar,
@@ -80,7 +82,7 @@ export default function EcosystemLiteContent() {
   return (
     <div className="max-w-[1200px] w-full mx-auto flex flex-col items-center relative">
       
-      {/* Header */}
+      {/* Header
       <div className="flex flex-col items-center text-center mb-8 md:mb-12 w-full">
         <div className="flex items-center justify-center w-full max-w-5xl mx-auto gap-4 mb-3 md:mb-4">
           <div className="hidden md:flex items-center gap-3 flex-1 justify-end opacity-80">
@@ -100,7 +102,7 @@ export default function EcosystemLiteContent() {
         <p className="text-[#0A84FF] tracking-[0.35em] text-[10px] md:text-sm font-bold uppercase">
           ONE INTELLIGENCE LAYER.
         </p>
-      </div>
+      </div> */}
 
       {/* Expertise Nodes */}
       <div className="flex justify-between w-full gap-1 md:gap-4 relative z-20">

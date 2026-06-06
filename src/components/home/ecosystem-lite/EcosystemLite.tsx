@@ -1,18 +1,41 @@
 // EcosystemLite.tsx
+
 import React from 'react';
 import EcosystemLiteBackground from './EcosystemLiteBackground';
+import EcosystemLiteHeadline from './EcosystemLiteHeadline';
 import EcosystemLiteContent from './EcosystemLiteContent';
 
 export default function EcosystemLite() {
   return (
-    <section className="relative min-h-screen overflow-hidden font-sans flex flex-col items-center justify-center py-10 md:py-16 px-2 md:px-4">
+    <section className="relative min-h-screen overflow-hidden font-sans">
       <EcosystemLiteBackground />
-      <div className="relative z-10 w-full">
+
+      {/* <div className="relative z-10 w-full"> */}
+      <div className="relative z-10 w-full pt-24 md:pt-32 lg:pt-40">
+        <EcosystemLiteHeadline />
         <EcosystemLiteContent />
       </div>
     </section>
   );
 }
+
+
+// // EcosystemLite.tsx
+// import React from 'react';
+// import EcosystemLiteBackground from './EcosystemLiteBackground';
+// import EcosystemLiteContent from './EcosystemLiteContent';
+
+
+// export default function EcosystemLite() {
+//   return (
+//     <section className="relative min-h-screen overflow-hidden font-sans flex flex-col items-center justify-center py-10 md:py-16 px-2 md:px-4">
+//       <EcosystemLiteBackground />
+//       <div className="relative z-10 w-full">
+//         <EcosystemLiteContent />
+//       </div>
+//     </section>
+//   );
+// }
 
 
 

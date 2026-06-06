@@ -3,7 +3,9 @@ import Section3Content from "./Section3Content";
 
 export default function Section3() {
   return (
-    <section className="relative min-h-screen overflow-hidden">
+    // <section className="relative min-h-screen overflow-hidden">
+     <section className="relative overflow-hidden">
+    {/* <section className="relative overflow-hidden py-8"> */}
       <Section3Background />
 
       <div className="relative z-10 w-full">

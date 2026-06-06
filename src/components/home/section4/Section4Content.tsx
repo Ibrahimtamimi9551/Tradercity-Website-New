@@ -79,12 +79,14 @@ export default function Section4Content() {
   const col2 = features.filter(f => f.col === 2);
 
   return (
-    <div className="max-w-[1300px] mx-auto w-full px-6 py-20 lg:py-32 relative z-10 flex flex-col font-sans">
+    // <div className="max-w-[1300px] mx-auto w-full px-6 py-20 lg:py-32 relative z-10 flex flex-col font-sans">
+    <div className="max-w-[1300px] mx-auto w-full px-6 py-6 lg:py-10 relative z-10 flex flex-col font-sans">
 
       {/* =========================================
           BLOCK 1 — MESSAGE + ILLUSTRATION
           ========================================= */}
-      <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8 mb-24 lg:mb-32">
+      {/* <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8 mb-24 lg:mb-32"> */}
+      <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8 mb-10 lg:mb-12">
 
         {/* LEFT: Message (55%) */}
         <div className="w-full lg:w-[55%] flex flex-col pt-4 lg:pr-8">
@@ -131,7 +133,9 @@ export default function Section4Content() {
       {/* =========================================
           BLOCK 2 — FEATURE LIST
           ========================================= */}
-      <div className="w-full border-t border-white/5 pt-14 lg:pt-16 mb-24 lg:mb-32">
+      {/* </div><div className="w-full border-t border-white/5 pt-14 lg:pt-16 mb-24 lg:mb-32"> */}
+      <div className="w-full border-t border-white/5 pt-14 lg:pt-16 mb-8 lg:mb-10">
+
 
         {/* 3-Column Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 xl:gap-x-16">
@@ -221,7 +225,8 @@ export default function Section4Content() {
       {/* =========================================
           BLOCK 3 — ENDING
           ========================================= */}
-      <div className="flex flex-col items-center text-center w-full mt-10">
+      {/* <div className="flex flex-col items-center text-center w-full mt-10"> */}
+      <div className="flex flex-col items-center text-center w-full mt-0">
 
         {/* Horizontal Line */}
         <div className="flex items-center justify-center w-full max-w-2xl mb-12 opacity-60">
@@ -235,7 +240,8 @@ export default function Section4Content() {
           <span className="text-white/90 mb-2 pl-[0.3em] md:pl-[0.4em]">
             MARKET
           </span>
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#C084FC] to-[#F59E0B] pl-[0.3em] md:pl-[0.4em]">
+          {/* <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#C084FC] to-[#F59E0B] pl-[0.3em] md:pl-[0.4em]"> */}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] via-[#3B82F6] to-[#06B6D4]">
             CLARITY.
           </span>
         </h3>

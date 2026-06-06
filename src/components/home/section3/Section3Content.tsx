@@ -81,15 +81,32 @@ const journeySteps = [
 
 export default function Section3Content() {
   return (
-    <div className="max-w-[1300px] mx-auto w-full px-6 py-20 lg:py-32 relative z-10 flex flex-col font-sans">
+    // <div className="max-w-[1300px] mx-auto w-full px-6 py-20 lg:py-32 relative z-10 flex flex-col font-sans">
+      <div className="max-w-[1300px] mx-auto w-full px-6 py-20 lg:py-32 relative z-10 flex flex-col font-sans">
+
+  {/* New Intro Headline */}
+  <div className="flex flex-col items-center text-center mb-20 lg:mb-28">
+    
+    <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-tight">
+      EVERY TRADER STARTS HERE.
+    </h2>
+
+    <p className="mt-5 text-base md:text-lg lg:text-xl text-white/60 font-medium">
+      The same ambition. The same mistakes.
+    </p>
+
+  </div>
       
       {/* =========================================
           AREA 1 & 2: TWO COLUMN LAYOUT
           ========================================= */}
-      <div className="flex flex-col lg:flex-row gap-16 lg:gap-20 mb-32">
+      {/* <div className="flex flex-col lg:flex-row gap-16 lg:gap-20 mb-8"> */}
+      <div className="flex flex-col lg:flex-row gap-12 lg:gap-14 mb-8">
         
         {/* AREA 1: LEFT COLUMN */}
-        <div className="flex-1 lg:max-w-md xl:max-w-lg flex flex-col pt-4">
+        {/* <div className="flex-1 lg:max-w-md xl:max-w-lg flex flex-col pt-4"> */}
+        <div className="flex-1 lg:max-w-[520px] xl:max-w-[580px] flex flex-col pt-4">
+
           
           {/* Eyebrow */}
           <div className="flex items-center gap-4 mb-10 opacity-80">
@@ -120,8 +137,13 @@ export default function Section3Content() {
               dead ends, and costly mistakes.<br />
               Most traders don't lack effort.
             </p>
-            <p className="text-[#A855F7]/90 font-medium">
+            {/* <p className="text-[#A855F7]/90 font-medium">
               They lack a place where it all comes together.
+            </p> */}
+            <p className="text-[#A855F7]/95 font-semibold uppercase tracking-[0.08em] leading-[1.8]">
+             MOST TRADERS DON'T FAIL FROM LACK OF EFFORT.
+            <br />
+             THEY FAIL FROM LACK OF CONTEXT.
             </p>
           </div>
         </div>
@@ -162,10 +184,10 @@ export default function Section3Content() {
       {/* =========================================
           AREA 3: CONCLUSION
           ========================================= */}
-      <div className="flex flex-col items-center text-center w-full mt-10">
+      <div className="flex flex-col items-center text-center w-full">
         
         {/* Horizontal Line with X icon */}
-        <div className="flex items-center justify-center w-full max-w-2xl mb-12 opacity-60">
+        <div className="flex items-center justify-center w-full max-w-2xl mb-4 opacity-60">
           <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-white/10" />
           <div className="mx-4 w-9 h-9 rounded-full border border-white/10 flex items-center justify-center">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8F9BB3" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
