@@ -4,16 +4,16 @@
 // ROUTE: /dashboard/vip
 // ======================================================
 
-import Section9Background from "./Section9Background";
-import Section9Content from "./Section9Content";
+import VipDashboardBackground from "./VipDashboardBackground";
+import VipDashboardContent from "./VipDashboardContent";
 
-export default function Section9() {
+export default function VipDashboard() {
   return (
     <section className="relative overflow-hidden">
-      <Section9Background />
+      <VipDashboardBackground />
 
       <div className="relative z-10 w-full">
-        <Section9Content />
+        <VipDashboardContent />
       </div>
     </section>
   );

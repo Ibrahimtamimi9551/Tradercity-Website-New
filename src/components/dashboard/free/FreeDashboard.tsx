@@ -5,16 +5,16 @@
 // ======================================================
 
 
-import Section10Background from "./Section10Background";
-import Section10Content from "./Section10Content";
+import FreeDashboardBackground from "./FreeDashboardBackground";
+import FreeDashboardContent from "./FreeDashboardContent";
 
-export default function Section10() {
+export default function FreeDashboard() {
   return (
     <section className="relative overflow-hidden">
-      <Section10Background />
+      <FreeDashboardBackground />
 
       <div className="relative z-10 w-full">
-        <Section10Content />
+       <FreeDashboardContent />
       </div>
     </section>
   );
