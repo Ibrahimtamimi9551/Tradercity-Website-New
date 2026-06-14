@@ -7,7 +7,7 @@ import {
   IconChartCandle,
   IconWorld,
   IconFileSearch,
-  IconSchool,
+  IconChartHistogram,
   IconUsers,
   IconArrowDown
 } from '@tabler/icons-react';
@@ -52,31 +52,58 @@ const ExpertNode = ({
 
 export default function EcosystemLiteContent() {
   const nodes = [
-    {
-      title: "Market\nStructure",
-      icon: IconChartBar,
-      color: "#9B5DE5" // Purple
-    },
-    {
-      title: "Orderflow",
-      icon: IconChartCandle,
-      color: "#5E5CE6" // Indigo
-    },
-    {
-      title: "Macro",
-      icon: IconWorld,
-      color: "#0A84FF" // Blue
-    },
-    {
-      title: "Research",
-      icon: IconFileSearch,
-      color: "#06D6F7" // Cyan
-    },
-    {
-      title: "Education",
-      icon: IconSchool,
-      color: "#30D158" // Teal/Green
-    }
+    // {
+    //   title: "Market\nStructure",
+    //   icon: IconChartBar,
+    //   color: "#9B5DE5" // Purple
+    // },
+    // {
+    //   title: "Orderflow",
+    //   icon: IconChartCandle,
+    //   color: "#5E5CE6" // Indigo
+    // },
+    // {
+    //   title: "Macro",
+    //   icon: IconWorld,
+    //   color: "#0A84FF" // Blue
+    // },
+    // {
+    //   title: "Research",
+    //   icon: IconFileSearch,
+    //   color: "#06D6F7" // Cyan
+    // },
+    // {
+    //   title: "Education",
+    //   icon: IconSchool,
+    //   color: "#30D158" // Teal/Green
+    // }
+
+     {
+title: "Orderflow",
+icon: IconChartCandle,
+color: "#9B5DE5" // Purple
+},
+{
+title: "Macro",
+icon: IconWorld,
+color: "#5E5CE6" // Indigo
+},
+{
+title: "Price Action",
+icon: IconChartBar,
+color: "#0A84FF" // Blue
+},
+{
+title: "Quant",
+icon: IconChartHistogram,
+color: "#06D6F7" // Cyan
+},
+{
+title: "Research",
+icon: IconFileSearch,
+color: "#30D158" // Green
+}
+
   ];
 
   return (
@@ -128,8 +155,8 @@ export default function EcosystemLiteContent() {
       </div>
 
       {/* Central Hexagon Hub */}
-      <div className="flex flex-col items-center mt-6 md:mt-2 z-20">
-        <div className="relative mb-4 group cursor-pointer">
+      <div className="flex flex-col items-center mt-2 md:mt-4 z-2">
+        <div className="relative mb-1 group cursor-pointer">
           <svg width="100" height="115" viewBox="0 0 80 92" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M40 0L74.641 20V60L40 80L5.35898 60V20L40 0Z" fill="url(#hex-grad-lite)" />
             <path d="M40 15L60.641 27V51L40 63L19.359 51V27L40 15Z" fill="#03040C" />
@@ -137,7 +164,7 @@ export default function EcosystemLiteContent() {
               <linearGradient id="hex-grad-lite" x1="5" y1="0" x2="75" y2="80" gradientUnits="userSpaceOnUse">
                 <stop stopColor="#9B5DE5" />
                 <stop offset="0.5" stopColor="#0A84FF" />
-                <stop offset="1" stopColor="#06D6F7" />
+                <stop offset="1" stopColor="#06D6F7" />  
               </linearGradient>
             </defs>
           </svg>
@@ -163,7 +190,7 @@ export default function EcosystemLiteContent() {
         <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border border-[#06D6F7] bg-[#03040C] flex flex-col items-center justify-center mb-4 transition-transform hover:scale-105">
           <IconUsers className="w-8 h-8 md:w-10 md:h-10 text-[#06D6F7]" stroke={1.5} />
         </div>
-        <h3 className="text-white text-lg md:text-xl font-black tracking-[0.25em] uppercase">
+        <h3 className="text-white text-lg md:text-x2 font-bold tracking-[0.50em] uppercase">
           UNIFIED COMMUNITY
         </h3>
       </div>

@@ -85,7 +85,7 @@ export default function Section3Content() {
       <div className="max-w-[1300px] mx-auto w-full px-6 py-20 lg:py-32 relative z-10 flex flex-col font-sans">
 
   {/* New Intro Headline */}
-  <div className="flex flex-col items-center text-center mb-20 lg:mb-28">
+  <div className="flex flex-col items-center text-center mb-10 lg:mb-10">
     
     <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-tight">
       EVERY TRADER STARTS HERE.

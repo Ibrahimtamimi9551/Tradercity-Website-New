@@ -1,3 +1,5 @@
+
+import EcosystemLiteContent from "@/components/home/ecosystem-lite/EcosystemLiteContent";
 import React from 'react';
 
 export default function HeroContent() {
@@ -25,7 +27,7 @@ export default function HeroContent() {
         </div>
 
         {/* 2. Main Headline */}
-        <h1 className="font-bold text-[42px] sm:text-[64px] md:text-[80px] lg:text-[100px] leading-[1.05] tracking-tight mb-10 md:mb-14">
+        {/* <h1 className="font-bold text-[42px] sm:text-[64px] md:text-[80px] lg:text-[100px] leading-[1.05] tracking-tight mb-10 md:mb-14">
           <span className="block text-white">
             One Market.
           </span>
@@ -35,17 +37,39 @@ export default function HeroContent() {
           <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#9B5DE5] via-[#0A84FF] to-[#06D6F7]">
             Better Decisions.
           </span>
-        </h1>
+        </h1> */}
+
+        {/* 2. Main Headline */}
+       <h1 className="font-bold tracking-tight mb-8 md:mb-10">
+  <span className="block text-white text-[36px] sm:text-[40px] md:text-[42px] lg:text-[60px] leading-[1]">
+    Crypto Is More Than One Market.
+  </span>
+
+  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#9B5DE5] via-[#0A84FF] to-[#06D6F7]
+    text-[30px] sm:text-[34px] md:text-[36px] lg:text-[40px] leading-[1] mt-3">
+    Multiple Experts.
+  </span>
+
+  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#9B5DE5] via-[#0A84FF] to-[#06D6F7]
+    text-[30px] sm:text-[34px] md:text-[36px] lg:text-[50px] leading-[1]">
+    Better Decisions.
+  </span>
+</h1>
 
         {/* 3. Supporting Text */}
-        <div className="flex flex-col items-center gap-1.5 md:gap-2 text-[#E2E8F0] text-sm sm:text-base md:text-xl lg:text-2xl font-medium tracking-wide mb-16 md:mb-24">
+        <div className="flex flex-col items-center gap-1.5 md:gap-2 text-[#E2E8F0] text-sm sm:text-base md:text-xl lg:text-2xl font-medium tracking-wide mb-6 md:mb-8">
           <p>Different backgrounds.</p>
-          <p>Different methodologies.</p>
+          {/* <p>Different methodologies.</p> */}
           <p>Different ways of reading the market.</p>
           <p className="text-transparent bg-clip-text bg-gradient-to-r from-[#9B5DE5] via-[#0A84FF] to-[#06D6F7] font-semibold mt-1 md:mt-2">
-            All in one place.
+            All in one place
           </p>
         </div>
+
+        <div className="mt-16">
+    <EcosystemLiteContent />
+  </div>
+
 
         {/* 4. Scroll Indicator */}
         <div className="flex flex-col items-center">
@@ -54,7 +78,7 @@ export default function HeroContent() {
             <div className="absolute w-12 h-12 bg-[#0A84FF] blur-[20px] rounded-full opacity-40 pointer-events-none" />
             
             {/* Simple downward chevron arrow */}
-            <svg 
+            {/* <svg 
               xmlns="http://www.w3.org/2000/svg" 
               width="36" 
               height="36" 
@@ -67,7 +91,7 @@ export default function HeroContent() {
               className="relative z-10"
             >
               <path d="M6 9l6 6 6-6" />
-            </svg>
+            </svg> */}
           </div>
         </div>
 

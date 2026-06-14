@@ -3,7 +3,8 @@ import HeroContent from "./HeroContent";
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen overflow-hidden">
+    <section className="relative  overflow-hidden">
+      {/* min-h-[140vh] */}
       <HeroBackground />
 
       <div className="relative z-10">

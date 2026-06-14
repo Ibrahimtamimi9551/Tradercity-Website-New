@@ -18,7 +18,7 @@
 
 
 import Hero from "@/components/home/hero/Hero";
-import EcosystemLite from "@/components/home/ecosystem-lite/EcosystemLite";
+// import EcosystemLite from "@/components/home/ecosystem-lite/EcosystemLite";
 import Section3 from "@/components/home/section3/Section3";
 import Section4 from "@/components/home/section4/Section4";
 import Section5 from "@/components/home/section5/Section5";
@@ -29,12 +29,13 @@ import Section8 from "@/components/home/section8/Section8";
 // import Section10 from "@/components/home/section10/Section10";
 // import Section11 from "@/components/home/section11/Section11";
 // import Section12 from "@/components/home/section12/Section12";
+import Pricing from "@/components/pricing/Pricing";
 
 export default function Page() {
   return (
     <main>
       <Hero />
-      <EcosystemLite />
+      {/* <EcosystemLite /> */}
       <Section3 />
       <Section4 />
       <Section5 />
@@ -45,6 +46,7 @@ export default function Page() {
       {/* <Section10 /> */}
       {/* <Section11 /> */}
       {/* <Section12 /> */}
+      <Pricing />
     </main>
   );
 }

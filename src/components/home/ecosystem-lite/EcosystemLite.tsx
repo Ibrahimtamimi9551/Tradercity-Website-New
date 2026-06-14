@@ -2,8 +2,8 @@
 
 import React from 'react';
 import EcosystemLiteBackground from './EcosystemLiteBackground';
-import EcosystemLiteHeadline from './EcosystemLiteHeadline';
-import EcosystemLiteContent from './EcosystemLiteContent';
+// import EcosystemLiteHeadline from './EcosystemLiteHeadline';
+// import EcosystemLiteContent from './EcosystemLiteContent';
 
 export default function EcosystemLite() {
   return (
@@ -12,8 +12,8 @@ export default function EcosystemLite() {
 
       {/* <div className="relative z-10 w-full"> */}
       <div className="relative z-10 w-full pt-24 md:pt-32 lg:pt-40">
-        <EcosystemLiteHeadline />
-        <EcosystemLiteContent />
+        {/* <EcosystemLiteHeadline /> */}
+        {/* <EcosystemLiteContent /> */}
       </div>
     </section>
   );
