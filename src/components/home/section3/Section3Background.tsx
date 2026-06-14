@@ -75,9 +75,9 @@ const ProblemBackground = () => {
       return x - Math.floor(x);
     };
 
-    const applyDistortion = (x, y) => {
-      let nx = x;
-      let ny = y;
+    const applyDistortion = (x: number, y: number) => {
+  let nx = x;
+  let ny = y;
 
       // Left: Structured Pull (Spacetime warp)
       const ldx = lcx - x;

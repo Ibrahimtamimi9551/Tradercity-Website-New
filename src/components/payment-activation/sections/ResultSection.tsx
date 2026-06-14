@@ -12,7 +12,9 @@ export default function ResultSection() {
     - supportVisible
   */
   
-  const membershipStatus = "dormant"; // Toggle to 'active' or 'issue' to preview future states
+  // const membershipStatus = "dormant"; // Toggle to 'active' or 'issue' to preview future states
+  // let membershipStatus: "dormant" | "active" | "issue" = "dormant";
+  const membershipStatus = "dormant" as "dormant" | "active" | "issue";
 
   if (membershipStatus === "active") {
     return (
