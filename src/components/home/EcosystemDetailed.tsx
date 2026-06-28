@@ -1,3 +1,5 @@
+// Inside TraderCity
+
 import React from 'react';
 import {
   IconChartCandle,

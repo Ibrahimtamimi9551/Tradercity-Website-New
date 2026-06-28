@@ -199,6 +199,7 @@ export default function LoginPage() {
             </Link> */}
 
             <Link href="/dashboard/free">
+            {/* mock frontend stage ke liye: */}
              <button onClick={() => window.location.href = "/dashboard/free"}
              className="w-full h-16 bg-white hover:bg-gray-50 text-black font-extrabold rounded-xl flex items-center justify-center gap-3 mb-6 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98]">
                 <GoogleIcon className="w-6 h-6" />

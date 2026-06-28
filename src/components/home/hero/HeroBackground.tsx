@@ -65,7 +65,7 @@ export default function HeroBackground() {
           className="absolute bottom-0 left-0 right-0 h-[70vh]"
           style={{
             maskImage: 'linear-gradient(to top, white 10%, transparent 90%)',
-            WebkitMaskImage: 'linear-gradient(to top, white 10%, transparent 90%)',
+            WebkitMaskImage: 'linear-gradient(to top, white 10%, transparent 90%)', 
           }}
         >
           {/* 3D Grid Lines */}
