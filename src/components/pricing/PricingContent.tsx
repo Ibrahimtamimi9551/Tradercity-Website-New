@@ -11,6 +11,7 @@ import {
   ArrowRight,
   Circle,
 } from "lucide-react";
+import Link from "next/link";
 
 export default function PricingSection() {
   const [selectedPlan, setSelectedPlan] = useState("quarterly");
@@ -25,14 +26,25 @@ export default function PricingSection() {
   ];
 
   const plans = [
-    {
-      id: "monthly",
-      name: "MONTHLY",
-      price: "$60",
-      period: "/ month",
-      duration: "30 DAYS",
-      accent: "purple",
-    },
+    // {
+    //   id: "monthly",
+    //   name: "MONTHLY",
+    //   price: "$60",
+    //   period: "/ month",
+    //   duration: "30 DAYS",
+    //   accent: "purple",
+    // },
+        {
+  id: "monthly",
+  name: "MONTHLY",
+  price: "$50",
+  period: "/ month",
+  duration: "30 DAYS",
+  oldPrice: "$60",
+  badge: "FIRST MEMBERSHIP OFFER",
+  helper: "Save $10 on your first membership",
+  accent: "gold",
+},
     {
       id: "quarterly",
       name: "QUARTERLY",
@@ -57,7 +69,8 @@ export default function PricingSection() {
   ];
 
   return (
-    <section className="min-h-screen bg-[#0A0A0A] py-16 px-4 font-sans selection:bg-yellow-500/30">
+    // <section className="min-h-screen bg-[#0A0A0A] py-16 px-4 font-sans selection:bg-yellow-500/30">
+    <section className="min-h-screen py-16 px-4 font-sans selection:bg-yellow-500/30">
       <div className="max-w-[1080px] mx-auto">
         
         {/* ========================================== */}
@@ -253,6 +266,7 @@ export default function PricingSection() {
 
             {/* CTA Button */}
             <div className="mt-8">
+              <Link href="/login?plan=free">
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -262,6 +276,7 @@ export default function PricingSection() {
                 <span>Become a VIP Member</span>
                 <ArrowRight className="w-5 h-5 ml-1" />
               </motion.button>
+              </Link>
             </div>
             
             {/* Community Footer */}

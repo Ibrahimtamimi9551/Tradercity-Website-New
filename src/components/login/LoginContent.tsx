@@ -17,6 +17,7 @@ import {
   Shield,
   Users
 } from "lucide-react";
+import Link from "next/link";
 
 // ==========================================
 // Custom SVG Icons
@@ -105,7 +106,7 @@ export default function LoginPage() {
       {/* ========================================== */}
       {/* 3D PERSPECTIVE LAYOUT */}
       {/* ========================================== */}
-      <main className="relative z-10 max-w-[1200px] w-full mx-auto px-4 lg:px-8 flex flex-col items-center">
+      <main className="relative z-10 max-w-[1400px] w-full mx-auto px-4 lg:px-8 flex flex-col items-center">
         
         <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8 xl:gap-12 w-full perspective-[1400px]">
           
@@ -113,7 +114,7 @@ export default function LoginPage() {
           {/* LEFT FEATURE CARD */}
           {/* -------------------------------------- */}
           <div
-            className="w-full max-w-[280px] rounded-[24px] p-6 lg:rotate-y-[12deg] lg:rotate-z-[1deg] lg:translate-x-4 relative bg-[#090A10] pointer-events-auto"
+            className="w-full max-w-[300px] rounded-[24px] p-6 lg:rotate-y-[12deg] lg:rotate-z-[1deg] lg:translate-x-4 relative bg-[#090A10] pointer-events-auto"
             style={{
               background: "linear-gradient(#090A10, #090A10) padding-box, linear-gradient(180deg, rgba(56,189,248,0.6), rgba(168,85,247,0.3)) border-box",
               borderWidth: "1px",
@@ -177,22 +178,33 @@ export default function LoginPage() {
           {/* CENTER LOGIN CARD (Visual Dominance) */}
           {/* -------------------------------------- */}
           <div
-            className="w-full max-w-[520px] rounded-[24px] p-10 lg:p-12 z-20 bg-[#0A0C10] relative shadow-[0_0_100px_rgba(59,130,246,0.15)] order-first lg:order-none pointer-events-auto flex flex-col items-center"
+            className="w-full max-w-[760px] rounded-[24px] p-12 lg:p-14 z-20 bg-[#0A0C10] relative shadow-[0_0_100px_rgba(59,130,246,0.15)] order-first lg:order-none pointer-events-auto flex flex-col items-center"
             style={{
               background: "linear-gradient(#0A0C10, #0A0C10) padding-box, linear-gradient(135deg, rgba(56,189,248,0.9), rgba(168,85,247,0.7)) border-box",
               borderWidth: "1.5px",
               borderColor: "transparent",
             }}
           >
-            <h2 className="text-4xl md:text-[44px] font-extrabold text-white mb-12 tracking-tight text-center mt-2 drop-shadow-md">
+            <h2 className="text-5xl md:text-[50px] font-extrabold text-white mb-12 tracking-tight text-center mt-2 drop-shadow-md">
               Register / Login
             </h2>
 
             {/* Google Auth Button */}
-            <button className="w-full h-16 bg-white hover:bg-gray-50 text-black font-extrabold rounded-xl flex items-center justify-center gap-3 mb-6 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98]">
-              <GoogleIcon className="w-6 h-6" />
-              <span className="text-[16px]">Continue with Google</span>
-            </button>
+            {/*  Added Link component to wrap the Google Auth Button, directing users to the free dashboard after clicking  but here a problem , this click work on 2 conditions , if user come from free discord this login should redirect to free , otherwise activation page */}
+            {/* <Link href="/dashboard/free">
+              <button className="w-full h-16 bg-white hover:bg-gray-50 text-black font-extrabold rounded-xl flex items-center justify-center gap-3 mb-6 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98]">
+                <GoogleIcon className="w-6 h-6" />
+                <span className="text-[16px]">Continue with Google</span>
+              </button>
+            </Link> */}
+
+            <Link href="/dashboard/free">
+             <button onClick={() => window.location.href = "/dashboard/free"}
+             className="w-full h-16 bg-white hover:bg-gray-50 text-black font-extrabold rounded-xl flex items-center justify-center gap-3 mb-6 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98]">
+                <GoogleIcon className="w-6 h-6" />
+                <span className="text-[16px]">Continue with Google</span>
+              </button>
+            </Link>
 
             <div className="flex items-center gap-4 w-full mb-6">
               <div className="h-px bg-[#1F2129] flex-1"></div>
@@ -241,7 +253,7 @@ export default function LoginPage() {
           {/* RIGHT FEATURE CARD */}
           {/* -------------------------------------- */}
           <div
-            className="w-full max-w-[280px] rounded-[24px] p-6 lg:-rotate-y-[12deg] lg:-rotate-z-[1deg] lg:-translate-x-4 relative bg-[#090A10] pointer-events-auto"
+            className="w-full max-w-[300px] rounded-[24px] p-6 lg:-rotate-y-[12deg] lg:-rotate-z-[1deg] lg:-translate-x-4 relative bg-[#090A10] pointer-events-auto"
             style={{
               background: "linear-gradient(#090A10, #090A10) padding-box, linear-gradient(180deg, rgba(234,179,8,0.6), rgba(234,179,8,0.1)) border-box",
               borderWidth: "1px",

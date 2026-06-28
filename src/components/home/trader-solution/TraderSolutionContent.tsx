@@ -1,5 +1,5 @@
 import React from 'react';
-import Section4Illustration from './Section4Illustration';
+import TraderSolutionIllustration from "./TraderSolutionIllustration";
 
 const features = [
   // Column 1
@@ -73,7 +73,7 @@ const features = [
   }
 ];
 
-export default function Section4Content() {
+export default function TraderSolutionContent() {
   const col0 = features.filter(f => f.col === 0);
   const col1 = features.filter(f => f.col === 1);
   const col2 = features.filter(f => f.col === 2);
@@ -143,7 +143,7 @@ export default function Section4Content() {
 
         {/* RIGHT: Illustration (45%) */}
         <div className="w-full lg:w-[52%] flex items-center justify-center py-2 lg:py-0">
-          <Section4Illustration />
+          <TraderSolutionIllustration />
         </div>
       </div>
 

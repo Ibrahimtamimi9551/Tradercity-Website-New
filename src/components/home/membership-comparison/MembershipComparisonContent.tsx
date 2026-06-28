@@ -208,7 +208,7 @@ const journeySteps = [
   { number: '4', label: 'UPGRADE', highlight: true },
 ];
 
-export default function Section7Content() {
+export default function MembershipComparisonContent() {
   return (
     <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 sm:px-8 lg:px-16 py-16 md:py-20 lg:py-28">
 

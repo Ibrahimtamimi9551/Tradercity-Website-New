@@ -1,18 +1,8 @@
-// import Section4Background from "@/components/home/section4/Section4Background";
-
-// export default function LoginBackground() {
-//   return (
-//     <div className="absolute inset-0 z-0">
-//       <Section4Background />
-//     </div>
-//   );
-// }
-
 //GLOBAL BACKGROUND 
 
 import React from 'react';
 
-export default function LoginBackground() {
+export default function MembershipComparisonBackground() {
   return (
     <div className="absolute inset-0 bg-[#03040C] pointer-events-none overflow-hidden">
       
@@ -31,4 +21,3 @@ export default function LoginBackground() {
     </div>
   );
 }
-

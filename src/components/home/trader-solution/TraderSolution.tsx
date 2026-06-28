@@ -1,15 +1,14 @@
-// import Section4Background from "./Section4Background";
-import Section4Content from "./Section4Content";
-// import Section4Illustration from "./Section4Illustration";
+import TraderSolutionBackground from "./TraderSolutionBackground";
+import TraderSolutionContent from "./TraderSolutionContent";
 
-export default function Section4() {
+export default function TraderSolution() {
   return (
     // <section className="relative min-h-screen overflow-hidden">
     <section className="relative overflow-hidden">
-      {/* <Section4Background /> */}
+      <TraderSolutionBackground />
 
       <div className="relative z-10 w-full">
-        <Section4Content />
+        <TraderSolutionContent />
       </div>
        
        {/* <div className="w-full lg:w-[48%]">

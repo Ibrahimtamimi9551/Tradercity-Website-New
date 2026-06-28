@@ -414,7 +414,7 @@ const PricingPlansSection = () => (
 
     <div className="flex items-center justify-center gap-2 text-gray-400 text-xs bg-[#0c0814] border border-purple-900/30 w-fit mx-auto px-4 py-2 rounded-full mb-10">
       <ShieldCheck className="w-4 h-4 text-purple-400" />
-      <span className="font-bold text-gray-300 mr-1">30-Day Money Back Guarantee</span>
+      {/* <span className="font-bold text-gray-300 mr-1">30-Day Money Back Guarantee</span> */}
       Not satisfied? Get a full refund within 30 days.
     </div>
 

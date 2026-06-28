@@ -14,7 +14,7 @@ function DiscordIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-export default function Section6Illustration() {
+export default function CommunityIllustration() {
   return (
     // Changed -mt-8 to mt-12 on mobile to add clear separation from the screenshot.
     // Preserved negative margin on sm and lg to maintain desktop/tablet overlap composition.

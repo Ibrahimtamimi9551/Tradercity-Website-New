@@ -1,18 +1,8 @@
-// import Section4Background from "@/components/home/section4/Section4Background";
-
-// export default function LoginBackground() {
-//   return (
-//     <div className="absolute inset-0 z-0">
-//       <Section4Background />
-//     </div>
-//   );
-// }
-
 //GLOBAL BACKGROUND 
 
 import React from 'react';
 
-export default function LoginBackground() {
+export default function TraderSolutionBackground() {
   return (
     <div className="absolute inset-0 bg-[#03040C] pointer-events-none overflow-hidden">
       
@@ -32,3 +22,23 @@ export default function LoginBackground() {
   );
 }
 
+// Iteration 1
+// export default function Section4Background() {
+//   return (
+//     <div
+//       className="absolute inset-0 pointer-events-none"
+//       style={{
+//         backgroundImage: "url('/images/Backgrounds/Section4Background4.png')",
+//         backgroundSize: "100% 100%",
+//         backgroundPosition: "center",
+//         backgroundRepeat: "no-repeat",
+//       }}
+//     />
+//   );
+// }
+
+// import Section3Background from "../section3/Section3Background";
+
+// export default function Section5Background() {
+//   return <Section3Background />;
+// }

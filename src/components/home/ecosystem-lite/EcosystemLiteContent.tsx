@@ -45,7 +45,8 @@ const ExpertNode = ({
     {/* Anchor Dot */}
     <div
       className="absolute -bottom-[2px] md:-bottom-[4px] w-1.5 h-1.5 md:w-2 md:h-2 rounded-full z-20"
-      style={{ backgroundColor: color, boxShadow: `0 0 6px ${color}` }}
+      // style={{ backgroundColor: color, boxShadow: `0 0 6px ${color}` }}
+      style={{ backgroundColor: color }}
     />
   </div>
 );
@@ -150,12 +151,75 @@ color: "#30D158" // Green
             <path d="M 900 0 C 900 80, 500 30, 500 120" stroke="#30D158" />
           </g>
           {/* Minimal Hub Connection Dot */}
-          <circle cx="500" cy="120" r="3" fill="#0A84FF" />
+          {/* <circle cx="500" cy="120" r="3" fill="#0A84FF" /> */}
         </svg>
       </div>
 
+
+      {/* Central Hub Iteration 1  */}
+        {/* Central Hexagon Hub */}
+<div className="flex flex-col items-center mt-2 md:mt-4 z-2">
+
+  {/* <div className="flex items-center justify-center gap-6 md:gap-10"> */}
+  <div className="flex items-center justify-center -ml-24">
+
+    {/* TRADER */}
+    <span className="text-white text-[28px] md:text-[36px] font-black tracking-[0.18em] mr-6">
+      TRADER
+    </span>
+
+    {/* LOGO */}
+    <div className="relative group cursor-pointer -ml-2">
+      <svg
+        width="90"
+        height="100"
+        viewBox="0 0 80 92"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M40 0L74.641 20V60L40 80L5.35898 60V20L40 0Z"
+          fill="url(#hex-grad-lite)"
+        />
+        <path
+          d="M40 15L60.641 27V51L40 63L19.359 51V27L40 15Z"
+          fill="#03040C"
+        />
+
+        <defs>
+          <linearGradient
+            id="hex-grad-lite"
+            x1="5"
+            y1="0"
+            x2="75"
+            y2="80"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stopColor="#9B5DE5" />
+            <stop offset="0.5" stopColor="#0A84FF" />
+            <stop offset="1" stopColor="#06D6F7" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+    {/* CITY */}
+    <span className="text-white text-[28px] md:text-[36px] font-black tracking-[0.18em] ml-6">
+      CITY
+    </span>
+
+  </div>
+
+  <p className="mt-2 text-[#06D6F7] text-[10px] md:text-[11px] font-bold tracking-[0.3em]">
+    THE CENTRAL ECOSYSTEM
+  </p>
+
+</div>
+
+
+
       {/* Central Hexagon Hub */}
-      <div className="flex flex-col items-center mt-2 md:mt-4 z-2">
+      {/* <div className="flex flex-col items-center mt-2 md:mt-4 z-2">
         <div className="relative mb-1 group cursor-pointer">
           <svg width="100" height="115" viewBox="0 0 80 92" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M40 0L74.641 20V60L40 80L5.35898 60V20L40 0Z" fill="url(#hex-grad-lite)" />
@@ -169,18 +233,18 @@ color: "#30D158" // Green
             </defs>
           </svg>
         </div>
-        
         <h1 className="text-3xl md:text-[40px] font-black text-white tracking-[0.2em] mb-1">
           TRADERCITY
         </h1>
+        
         <p className="text-[#06D6F7] text-[10px] md:text-[11px] font-bold tracking-[0.3em]">
           THE CENTRAL ECOSYSTEM
         </p>
-      </div>
+      </div> */}
 
       {/* Connecting Arrow Down */}
       <div className="mt-3 md:mt-4 flex flex-col items-center">
-        <div className="w-[1.5px] h-6 md:h-8 bg-gradient-to-b from-[#06D6F7] to-[#06D6F7]/20 relative">
+        <div className="w-[3.5px] h-6 md:h-8 bg-gradient-to-b from-[#06D6F7] to-[#06D6F7]/20 relative">
            <IconArrowDown size={14} color="#06D6F7" className="absolute -bottom-3 -left-[6px]" />
         </div>
       </div>
