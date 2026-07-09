@@ -9,7 +9,7 @@ import PricingContent from "./PricingContent";
 
 export default function Pricing() {
   return (
-    <section className="relative overflow-hidden">
+    <section id="pricing" className="relative overflow-hidden">
       <PricingBackground />
 
       <div className="relative z-10">

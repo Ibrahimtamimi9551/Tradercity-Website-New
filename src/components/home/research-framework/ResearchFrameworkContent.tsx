@@ -1,11 +1,10 @@
-//Gemini Iteration 1 
-
 'use client';
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { learningFrameworks } from './learningFrameworks';
 import { microstructureReports } from './microstructureReports';
+import SectionEyebrow from '../shared/SectionEyebrow';
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
@@ -227,7 +226,7 @@ export default function ResearchFrameworkContent() {
     : 'TRADERCITY MICROSTRUCTURE REPORT ARCHIVE';
 
   return (
-    <div className="relative z-10 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-16 py-16 lg:py-24">
+    <div className="relative z-10 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-16 py-12 lg:py-16 font-sans">
 
       {/* ── Main layout ──────────────────────────────────────────────────────── */}
       <div className="flex flex-col lg:flex-row gap-8 xl:gap-10 items-start">
@@ -235,15 +234,13 @@ export default function ResearchFrameworkContent() {
         {/* ── LEFT COLUMN ──────────────────────────────────────────────────── */}
         <div className="w-full lg:w-[288px] xl:w-[308px] shrink-0 flex flex-col gap-6">
 
-          {/* Section label */}
-          <div className="flex items-center gap-3">
-            <span className="text-[#D4AF37] font-semibold tracking-[0.3em] text-sm">08</span>
-            <div className="h-px w-4 bg-[#D4AF37]" />
-            <span className="text-[#D4AF37] font-semibold tracking-[0.2em] text-xs uppercase">Knowledge Vault</span>
-          </div>
+          <SectionEyebrow
+            number="07"
+            label="Knowledge Vault"
+            accentColor="#D4AF37"
+          />
 
-          {/* Headline */}
-          <h2 className="text-3xl sm:text-4xl xl:text-[2.75rem] font-bold text-white leading-[1.1] tracking-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-[1.1] tracking-tight">
             Research.
             <br />
             Frameworks.

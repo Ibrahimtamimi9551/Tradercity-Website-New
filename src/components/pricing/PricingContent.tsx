@@ -11,7 +11,8 @@ import {
   ArrowRight,
   Circle,
 } from "lucide-react";
-import Link from "next/link";
+import GlassCard from "@/components/home/shared/GlassCard";
+import GradientText from "@/components/home/shared/GradientText";
 
 export default function PricingSection() {
   const [selectedPlan, setSelectedPlan] = useState("quarterly");
@@ -87,7 +88,7 @@ export default function PricingSection() {
         {/* ========================================== */}
         {/* MAIN PRICING CONTAINER                     */}
         {/* ========================================== */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 bg-[#0C0D12] border border-[#1F2129] rounded-[24px] p-8 lg:p-12">
+        <GlassCard className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 bg-[#0C0D12]/90 border-[#1F2129] rounded-[24px] p-8 lg:p-12">
           
           {/* ========================================== */}
           {/* LEFT COLUMN - VALUE PROPOSITION            */}
@@ -101,15 +102,14 @@ export default function PricingSection() {
               </div>
 
               {/* Main Heading */}
-              <h1 className="text-4xl lg:text-[44px] font-bold tracking-tight text-white mb-4 leading-[1.1]">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-4 leading-[1.1]">
                 Choose Your <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#A855F7] to-[#FACC15]">
+                <GradientText from="#A855F7" to="#FACC15">
                   Membership Term
-                </span>
+                </GradientText>
               </h1>
 
-              {/* Subheading */}
-              <p className="text-[#94A3B8] text-[15px] mb-10 leading-relaxed">
+              <p className="text-tc-muted text-base leading-relaxed mb-10">
                 One VIP membership. <br className="hidden lg:block" />
                 Choose the duration that fits your journey.
               </p>
@@ -167,7 +167,7 @@ export default function PricingSection() {
             </div>
 
             {/* Duration Selection Cards */}
-            <div className="flex flex-col gap-5 flex-1">
+            <div id="plan-selector" className="flex flex-col gap-5 flex-1">
               {plans.map((plan) => {
                 const isSelected = selectedPlan === plan.id;
                 const isGold = plan.accent === "gold";
@@ -266,7 +266,7 @@ export default function PricingSection() {
 
             {/* CTA Button */}
             <div className="mt-8">
-              <Link href="/login?plan=free">
+              <a href="#plan-selector">
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -276,7 +276,7 @@ export default function PricingSection() {
                 <span>Become a VIP Member</span>
                 <ArrowRight className="w-5 h-5 ml-1" />
               </motion.button>
-              </Link>
+              </a>
             </div>
             
             {/* Community Footer */}
@@ -300,7 +300,7 @@ export default function PricingSection() {
             </div>
 
           </div>
-        </div>
+        </GlassCard>
       </div>
     </section>
   );

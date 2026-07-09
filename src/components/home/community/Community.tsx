@@ -2,7 +2,7 @@
 
 import CommunityBackground from "./CommunityBackground";
 import CommunityDiscord from "./CommunityDiscord";
-import CommunityIllustration from "./CommunityIllustratiion";
+import CommunityIllustration from "./CommunityIllustration";
 
 export default function Community() {
   return (

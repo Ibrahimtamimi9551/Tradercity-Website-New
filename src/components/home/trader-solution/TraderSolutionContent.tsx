@@ -1,5 +1,8 @@
 import React from 'react';
 import TraderSolutionIllustration from "./TraderSolutionIllustration";
+import SectionContainer from '../shared/SectionContainer';
+import SectionEyebrow from '../shared/SectionEyebrow';
+import GradientText from '../shared/GradientText';
 
 const features = [
   // Column 1
@@ -79,8 +82,7 @@ export default function TraderSolutionContent() {
   const col2 = features.filter(f => f.col === 2);
 
   return (
-    // <div className="max-w-[1300px] mx-auto w-full px-6 py-20 lg:py-32 relative z-10 flex flex-col font-sans">
-    <div className="max-w-[1300px] mx-auto w-full px-6 py-2 lg:py-6 relative z-10 flex flex-col font-sans">
+    <SectionContainer band="medium">
 
       {/* =========================================
           BLOCK 1 — MESSAGE + ILLUSTRATION
@@ -92,28 +94,15 @@ export default function TraderSolutionContent() {
         {/* LEFT: Message (55%) */}
         <div className="w-full lg:w-[55%] flex flex-col pt-4 lg:pr-8">
 
-          {/* Eyebrow */}
-          <div className="flex items-center gap-4 mb-6 opacity-80">
-            <span className="text-[#A855F7] font-semibold text-sm">04</span>
-            <div className="w-12 h-[1px] bg-[#A855F7]/30" />
-            <span className="text-[#8F9BB3] uppercase text-[16px] font-semibold tracking-[0.2em]">
-              The Solution
-            </span>
-          </div>
+          <SectionEyebrow
+            number="03"
+            label="The Solution"
+            accentColor="#A855F7"
+            variant="muted-label"
+            className="mb-6"
+          />
 
-          {/* Headline */}
-          {/* <h2 className="text-[32px] md:text-[38px] lg:text-[48px] font-bold text-white leading-[1.15] tracking-tight mb-10">
-            TraderCity wasn't built<br />
-            to provide more opinions.<br />
-            <br />
-            <span className="block h-1" />
-            It was built<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#C084FC] to-[#F59E0B]">
-              to provide context.
-            </span>
-          </h2> */}
-
-          <h2 className="text-[32px] md:text-[42px] lg:text-[48px] font-bold text-white leading-[1.1] tracking-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-[1.1] tracking-tight">
           <div className="mb-4">
               TraderCity wasn't built<br />
               to provide more opinions.
@@ -121,15 +110,13 @@ export default function TraderSolutionContent() {
 
            <div>
               It was built<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#C084FC] to-[#F59E0B]">
+              <GradientText from="#C084FC" to="#F59E0B">
                to provide context.
-             </span>
+              </GradientText>
            </div>
 
        </h2>
-          {/* Supporting Copy */}
-          {/* <div className="text-[#8F9BB3] text-[15px] leading-[1.8] space-y-8"> */}
-          <div className="mt-4 text-[#8F9BB3] text-[15px] leading-[1.8] space-y-8">
+          <div className="mt-4 text-tc-muted text-base leading-relaxed space-y-8">
             <p>
               Different analysts read the market differently.
             </p>
@@ -171,7 +158,7 @@ export default function TraderSolutionContent() {
                   />
                   <div>
                     <h4 className="text-white font-medium text-[15px] mb-2">{feat.title}</h4>
-                    <p className="text-[#8F9BB3] text-[13px] leading-[1.6]">{feat.desc}</p>
+                    <p className="text-tc-muted text-[13px] leading-relaxed">{feat.desc}</p>
                   </div>
                 </div>
               </div>
@@ -192,7 +179,7 @@ export default function TraderSolutionContent() {
                   />
                   <div>
                     <h4 className="text-white font-medium text-[15px] mb-2">{feat.title}</h4>
-                    <p className="text-[#8F9BB3] text-[13px] leading-[1.6]">{feat.desc}</p>
+                    <p className="text-tc-muted text-[13px] leading-relaxed">{feat.desc}</p>
                   </div>
                 </div>
               </div>
@@ -213,7 +200,7 @@ export default function TraderSolutionContent() {
                   />
                   <div>
                     <h4 className="text-white font-medium text-[15px] mb-2">{feat.title}</h4>
-                    <p className="text-[#8F9BB3] text-[13px] leading-[1.6]">{feat.desc}</p>
+                    <p className="text-tc-muted text-[13px] leading-relaxed">{feat.desc}</p>
                   </div>
                 </div>
               </div>
@@ -227,7 +214,7 @@ export default function TraderSolutionContent() {
                   <h4 className="text-white font-bold text-[28px] md:text-[32px] leading-tight mb-3">
                     Community
                   </h4>
-                  <p className="text-[#8F9BB3] text-[14px] leading-[1.7]">
+                  <p className="text-tc-muted text-sm leading-relaxed">
                     Active traders.<br />
                     Real discussions.<br />
                     Learn &amp; Grow together.
@@ -248,18 +235,16 @@ export default function TraderSolutionContent() {
         
 
         {/* Large Typography */}
-        <h3 className="text-[28px] sm:text-4xl md:text-5xl lg:text-[46px] font-bold uppercase tracking-[0.3em] md:tracking-[0.4em] leading-tight flex flex-col items-center">
+        <h3 className="text-3xl sm:text-4xl lg:text-5xl font-bold uppercase tracking-[0.3em] md:tracking-[0.4em] leading-tight flex flex-col items-center">
           <span className="text-white/90 mb-2 pl-[0.3em] md:pl-[0.4em]">
             MARKET
           </span>
-          {/* <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#C084FC] to-[#F59E0B] pl-[0.3em] md:pl-[0.4em]"> */}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] via-[#3B82F6] to-[#06B6D4]">
+          <GradientText from="#8B5CF6" via="#3B82F6" to="#06B6D4" className="pl-[0.3em] md:pl-[0.4em]">
             CLARITY.
-          </span>
+          </GradientText>
         </h3>
 
-        {/* Subtext */}
-        <p className="text-[#8F9BB3] text-[16px] sm:text-[18px] font-medium tracking-[0.2em] md:tracking-[0.3em] uppercase mt-8 pl-[0.2em] md:pl-[0.3em]">
+        <p className="text-tc-muted text-base sm:text-lg font-medium tracking-[0.2em] md:tracking-[0.3em] uppercase mt-8 pl-[0.2em] md:pl-[0.3em]">
           Different Expertise. One Conviction. Stronger Community.
         </p>
 
@@ -271,6 +256,6 @@ export default function TraderSolutionContent() {
         </div>
       </div>
 
-    </div>
+    </SectionContainer>
   );
 }

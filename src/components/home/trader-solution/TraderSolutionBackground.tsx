@@ -21,24 +21,3 @@ export default function TraderSolutionBackground() {
     </div>
   );
 }
-
-// Iteration 1
-// export default function Section4Background() {
-//   return (
-//     <div
-//       className="absolute inset-0 pointer-events-none"
-//       style={{
-//         backgroundImage: "url('/images/Backgrounds/Section4Background4.png')",
-//         backgroundSize: "100% 100%",
-//         backgroundPosition: "center",
-//         backgroundRepeat: "no-repeat",
-//       }}
-//     />
-//   );
-// }
-
-// import Section3Background from "../section3/Section3Background";
-
-// export default function Section5Background() {
-//   return <Section3Background />;
-// }

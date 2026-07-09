@@ -1,27 +1,10 @@
-// export default function Section7Content() {
-//   return (
-//     <div className="relative z-10 flex min-h-[800px] items-center justify-center">
-//       <div className="rounded-3xl border border-amber-500/30 bg-amber-500/10 px-12 py-10 text-center backdrop-blur-sm">
-//         <p className="mb-2 text-sm uppercase tracking-[0.3em] text-amber-400">
-//           Section 7
-//         </p>
-
-//         <h2 className="text-4xl font-semibold text-white">
-//           Free vs VIP Membership
-//         </h2>
-
-//         <p className="mt-4 text-neutral-400">
-//           Section7Content.tsx is rendering successfully.
-//         </p>
-//       </div>
-//     </div>
-//   );
-// }
-
 'use client';
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import SectionEyebrow from '../shared/SectionEyebrow';
+import GradientText from '../shared/GradientText';
+import { GLASS_CARD_CLASSES } from '../shared/GlassCard';
 
 function DiscordIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -210,7 +193,7 @@ const journeySteps = [
 
 export default function MembershipComparisonContent() {
   return (
-    <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 sm:px-8 lg:px-16 py-16 md:py-20 lg:py-28">
+    <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 sm:px-8 lg:px-16 py-12 lg:py-16 font-sans">
 
       {/* ── Main grid ── */}
       <div className="w-full grid grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)_auto_minmax(0,1.4fr)] gap-6 lg:gap-8 xl:gap-10 items-start mb-12 lg:mb-16">
@@ -226,26 +209,27 @@ export default function MembershipComparisonContent() {
         //   viewport={{ once: true }}
         //   variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
         >
-          <motion.div /* variants={fadeUp} */ custom={0} className="flex items-center gap-3">
-            <span className="text-[#A855F7] font-semibold tracking-[0.3em] text-sm">07</span>
-            <div className="h-px w-10 bg-[#A855F7]" />
-            <span className="text-[#A855F7] font-semibold tracking-[0.2em] text-xs uppercase">Membership</span>
-          </motion.div>
+          <SectionEyebrow
+            number="06"
+            label="Membership"
+            accentColor="#A855F7"
+            className="mb-0"
+          />
 
           <motion.h2
             // variants={fadeUp}
             custom={0.05}
-            className="text-3xl sm:text-4xl xl:text-[2.65rem] font-bold text-white leading-[1.12] tracking-tight"
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-[1.12] tracking-tight"
           >
             Most communities
             <br />
             give you information.
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#A855F7] via-[#C084FC] to-[#D4AF37]">
+            <GradientText from="#A855F7" via="#C084FC" to="#D4AF37">
               TraderCity gives
               <br />
               you context.
-            </span>
+            </GradientText>
           </motion.h2>
 
           <motion.div /* variants={fadeUp} */ custom={0.1} className="w-10 h-px bg-white/20" />
@@ -284,7 +268,7 @@ export default function MembershipComparisonContent() {
         //   viewport={{ once: true }}
         //   transition={{ duration: 0.65, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
         //   whileHover={{ y: -4, transition: { duration: 0.22 } }}
-          className="relative rounded-2xl border border-[#A855F7]/30 bg-[#0A0A12]/80 backdrop-blur-sm p-6 sm:p-7 flex flex-col gap-5 shadow-[0_8px_40px_rgba(168,85,247,0.07)]"
+          className={`relative ${GLASS_CARD_CLASSES} rounded-2xl border-[#A855F7]/30 p-6 sm:p-7 flex flex-col gap-5 shadow-[0_8px_40px_rgba(168,85,247,0.07)]`}
         >
           <div className="flex items-center justify-between">
             <span className="inline-block border border-[#A855F7]/45 text-[#A855F7] text-[10px] font-bold tracking-[0.3em] uppercase rounded-md px-2.5 py-1 bg-[#A855F7]/10">
@@ -366,7 +350,7 @@ export default function MembershipComparisonContent() {
         //   viewport={{ once: true }}
         //   transition={{ duration: 0.65, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
         //   whileHover={{ y: -4, transition: { duration: 0.22 } }}
-          className="relative rounded-2xl border border-[#D4AF37]/35 bg-[#0D0A06]/80 backdrop-blur-sm p-6 sm:p-7 flex flex-col gap-5 shadow-[0_8px_40px_rgba(212,175,55,0.07)]"
+          className={`relative ${GLASS_CARD_CLASSES} rounded-2xl border-[#D4AF37]/35 p-6 sm:p-7 flex flex-col gap-5 shadow-[0_8px_40px_rgba(212,175,55,0.07)]`}
         >
           <div className="flex items-center justify-between">
             <span className="inline-block border border-[#D4AF37]/50 text-[#D4AF37] text-[10px] font-bold tracking-[0.3em] uppercase rounded-md px-2.5 py-1 bg-[#D4AF37]/10">
@@ -489,7 +473,7 @@ export default function MembershipComparisonContent() {
               <p className="text-white font-bold text-lg sm:text-xl leading-tight">Explore VIP Membership</p>
               <p className="text-white/40 text-sm">Unlock the complete experience.</p>
               <motion.a
-                href="/pricing"
+                href="#plan-selector"
                 whileHover={{ x: 4 }}
                 transition={{ duration: 0.18 }}
                 className="inline-flex items-center gap-1.5 text-[#D4AF37] text-sm font-semibold mt-1 hover:text-[#F5CC5A] transition-colors"
