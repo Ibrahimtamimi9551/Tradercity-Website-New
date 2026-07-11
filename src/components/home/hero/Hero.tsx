@@ -7,7 +7,7 @@ export default function Hero() {
       <HeroBackground />
 
       <div className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-1 flex-col px-4 sm:px-6 md:px-8 lg:px-16">
-        <div className="grid min-h-0 flex-1 grid-cols-12">
+        <div className="grid min-h-0 flex-1 grid-cols-12 content-start">
           <HeroContent2 />
         </div>
       </div>

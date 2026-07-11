@@ -1,4 +1,11 @@
 import React from "react";
+import {
+  BarChart3,
+  BookOpen,
+  Users,
+  Zap,
+  type LucideIcon,
+} from "lucide-react";
 import { IconChevronRight, IconUsers } from "@tabler/icons-react";
 import GradientText from "../shared/GradientText";
 // Illustration temporarily removed — content-first iteration
@@ -15,10 +22,10 @@ type CtaItem = {
   icon: React.ReactNode;
 };
 
-type TrustItem = {
+type WhyChooseFeature = {
   title: string;
-  subtitle: string;
-  icon: React.ReactNode;
+  description: string;
+  icon: LucideIcon;
 };
 
 type StatItem = {
@@ -41,26 +48,26 @@ const CTA_ITEMS: CtaItem[] = [
   },
 ];
 
-const TRUST_ITEMS: TrustItem[] = [
+const WHY_CHOOSE_FEATURES: WhyChooseFeature[] = [
   {
-    title: "Free to Join",
-    subtitle: "No credit card required",
-    icon: <TrustLockIcon />,
+    title: "Different Perspectives",
+    description: "Understand markets from multiple angles and make better decisions.",
+    icon: BarChart3,
   },
   {
-    title: "Trusted by Thousands",
-    subtitle: "Active & growing daily",
-    icon: <TrustShieldIcon />,
+    title: "Premium Education",
+    description: "Learn proven frameworks and strategies designed for real market conditions.",
+    icon: BookOpen,
   },
   {
-    title: "Premium Value",
-    subtitle: "Upgrade when ready",
-    icon: <TrustBoltIcon />,
+    title: "Active Community",
+    description: "Connect with thousands of traders, share insights, and grow together.",
+    icon: Users,
   },
   {
-    title: "Built for Traders",
-    subtitle: "By traders, for traders",
-    icon: <TrustStarIcon />,
+    title: "Real-Time Insights",
+    description: "Stay ahead with timely analysis, reports, and market intelligence.",
+    icon: Zap,
   },
 ];
 
@@ -71,67 +78,9 @@ const STAT_ITEMS: StatItem[] = [
   { value: "Daily", label: "Market Insights" },
 ];
 
-const ICON_PURPLE = "#A855F7";
-
 /* ------------------------------------------------------------------ */
 /*  Icons                                                              */
 /* ------------------------------------------------------------------ */
-
-function TrustLockIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" aria-hidden="true">
-      <rect x="5" y="10" width="14" height="11" rx="2.5" fill={ICON_PURPLE} opacity="0.85" />
-      <path
-        d="M8 10V8a4 4 0 0 1 8 0v2"
-        fill="none"
-        stroke={ICON_PURPLE}
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
-      <circle cx="12" cy="15.5" r="1.5" fill="#0B1220" />
-    </svg>
-  );
-}
-
-function TrustShieldIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" aria-hidden="true">
-      <path
-        d="M12 3L4 6.5V11.5c0 5.2 3.4 9.9 8 11 4.6-1.1 8-5.8 8-11V6.5L12 3z"
-        fill={ICON_PURPLE}
-        opacity="0.85"
-      />
-      <path
-        d="M9.5 12.5l1.8 1.8 3.7-3.7"
-        fill="none"
-        stroke="#0B1220"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function TrustBoltIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" aria-hidden="true">
-      <path d="M13 2L5 13.5h5.5L10 22l9-12.5H13.5L13 2z" fill={ICON_PURPLE} opacity="0.85" />
-    </svg>
-  );
-}
-
-function TrustStarIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" aria-hidden="true">
-      <path
-        d="M12 2l2.9 6.9 7.4.6-5.6 4.9 1.7 7.2L12 18.8 7.6 22.6l1.7-7.2-5.6-4.9 7.4-.6L12 2z"
-        fill={ICON_PURPLE}
-        opacity="0.85"
-      />
-    </svg>
-  );
-}
 
 function DiscordIcon({ className }: { className?: string }) {
   return (
@@ -145,12 +94,12 @@ function DiscordIcon({ className }: { className?: string }) {
 /*  Sub-components                                                     */
 /* ------------------------------------------------------------------ */
 
-function HeroEyebrow() {
+function HeroEyebrow({ label, centered = false }: { label: string; centered?: boolean }) {
   return (
-    <div className="flex items-center gap-2.5">
+    <div className={`flex items-center gap-2.5 ${centered ? "justify-center" : ""}`}>
       <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#A855F7]" aria-hidden="true" />
       <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#A855F7]/80 sm:text-xs">
-        The Central Ecosystem
+        {label}
       </span>
     </div>
   );
@@ -178,15 +127,60 @@ function CtaButton({ href, title, variant, icon }: CtaItem) {
   );
 }
 
-function TrustStripItem({ title, subtitle, icon }: TrustItem) {
+function WhyChooseFeatureRow({
+  title,
+  description,
+  icon: Icon,
+  isLast,
+}: WhyChooseFeature & { isLast: boolean }) {
   return (
-    <div className="flex min-w-0 flex-1 items-start gap-3 px-4 py-4 sm:px-5 sm:py-4">
-      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03]">
-        {icon}
+    <div
+      className={`flex flex-col gap-4 py-7 sm:flex-row sm:items-start lg:items-center lg:gap-8 ${
+        isLast ? "" : "border-b border-white/[0.06]"
+      }`}
+    >
+      <div className="flex shrink-0 items-center gap-4 sm:w-[42%] lg:w-[40%]">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[#A855F7]/25 bg-[#A855F7]/[0.06] sm:h-11 sm:w-11">
+          <Icon className="h-[18px] w-[18px] text-[#A855F7]" strokeWidth={1.75} aria-hidden="true" />
+        </div>
+        <p className="text-[15px] font-semibold leading-tight text-white sm:text-base">{title}</p>
       </div>
-      <div className="min-w-0">
-        <p className="text-[13px] font-semibold leading-tight text-white sm:text-sm">{title}</p>
-        <p className="mt-1 text-[11px] leading-snug text-tc-muted sm:text-xs">{subtitle}</p>
+      <p className="text-[13px] leading-relaxed text-tc-muted sm:w-[58%] lg:w-[60%] lg:pl-2">
+        {description}
+      </p>
+    </div>
+  );
+}
+
+function WhyChooseSection() {
+  return (
+    <div className="flex w-full flex-col gap-12 lg:flex-row lg:items-stretch lg:justify-between lg:gap-14 xl:gap-20">
+      {/* Left — headline, centered in its column */}
+      <div className="flex w-full flex-col items-center justify-center text-center lg:max-w-[400px] lg:shrink-0 xl:max-w-[440px]">
+        <HeroEyebrow label="Why Traders Choose TraderCity" centered />
+
+        <h2 className="mt-8 flex w-full flex-col items-center text-[40px] font-bold tracking-[-0.03em] min-[375px]:text-[44px] sm:mt-10 sm:text-[52px] md:text-[56px] lg:mt-10 lg:text-[60px] xl:text-[64px]">
+          <span className="block leading-[1.1] text-white">Clarity.</span>
+          <span className="mt-5 block leading-[1.1] sm:mt-6 md:mt-7 lg:mt-8">
+            <GradientText from="#C084FC" to="#A855F7">Context.</GradientText>
+          </span>
+          <span className="mt-5 block leading-[1.1] sm:mt-6 md:mt-7 lg:mt-8">
+            <GradientText from="#F59E0B" to="#F97316">Confidence.</GradientText>
+          </span>
+        </h2>
+      </div>
+
+      <div className="hidden shrink-0 lg:block lg:w-px lg:bg-white/[0.06]" aria-hidden="true" />
+
+      {/* Right — feature list, pushed toward page right like Problem Awareness */}
+      <div className="w-full lg:ml-auto lg:max-w-[600px] lg:flex-1 xl:max-w-2xl">
+        {WHY_CHOOSE_FEATURES.map((feature, index) => (
+          <WhyChooseFeatureRow
+            key={feature.title}
+            {...feature}
+            isLast={index === WHY_CHOOSE_FEATURES.length - 1}
+          />
+        ))}
       </div>
     </div>
   );
@@ -194,7 +188,7 @@ function TrustStripItem({ title, subtitle, icon }: TrustItem) {
 
 function StatItem({ value, label }: StatItem) {
   return (
-    <div className="flex min-w-0 flex-1 flex-col items-start px-4 py-2 sm:px-6 sm:py-3">
+    <div className="flex min-w-0 flex-1 flex-col items-start px-4 py-4 sm:px-6 sm:py-5">
       <p className="text-[28px] font-bold leading-none tracking-tight text-white sm:text-[32px] md:text-[36px]">
         {value}
       </p>
@@ -205,18 +199,29 @@ function StatItem({ value, label }: StatItem) {
   );
 }
 
+function StatsBar() {
+  return (
+    <div className="w-full overflow-hidden rounded-xl border border-white/[0.08] bg-[#0c0e16]/40">
+      <div className="grid grid-cols-2 divide-x divide-y divide-white/[0.06] lg:grid-cols-4 lg:divide-y-0">
+        {STAT_ITEMS.map((item) => (
+          <StatItem key={item.label} {...item} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /*  Main                                                               */
 /* ------------------------------------------------------------------ */
 
 export default function HeroContent2() {
   return (
-    <div className="contents">
-      <div className="col-span-12 flex w-full max-w-[680px] flex-col pt-20 sm:pt-24 md:max-w-[720px] md:pt-28 lg:max-w-[760px] lg:pt-[7.5rem]">
-        {/* Eyebrow */}
-        <HeroEyebrow />
+    <div className="col-span-12 flex min-h-0 flex-1 flex-col">
+      {/* Hero copy + CTAs */}
+      <div className="flex w-full max-w-[760px] flex-col pt-20 sm:pt-24 md:pt-28 lg:pt-[7.5rem]">
+        <HeroEyebrow label="The Central Ecosystem" />
 
-        {/* Main headline */}
         <h1 className="mt-6 max-w-[640px] text-balance font-bold tracking-[-0.03em]">
           <span className="block text-[34px] leading-[1.05] text-white min-[375px]:text-[38px] sm:text-[44px] md:text-[52px] lg:text-[56px]">
             Crypto Is More
@@ -240,37 +245,27 @@ export default function HeroContent2() {
           </span>
         </h1>
 
-        {/* Description */}
         <p className="mt-8 max-w-[480px] text-[15px] leading-relaxed text-tc-muted sm:text-base">
           Powerful insights, premium education,
           <br className="hidden sm:block" />
           {" "}and a thriving community — all in one place.
         </p>
 
-        {/* CTAs */}
         <div className="mt-10 flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
           {CTA_ITEMS.map((item) => (
             <CtaButton key={item.title} {...item} />
           ))}
         </div>
+      </div>
 
-        {/* Trust strip */}
-        <div className="mt-14 w-full max-w-[760px] overflow-hidden rounded-xl border border-white/[0.08] bg-[#0c0e16]/40">
-          <div className="grid grid-cols-1 divide-y divide-white/[0.06] sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
-            {TRUST_ITEMS.map((item) => (
-              <TrustStripItem key={item.title} {...item} />
-            ))}
-          </div>
-        </div>
+      {/* Why Traders Choose — replaces trust strip */}
+      <div className="mt-16 w-full sm:mt-20 lg:mt-24">
+        <WhyChooseSection />
+      </div>
 
-        {/* Statistics */}
-        <div className="mt-10 w-full max-w-[760px] border-t border-white/[0.06] pt-10">
-          <div className="grid grid-cols-2 divide-x divide-y divide-white/[0.06] lg:grid-cols-4 lg:divide-y-0">
-            {STAT_ITEMS.map((item) => (
-              <StatItem key={item.label} {...item} />
-            ))}
-          </div>
-        </div>
+      {/* Stats bar — pinned to hero bottom */}
+      <div className="mt-auto w-full pt-14 sm:pt-16 lg:pt-20">
+        <StatsBar />
       </div>
 
       {/* Illustration temporarily removed — content-first iteration
