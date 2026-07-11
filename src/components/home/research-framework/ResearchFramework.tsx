@@ -3,7 +3,7 @@ import ResearchFrameworkContent from "./ResearchFrameworkContent";
 
 export default function ResearchFramework() {
   return (
-    <section className="relative overflow-hidden">
+    <section id="research" className="relative overflow-hidden">
       <ResearchFrameworkBackground />
 
       <div className="relative z-10 w-full">

@@ -387,16 +387,14 @@ OUT OF SCOPE:
 ## Required Reading (in order)
 
 ### Docs
-1. docs/Universal/TraderCity_Architecture_Rules.md
-2. docs/Universal/TraderCity_Frontend_Constitution_V1.md
-3. AGENTS.md + PROJECT_CONTEXT.md
-4. docs/admin-dashboard-ui-analysis/README.md
-5. docs/admin-dashboard-ui-analysis/03_Subscription_Interface.md
-6. docs/admin-dashboard-ui-analysis/04_Payment_Interface.md
-7. docs/admin-dashboard-ui-analysis/05_User_Management_Interface.md
-8. docs/admin-dashboard-ui-analysis/06_Management_Workflows.md
-9. docs/admin-dashboard-ui-analysis/07_UI_Patterns.md
-10. docs/admin-dashboard-ui-analysis/10_TraderCity_Interface_Ideas.md
+1. docs/AI/Agents/Admin/00_Admin_Dashboard_Foundation.md
+2. docs/AI/Agents/Admin/01_Product_Vision_and_Architecture.md
+3. docs/AI/Agents/Admin/02_Frontend_Design_System_and_UX_Rules.md
+4. docs/AI/Agents/Admin/03_Module_Specifications.md
+5. docs/AI/Agents/Admin/04_Development_Rules.md
+6. docs/Universal/TraderCity_Architecture_Rules.md
+7. docs/Universal/TraderCity_Frontend_Constitution_V1.md
+8. AGENTS.md + PROJECT_CONTEXT.md
 
 ### Member flow code (study architecture + data before admin UI)
 11. src/components/pricing/Pricing.tsx + PricingContent.tsx — plan ids, prices, features, Framer Motion card pattern
@@ -425,7 +423,7 @@ OUT OF SCOPE:
 
 PaymentSection hardcodes VIP Monthly at $60 — treat as legacy mock; align admin payment rows to submitted amount + plan label.
 
-### Arena/backend plan prices (docs/admin-dashboard-ui-analysis/03 — NestJS contract)
+### Arena/backend plan prices (docs/AI/Agents/Admin/04_Development_Rules.md — NestJS contract)
 Monthly $150 | 3 Months $400 | 1 Year $1,400 | Lifetime $2,000 | Custom
 Categories: Standard (plan-driven) | VIP (auto Lifetime, ∞ days, $0, forced Active)
 
@@ -464,9 +462,9 @@ DO NOT:
 
 ## Target Admin Modules (Phase 1 UI)
 
-### Module 1: Payment Verification
-Route: /admin/payment-verification
-Based on: docs/admin-dashboard-ui-analysis/04_Payment_Interface.md + PaymentSection/VerificationSection
+### Module 1: Subscriptions (includes Payment Verification)
+Route: /admin/subscriptions
+Based on: docs/AI/Agents/Admin/03_Module_Specifications.md + PaymentSection/VerificationSection
 - Hero banner + 4 stat cards (Total, Awaiting Approval, Completed, Failed)
 - Transaction table: Date, Merchant (Discord @username — matches PaymentSection field), Plan (monthly/quarterly/yearly labels), Amount (USDT), Transaction hash (copy), Status badge, Approve action
 - Status pill filters: All, PENDING, VERIFIED, SUCCESS, FAILED
@@ -474,9 +472,9 @@ Based on: docs/admin-dashboard-ui-analysis/04_Payment_Interface.md + PaymentSect
 - Approve confirmation modal before irreversible action
 - TraderCity improvement: Reject with reason field (UI shell + TODO if backend not ready)
 
-### Module 2: Members (User + Subscription Management)
-Route: /admin/members
-Based on: 03, 05, 06 + Free/Vip dashboard mock data
+### Module 2: Members + Member Control Center
+Routes: /admin/members, /admin/members/[id]
+Based on: docs/AI/Agents/Admin/03_Module_Specifications.md + Free/Vip dashboard mock data
 - Member table: Name, Username, Category (VIP badge), Plan, Joined, Expires, Status, Days Left (color-coded like RenewalCentre), Renew count, Amount (privacy toggle)
 - Filters: search, status dropdown (Active/Expired/Suspended/Left/VIP/Hidden/New Joiners), date range, clear
 - Toolbar: Add User, Export CSV, Refresh, revenue visibility toggle
@@ -485,8 +483,8 @@ Based on: 03, 05, 06 + Free/Vip dashboard mock data
 - Member Detail drawer: Profile / Subscription / Payments tabs — Subscription tab mirrors VipDashboard membership grid; Payments tab links to verification records
 
 ### Admin Shell (minimal)
-Based on: 02_Interface_Modules.md, 07_UI_Patterns.md
-- Collapsible sidebar (Dashboard, Members, Payment Verification)
+Based on: docs/AI/Agents/Admin/02_Frontend_Design_System_and_UX_Rules.md
+- Collapsible sidebar (Dashboard, Members, Subscriptions)
 - Top navbar with theme toggle, admin avatar dropdown
 - Toast feedback pattern (copy hash, approve success)
 - TraderCity brand: Deep Space Navy #05081A, institutional tone — NOT Arena copy-paste

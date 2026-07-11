@@ -235,7 +235,7 @@ export default function ResearchFrameworkContent() {
         <div className="w-full lg:w-[288px] xl:w-[308px] shrink-0 flex flex-col gap-6">
 
           <SectionEyebrow
-            number="07"
+            number="06"
             label="Knowledge Vault"
             accentColor="#D4AF37"
           />

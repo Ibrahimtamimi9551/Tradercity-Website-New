@@ -1,4 +1,4 @@
-
+import HomepageNavigation from "@/components/home/navigation/HomepageNavigation";
 import Hero from "@/components/home/hero/Hero";
 import ProblemAwareness from "@/components/home/problem-awareness/ProblemAwareness";
 import TraderSolution from "@/components/home/trader-solution/TraderSolution";
@@ -10,15 +10,17 @@ import Pricing from "@/components/pricing/Pricing";
 
 export default function Page() {
   return (
-    <main>
+    <main className="relative">
+      <div id="nav-scroll-sentinel" className="pointer-events-none absolute top-0 h-[50px] w-full" aria-hidden="true" />
+      <HomepageNavigation />
       <Hero />
       <ProblemAwareness />
       <TraderSolution />
       <AnalystTeam />
       <Community />
-      <MembershipComparison />
       <ResearchFramework />
-      <Pricing />   
+      <MembershipComparison />
+      <Pricing />
     </main>
   );
 }

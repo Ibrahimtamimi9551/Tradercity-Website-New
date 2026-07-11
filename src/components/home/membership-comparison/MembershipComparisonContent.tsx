@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import SectionEyebrow from '../shared/SectionEyebrow';
 import GradientText from '../shared/GradientText';
 import { GLASS_CARD_CLASSES } from '../shared/GlassCard';
 
@@ -119,15 +118,6 @@ function CrownIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: (delay: number = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] },
-  }),
-};
-
 const freeItems = [
   {
     icon: UsersIcon,
@@ -185,104 +175,50 @@ const vipItems = [
 ];
 
 const journeySteps = [
-  { number: '1', label: 'OBSERVE', highlight: false },
-  { number: '2', label: 'LEARN', highlight: false },
-  { number: '3', label: 'PARTICIPATE', highlight: false },
-  { number: '4', label: 'UPGRADE', highlight: true },
+  { label: 'OBSERVE', highlight: false },
+  { label: 'LEARN', highlight: false },
+  { label: 'PARTICIPATE', highlight: false },
+  { label: 'UPGRADE', highlight: true },
 ];
 
 export default function MembershipComparisonContent() {
   return (
-    <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 sm:px-8 lg:px-16 py-12 lg:py-16 font-sans">
+    <div className="relative z-10 w-full max-w-[1200px] mx-auto px-6 sm:px-8 lg:px-16 pt-12 lg:pt-16 pb-4 lg:pb-6 font-sans">
 
-      {/* ── Main grid ── */}
-      <div className="w-full grid grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)_auto_minmax(0,1.4fr)] gap-6 lg:gap-8 xl:gap-10 items-start mb-12 lg:mb-16">
+      {/* 1. Narrative — single focal point */}
+      <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-12 lg:mb-14">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="h-px w-10 bg-[#A855F7]" />
+          <span className="text-[#A855F7] font-semibold tracking-[0.2em] text-xs uppercase">
+            Membership
+          </span>
+          <div className="h-px w-10 bg-[#A855F7]" />
+        </div>
 
-        {/* LEFT COPY */}
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-[1.12] tracking-tight">
+          Most communities give you information.
+          <br />
+          <GradientText from="#A855F7" via="#C084FC" to="#D4AF37">
+            TraderCity gives you context.
+          </GradientText>
+        </h2>
+      </div>
+
+      {/* 2. Free vs VIP comparison */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-8 mb-8 lg:mb-10">
         <motion.div
-        //   className="flex flex-col gap-8 lg:pt-2"
-        // className="flex flex-col gap-8 lg:-translate-y-8 xl:-translate-y-10"
-        className="flex flex-col gap-8 lg:-translate-y-12"
-
-        //   initial="hidden"
-        //   whileInView="visible"
-        //   viewport={{ once: true }}
-        //   variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
-        >
-          <SectionEyebrow
-            number="06"
-            label="Membership"
-            accentColor="#A855F7"
-            className="mb-0"
-          />
-
-          <motion.h2
-            // variants={fadeUp}
-            custom={0.05}
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-[1.12] tracking-tight"
-          >
-            Most communities
-            <br />
-            give you information.
-            <br />
-            <GradientText from="#A855F7" via="#C084FC" to="#D4AF37">
-              TraderCity gives
-              <br />
-              you context.
-            </GradientText>
-          </motion.h2>
-
-          <motion.div /* variants={fadeUp} */ custom={0.1} className="w-10 h-px bg-white/20" />
-
-          <motion.p
-           // variants={fadeUp}
-            custom={0.15}
-            className="text-white/55 text-sm sm:text-base leading-relaxed"
-          >
-            Start free.
-            <br />
-            Upgrade when you&apos;re ready for deeper insights,
-            <br className="hidden sm:block" />
-            advanced education and direct trader access.
-          </motion.p>
-
-          <motion.div
-            //variants={fadeUp}
-            custom={0.2}
-            className="inline-flex items-center gap-3 border border-[#A855F7]/20 rounded-xl px-4 py-3 bg-[#A855F7]/5 w-fit"
-          >
-            <div className="w-8 h-8 rounded-lg border border-[#A855F7]/25 flex items-center justify-center shrink-0">
-              <UsersIcon className="w-4 h-4 text-[#A855F7]" />
-            </div>
-            <div>
-              <p className="text-[10px] font-bold tracking-[0.22em] text-white/45 uppercase">One Ecosystem.</p>
-              <p className="text-[10px] font-bold tracking-[0.22em] text-white/45 uppercase">Two Levels. Endless Growth.</p>
-            </div>
-          </motion.div>
-        </motion.div>
-
-        {/* FREE CARD */}
-        <motion.div
-        //   initial={{ opacity: 0, y: 28 }}
-        //   whileInView={{ opacity: 1, y: 0 }}
-        //   viewport={{ once: true }}
-        //   transition={{ duration: 0.65, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-        //   whileHover={{ y: -4, transition: { duration: 0.22 } }}
+          whileHover={{ y: -3 }}
+          transition={{ duration: 0.2 }}
           className={`relative ${GLASS_CARD_CLASSES} rounded-2xl border-[#A855F7]/30 p-6 sm:p-7 flex flex-col gap-5 shadow-[0_8px_40px_rgba(168,85,247,0.07)]`}
         >
-          <div className="flex items-center justify-between">
-            <span className="inline-block border border-[#A855F7]/45 text-[#A855F7] text-[10px] font-bold tracking-[0.3em] uppercase rounded-md px-2.5 py-1 bg-[#A855F7]/10">
-              FREE
-            </span>
-          </div>
-
+          <span className="inline-block w-fit border border-[#A855F7]/45 text-[#A855F7] text-[10px] font-bold tracking-[0.3em] uppercase rounded-md px-2.5 py-1 bg-[#A855F7]/10">
+            FREE
+          </span>
           <div>
             <h3 className="text-2xl sm:text-3xl font-bold text-white mb-1">Free Community</h3>
             <p className="text-white/40 text-sm">Open Access. Real Value.</p>
           </div>
-
           <div className="w-full h-px bg-white/[0.07]" />
-
           <ul className="flex flex-col gap-4">
             {freeItems.map(({ icon: Icon, title, desc }) => (
               <li key={title} className="flex items-start gap-3.5 group">
@@ -298,58 +234,9 @@ export default function MembershipComparisonContent() {
           </ul>
         </motion.div>
 
-        {/* JOURNEY COLUMN — desktop only */}
         <motion.div
-        //   initial={{ opacity: 0, y: 28 }}
-        //   whileInView={{ opacity: 1, y: 0 }}
-        //   viewport={{ once: true }}
-        //   transition={{ duration: 0.65, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-          className="hidden lg:flex flex-col items-center justify-center gap-0 self-stretch pt-2 pb-2"
-        >
-          <p className="text-[9px] font-bold tracking-[0.3em] text-white/30 uppercase mb-5 text-center leading-relaxed">
-            Your<br />Journey
-          </p>
-
-          {journeySteps.map((step, i) => (
-            <React.Fragment key={step.number}>
-              <div className="flex flex-col items-center gap-1.5">
-                <div
-                  className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm border transition-all ${
-                    step.highlight
-                      ? 'border-[#D4AF37] bg-[#D4AF37]/12 text-[#D4AF37] shadow-[0_0_14px_rgba(212,175,55,0.22)]'
-                      : 'border-white/18 bg-white/4 text-white/50'
-                  }`}
-                >
-                  {step.number}
-                </div>
-                <span
-                  className={`text-[9px] font-bold tracking-[0.22em] uppercase ${
-                    step.highlight ? 'text-[#D4AF37]' : 'text-white/30'
-                  }`}
-                >
-                  {step.label}
-                </span>
-              </div>
-
-              {i < journeySteps.length - 1 && (
-                <div className="flex flex-col items-center my-2">
-                  <div className="w-px h-4 bg-white/10" />
-                  <svg width="7" height="5" viewBox="0 0 7 5" fill="none">
-                    <path d="M3.5 5L0 0H7L3.5 5Z" fill="rgba(255,255,255,0.15)" />
-                  </svg>
-                </div>
-              )}
-            </React.Fragment>
-          ))}
-        </motion.div>
-
-        {/* VIP CARD */}
-        <motion.div
-        //   initial={{ opacity: 0, y: 28 }}
-        //   whileInView={{ opacity: 1, y: 0 }}
-        //   viewport={{ once: true }}
-        //   transition={{ duration: 0.65, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-        //   whileHover={{ y: -4, transition: { duration: 0.22 } }}
+          whileHover={{ y: -3 }}
+          transition={{ duration: 0.2 }}
           className={`relative ${GLASS_CARD_CLASSES} rounded-2xl border-[#D4AF37]/35 p-6 sm:p-7 flex flex-col gap-5 shadow-[0_8px_40px_rgba(212,175,55,0.07)]`}
         >
           <div className="flex items-center justify-between">
@@ -358,14 +245,11 @@ export default function MembershipComparisonContent() {
             </span>
             <CrownIcon className="w-4 h-4 text-[#D4AF37]/40" />
           </div>
-
           <div>
             <h3 className="text-2xl sm:text-3xl font-bold text-white mb-1">VIP Community</h3>
             <p className="text-white/40 text-sm">Deeper Access. Higher Edge.</p>
           </div>
-
           <div className="w-full h-px bg-white/[0.07]" />
-
           <ul className="flex flex-col gap-4">
             {vipItems.map(({ icon: Icon, title, desc }) => (
               <li key={title} className="flex items-start gap-3.5 group">
@@ -382,111 +266,110 @@ export default function MembershipComparisonContent() {
         </motion.div>
       </div>
 
-      {/* Journey strip — mobile only */}
-      <motion.div
-        // initial={{ opacity: 0, y: 20 }}
-        // whileInView={{ opacity: 1, y: 0 }}
-        // viewport={{ once: true }}
-        // transition={{ duration: 0.6, delay: 0.15 }}
-        className="flex lg:hidden items-center justify-center gap-0 mb-10 flex-wrap"
-      >
-        <p className="text-[9px] font-bold tracking-[0.3em] text-white/30 uppercase mr-4">Your Journey</p>
-        {journeySteps.map((step, i) => (
-          <React.Fragment key={step.number}>
-            <div className="flex flex-col items-center gap-1">
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs border ${
-                  step.highlight
-                    ? 'border-[#D4AF37] bg-[#D4AF37]/12 text-[#D4AF37]'
-                    : 'border-white/18 bg-white/4 text-white/45'
-                }`}
-              >
-                {step.number}
+      {/* 3. Journey as horizontal bridge */}
+      <div className="flex flex-col items-center mb-12 lg:mb-14">
+        <p className="text-[10px] font-bold tracking-[0.3em] text-white/30 uppercase mb-4">
+          Your Journey
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-y-3">
+          <span className="text-[11px] font-bold tracking-[0.2em] text-[#A855F7] uppercase px-2">
+            Free
+          </span>
+          <div className="w-6 sm:w-10 h-px bg-gradient-to-r from-[#A855F7]/50 to-white/15 mx-1" />
+          {journeySteps.map((step, i) => (
+            <React.Fragment key={step.label}>
+              <div className="flex items-center gap-2 px-1.5 sm:px-2">
+                <div
+                  className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold border ${
+                    step.highlight
+                      ? 'border-[#D4AF37] bg-[#D4AF37]/12 text-[#D4AF37] shadow-[0_0_12px_rgba(212,175,55,0.2)]'
+                      : 'border-white/18 bg-white/[0.04] text-white/45'
+                  }`}
+                >
+                  {i + 1}
+                </div>
+                <span
+                  className={`text-[9px] sm:text-[10px] font-bold tracking-[0.18em] uppercase ${
+                    step.highlight ? 'text-[#D4AF37]' : 'text-white/35'
+                  }`}
+                >
+                  {step.label}
+                </span>
               </div>
-              <span
-                className={`text-[8px] font-bold tracking-widest uppercase ${
-                  step.highlight ? 'text-[#D4AF37]' : 'text-white/28'
-                }`}
-              >
-                {step.label}
-              </span>
-            </div>
-            {i < journeySteps.length - 1 && (
-              <div className="w-5 h-px bg-white/12 mb-4 mx-1" />
-            )}
-          </React.Fragment>
-        ))}
-      </motion.div>
-
-      {/* CTA PANEL */}
-      <motion.div
-        // initial={{ opacity: 0, y: 28 }}
-        // whileInView={{ opacity: 1, y: 0 }}
-        // viewport={{ once: true }}
-        // transition={{ duration: 0.65, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full border border-white/[0.09] rounded-2xl bg-[#09090F]/55 backdrop-blur-sm overflow-hidden"
-      >
-        <div className="flex flex-col sm:flex-row items-stretch">
-
-          {/* Step 1 — Free */}
-          <div className="flex-1 flex items-center gap-5 px-6 sm:px-8 py-7 sm:py-8">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border border-[#A855F7]/28 bg-[#A855F7]/7 flex items-center justify-center shrink-0">
-              <DiscordIcon className="w-6 h-6 sm:w-7 sm:h-7 text-[#A855F7]" />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[10px] font-bold tracking-[0.3em] text-[#A855F7]/65 uppercase">Step 1</span>
-              <p className="text-white font-bold text-lg sm:text-xl leading-tight">Join Free Community</p>
-              <p className="text-white/40 text-sm">Start your journey. No commitment.</p>
-              <motion.a
-                href="/login?plan=free"
-                whileHover={{ x: 4 }}
-                transition={{ duration: 0.18 }}
-                className="inline-flex items-center gap-1.5 text-[#A855F7] text-sm font-semibold mt-1 hover:text-[#C084FC] transition-colors"
-              >
-                Join Free on Discord
-                <span className="text-base leading-none">→</span>
-              </motion.a>
-            </div>
-          </div>
-
-          {/* Center OR — desktop */}
-          <div className="hidden sm:flex flex-col items-center justify-center px-4 py-6">
-            <div className="w-px flex-1 bg-white/[0.07]" />
-            <span className="text-white/22 text-xs font-bold tracking-[0.2em] uppercase py-3 px-1">OR</span>
-            <div className="w-px flex-1 bg-white/[0.07]" />
-          </div>
-
-          {/* Center OR — mobile */}
-          <div className="flex sm:hidden items-center gap-4 px-6">
-            <div className="flex-1 h-px bg-white/[0.07]" />
-            <span className="text-white/22 text-xs font-bold tracking-[0.2em] uppercase">OR</span>
-            <div className="flex-1 h-px bg-white/[0.07]" />
-          </div>
-
-          {/* Step 2 — VIP */}
-          <div className="flex-1 flex items-center gap-5 px-6 sm:px-8 py-7 sm:py-8">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border border-[#D4AF37]/28 bg-[#D4AF37]/7 flex items-center justify-center shrink-0">
-              <CrownIcon className="w-6 h-6 sm:w-7 sm:h-7 text-[#D4AF37]" />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[10px] font-bold tracking-[0.3em] text-[#D4AF37]/65 uppercase">Step 2</span>
-              <p className="text-white font-bold text-lg sm:text-xl leading-tight">Explore VIP Membership</p>
-              <p className="text-white/40 text-sm">Unlock the complete experience.</p>
-              <motion.a
-                href="#plan-selector"
-                whileHover={{ x: 4 }}
-                transition={{ duration: 0.18 }}
-                className="inline-flex items-center gap-1.5 text-[#D4AF37] text-sm font-semibold mt-1 hover:text-[#F5CC5A] transition-colors"
-              >
-                View VIP Plans
-                <span className="text-base leading-none">→</span>
-              </motion.a>
-            </div>
-          </div>
-
+              {i < journeySteps.length - 1 && (
+                <div className="w-4 sm:w-6 h-px bg-white/12 mx-0.5" />
+              )}
+            </React.Fragment>
+          ))}
+          <div className="w-6 sm:w-10 h-px bg-gradient-to-r from-white/15 to-[#D4AF37]/50 mx-1" />
+          <span className="text-[11px] font-bold tracking-[0.2em] text-[#D4AF37] uppercase px-2">
+            VIP
+          </span>
         </div>
+      </div>
+
+      {/* 4. Start your journey + centered Free CTA */}
+      <div className="flex items-center justify-center gap-4 mb-6">
+        <div className="h-px flex-1 max-w-[120px] bg-gradient-to-r from-transparent to-white/15" />
+        <span className="text-[11px] font-bold tracking-[0.28em] text-white/40 uppercase">
+          Start Your Journey
+        </span>
+        <div className="h-px flex-1 max-w-[120px] bg-gradient-to-l from-transparent to-white/15" />
+      </div>
+
+      <motion.div
+        whileHover={{ y: -3 }}
+        transition={{ duration: 0.22 }}
+        className="relative w-full max-w-2xl lg:max-w-[70%] mx-auto flex flex-col gap-5 rounded-2xl border border-[#A855F7]/35 bg-[#0A0A12]/90 backdrop-blur-md p-6 sm:p-7 shadow-[0_0_40px_rgba(168,85,247,0.12)] hover:shadow-[0_0_56px_rgba(168,85,247,0.22)] hover:border-[#A855F7]/55 transition-shadow duration-300"
+      >
+        <div className="flex items-start gap-4">
+          <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-[#A855F7]/40 bg-[#A855F7]/10 flex items-center justify-center shrink-0">
+            <span className="absolute inset-0 rounded-full border border-[#A855F7]/30 animate-ping opacity-20" />
+            <DiscordIcon className="w-6 h-6 sm:w-7 sm:h-7 text-[#A855F7] relative z-10" />
+          </div>
+          <div className="flex flex-col gap-1.5 min-w-0">
+            <h3 className="text-white font-bold text-xl sm:text-2xl leading-tight">
+              Join Free Community
+            </h3>
+            <p className="text-white/45 text-sm leading-relaxed">
+              Learn with 800+ traders inside Discord
+            </p>
+          </div>
+        </div>
+
+        <ul className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-x-5 text-[13px] text-white/55">
+          <li className="flex items-center gap-2">
+            <span className="text-[#A855F7]">✓</span>
+            No payment required
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="text-[#A855F7]">✓</span>
+            Instant access
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="text-[#A855F7]">✓</span>
+            Daily discussions
+          </li>
+        </ul>
+
+        <a
+          href="/login?plan=free"
+          className="mt-1 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#A855F7] to-[#7C3AED] px-5 py-3.5 text-sm sm:text-base font-bold text-white shadow-[0_0_24px_rgba(168,85,247,0.35)] hover:shadow-[0_0_36px_rgba(168,85,247,0.5)] hover:brightness-110 transition-all duration-300"
+        >
+          <DiscordIcon className="w-5 h-5" />
+          Join Free Community
+          <span aria-hidden="true">→</span>
+        </a>
       </motion.div>
 
+      {/* 5. Transition into Pricing */}
+      <div className="flex flex-col items-center mt-8 lg:mt-10 mb-0">
+        <div className="w-full max-w-sm h-px bg-gradient-to-r from-transparent via-[#A855F7]/35 to-transparent mb-3" />
+        <p className="text-[12px] sm:text-sm font-medium tracking-[0.14em] text-[#C084FC]/80 text-center">
+          Ready for deeper insights?
+        </p>
+        <div className="w-full max-w-sm h-px bg-gradient-to-r from-transparent via-[#D4AF37]/30 to-transparent mt-3" />
+      </div>
     </div>
   );
 }

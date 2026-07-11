@@ -4,7 +4,7 @@ import ProblemAwarenessContent from "./ProblemAwarenessContent";
 export default function ProblemAwareness() {
   return (
     // <section className="relative min-h-screen overflow-hidden">
-     <section className="relative overflow-hidden">
+     <section id="journey" className="relative overflow-hidden">
     {/* <section className="relative overflow-hidden py-8"> */}
       <ProblemAwarenessBackground />
 

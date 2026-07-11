@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   CheckCircle2,
@@ -14,8 +14,38 @@ import {
 import GlassCard from "@/components/home/shared/GlassCard";
 import GradientText from "@/components/home/shared/GradientText";
 
+const FOCUS_PRICING_EVENT = "tc:focus-pricing";
+
 export default function PricingSection() {
   const [selectedPlan, setSelectedPlan] = useState("quarterly");
+  const [isHighlighted, setIsHighlighted] = useState(false);
+  const [pulsePlan, setPulsePlan] = useState(false);
+
+  const focusPricing = useCallback((planId = "quarterly") => {
+    setSelectedPlan(planId);
+    setIsHighlighted(true);
+    setPulsePlan(true);
+
+    window.setTimeout(() => setIsHighlighted(false), 1200);
+    window.setTimeout(() => setPulsePlan(false), 1400);
+  }, []);
+
+  useEffect(() => {
+    const onFocusPricing = (event: Event) => {
+      const detail = (event as CustomEvent<{ plan?: string }>).detail;
+      focusPricing(detail?.plan ?? "quarterly");
+    };
+
+    window.addEventListener(FOCUS_PRICING_EVENT, onFocusPricing);
+
+    if (window.location.hash === "#plan-selector" || window.location.hash === "#pricing") {
+      focusPricing("quarterly");
+    }
+
+    return () => {
+      window.removeEventListener(FOCUS_PRICING_EVENT, onFocusPricing);
+    };
+  }, [focusPricing]);
 
   const features = [
     "Full Discord Access",
@@ -71,7 +101,7 @@ export default function PricingSection() {
 
   return (
     // <section className="min-h-screen bg-[#0A0A0A] py-16 px-4 font-sans selection:bg-yellow-500/30">
-    <section className="min-h-screen py-16 px-4 font-sans selection:bg-yellow-500/30">
+    <section className="min-h-screen pt-4 pb-16 px-4 font-sans selection:bg-white/20">
       <div className="max-w-[1080px] mx-auto">
         
         {/* ========================================== */}
@@ -80,7 +110,7 @@ export default function PricingSection() {
         <div className="flex items-center justify-center gap-4 mb-8">
           <div className="h-[1px] w-24 bg-gradient-to-l from-yellow-500 to-transparent opacity-60"></div>
           <span className="text-yellow-500 text-[13px] font-bold tracking-[0.2em] uppercase">
-            Pricing Plans
+            Become VIP Member
           </span>
           <div className="h-[1px] w-24 bg-gradient-to-r from-yellow-500 to-transparent opacity-60"></div>
         </div>
@@ -88,7 +118,13 @@ export default function PricingSection() {
         {/* ========================================== */}
         {/* MAIN PRICING CONTAINER                     */}
         {/* ========================================== */}
-        <GlassCard className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 bg-[#0C0D12]/90 border-[#1F2129] rounded-[24px] p-8 lg:p-12">
+        <GlassCard
+          className={`grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 bg-[#0C0D12]/90 border-[#1F2129] rounded-[24px] p-8 lg:p-12 transition-shadow duration-500 ${
+            isHighlighted
+              ? "border-yellow-500/50 shadow-[0_0_50px_rgba(234,179,8,0.22)] ring-1 ring-yellow-500/30"
+              : ""
+          }`}
+        >
           
           {/* ========================================== */}
           {/* LEFT COLUMN - VALUE PROPOSITION            */}
@@ -180,7 +216,9 @@ export default function PricingSection() {
                     whileTap={{ scale: 0.99 }}
                     className={`relative cursor-pointer rounded-2xl border p-5 lg:p-6 transition-all duration-300 flex items-center justify-between group ${
                       isSelected
-                        ? "bg-[#111216] border-yellow-500 shadow-[0_0_30px_rgba(234,179,8,0.12)]"
+                        ? `bg-[#111216] border-yellow-500 shadow-[0_0_30px_rgba(234,179,8,0.12)] ${
+                            pulsePlan ? "animate-pulse shadow-[0_0_40px_rgba(234,179,8,0.28)]" : ""
+                          }`
                         : "bg-[#0F1117] border-[#1F2129] hover:border-[#2D313E]"
                     }`}
                   >
@@ -273,7 +311,7 @@ export default function PricingSection() {
                 className="w-full h-[60px] flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#FACC15] to-[#EAB308] text-black font-bold text-[17px] shadow-[0_0_20px_rgba(234,179,8,0.15)] transition-all duration-300"
               >
                 <Crown className="w-5 h-5" />
-                <span>Become a VIP Member</span>
+                <span>Submit and Pay</span>
                 <ArrowRight className="w-5 h-5 ml-1" />
               </motion.button>
               </a>

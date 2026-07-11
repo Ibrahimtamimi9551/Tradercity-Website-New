@@ -106,6 +106,33 @@ Phase records: `docs/Development/Homepage/Phase-*.md`
 
 ---
 
+## [Membership + Pricing Conversion Merge] — 2026-07-11
+
+**Status:** Complete  
+**Build:** `npm run build` — passed
+
+### Architecture
+
+- Reordered homepage conversion block; later adjusted to: Community → Research (06) → Membership → Pricing (07 at bottom)
+- VIP CTA dispatches `tc:focus-pricing` custom event; Pricing listens and selects quarterly plan
+- Free Discord CTA remains `/login?plan=free` (Discord invite API not yet available)
+
+### Design
+
+- Replaced Membership text-link CTA panel with dual conversion cards:
+  - Purple Free Discord card (glow, pulse icon, avatar cluster, full-width button)
+  - Gold Become VIP card (glow, crown, full-width button)
+- Tightened vertical seam between Membership and Pricing (`pb` / `pt` reduced)
+- Pricing card layout, copy, and plan design unchanged — temporary gold highlight/pulse only on focus
+
+### Conversion Flow
+
+```
+Community → Membership Comparison → CTA Block → Pricing → Research
+```
+
+---
+
 ## [Unreleased] — Phase 03 Preview
 
 Planned per Implementation Guide Sprint 3:
