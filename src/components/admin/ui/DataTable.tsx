@@ -1,0 +1,74 @@
+﻿import { cn } from "@/lib/admin/cn";
+
+export type DataTableColumn<T> = {
+  key: string;
+  header: string;
+  className?: string;
+  render: (row: T) => React.ReactNode;
+};
+
+type DataTableProps<T> = {
+  columns: DataTableColumn<T>[];
+  data: T[];
+  getRowKey: (row: T) => string;
+  onRowClick?: (row: T) => void;
+  emptyTitle?: string;
+  className?: string;
+};
+
+export function DataTable<T>({
+  columns,
+  data,
+  getRowKey,
+  onRowClick,
+  emptyTitle = "No records found",
+  className,
+}: DataTableProps<T>) {
+  if (data.length === 0) {
+    return (
+      <div className={cn("overflow-hidden rounded-xl border border-white/10", className)}>
+        <div className="px-4 py-10 text-center text-sm text-tc-muted">{emptyTitle}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn("overflow-hidden rounded-xl border border-white/10", className)}>
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-white/10 text-sm">
+          <thead className="bg-white/[0.02]">
+            <tr>
+              {columns.map((column) => (
+                <th
+                  key={column.key}
+                  scope="col"
+                  className={cn(
+                    "px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-tc-muted",
+                    column.className
+                  )}
+                >
+                  {column.header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-white/5 bg-transparent">
+            {data.map((row) => (
+              <tr
+                key={getRowKey(row)}
+                onClick={onRowClick ? () => onRowClick(row) : undefined}
+                className={cn(onRowClick && "cursor-pointer hover:bg-white/[0.03]")}
+              >
+                {columns.map((column) => (
+                  <td key={column.key} className={cn("px-4 py-3 text-white/90", column.className)}>
+                    {column.render(row)}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}

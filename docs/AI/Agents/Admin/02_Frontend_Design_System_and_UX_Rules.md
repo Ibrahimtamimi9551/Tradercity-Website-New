@@ -2,10 +2,32 @@
 
 ## Chapter 02 — Frontend Design System and UX Rules
 
-**Document Version:** 1.0  
+**Document Version:** 2.0  
 **Status:** Living Specification
 
-> This chapter defines reusable components, visual hierarchy, responsive behavior, and design language. Every admin screen must compose from these primitives — not one-off implementations.
+> Admin has its **own** design system — independent from the marketing website. Never import homepage components. See [`06_Application_Isolation_and_Folder_Architecture.md`](06_Application_Isolation_and_Folder_Architecture.md).
+
+---
+
+## Application Isolation (Design)
+
+- Admin visual language: institutional, operational, data-dense but calm
+- Marketing visual language: premium storytelling, hero sections, motion — **never mixed**
+- Reference member-facing code for **data field names only**
+- Shared shell + primitives: `src/components/admin/`
+- Member Management domain: `src/components/members/sections/`
+
+---
+
+## Reflection vs Management Components
+
+| Type | Location | Example |
+|------|----------|---------|
+| **Management** | `members/sections/{module}/` | `members/sections/subscriptions/SubscriptionActions` |
+| **Reflection** | `members/sections/profile/` | `members/sections/profile/SubscriptionCard` |
+| **Shared shell** | `admin/layout/`, `admin/ui/` | `AdminSidebar`, `DataTable` |
+
+Reflection cards are read-only and link to the owning module. Never embed approve/reject actions in profile cards.
 
 ---
 
@@ -37,6 +59,9 @@ Every page should be composed of reusable UI components.
 | User Avatar | Discord avatar with fallback |
 | Internal Notes Block | Admin-only note list + add |
 | Activity Feed | Operational event timeline |
+| **OperationsQueue** | Needs Attention inbox on Dashboard |
+| **SystemHealthBadge** | Healthy / Needs Attention / Action Required |
+| **WidgetCard (clickable)** | Deep-links to filtered module on click |
 
 Avoid creating one-off components for individual pages.
 
@@ -174,23 +199,25 @@ Collapsible sidebar
 Full filter bar
 ```
 
-### Mobile (375px)
+### Mobile (375px) — Operational First
 
 ```text
-Table
-  ↓
-Tap Row
-  ↓
-Open Details Page (full screen)
+Bottom Navigation: Dashboard | Members | Subscriptions | More
+        ↓
+More drawer: Discord, Referrals (no Settings during Phases 0–6)
+        ↓
+List / Table (scrollable)
+        ↓
+Tap row → Full-screen detail page
+        ↓
+Primary actions: Approve, Resolve, Open Profile (large touch targets)
 ```
 
-Avoid squeezing desktop layouts into mobile screens.
-
-Design mobile interactions independently.
-
-- Sidebar becomes drawer overlay
-- Tables scroll horizontally or stack gracefully
-- Modals and details pages usable on small screens
+- Sidebar → drawer overlay on tablet/mobile
+- Subscription detail on mobile: full-page with timeline + action buttons
+- Member Control Center: stacked cards, horizontal scroll tabs
+- Profile footer note visible on mobile
+- Avoid squeezing desktop table + panel layouts
 
 ---
 
@@ -221,8 +248,10 @@ The dashboard should remain responsive even with thousands of members.
 
 Based on design references and TraderCity brand:
 
-- Collapsible sidebar with module groups (Management, Content, System)
-- Top navbar: search (global, future), notifications (future), admin avatar dropdown
+- Collapsible sidebar with **5 Member Management items** (Dashboard, Members, Subscriptions, Discord, Referrals)
+- Top navbar: search (global, future), admin avatar dropdown
+- **Do not** add Settings, Reports, Notifications, or Payments to sidebar during Phases 0–6
+- UI mockup sidebars showing extra items are **layout reference only**
 - Optional grid background echoing member Background pattern — implement in admin layout, do not couple to member files
 - Admin-scoped Tailwind or layout CSS variables — do not modify `globals.css` without coordination
 
@@ -253,25 +282,36 @@ Every module must handle:
 
 ## File Organization Pattern
 
-Mirror member journey architecture:
-
 ```text
 src/app/admin/
-  layout.tsx              # Admin shell
+  layout.tsx              # Admin shell — imports admin/layout components
+  page.tsx                # Phase 1 — composes members/sections/dashboard
   members/
   subscriptions/
-  members/[id]/           # Member Control Center
+  discord/
+  referrals/
+  members/[id]/           # Phase 3 — composes members/sections/profile
 
 src/components/admin/
-  layout/                 # Sidebar, Navbar, AdminBackground
+  layout/                 # AdminSidebar, AdminHeader, AdminBackground
   ui/                     # Shared primitives (StatusBadge, DataTable, etc.)
-  members/                # Members module components
-  subscriptions/          # Subscriptions module components
-  member-profile/         # Member Control Center components
 
-src/types/admin/          # Typed contracts aligned to backend
-src/lib/admin/            # Hooks, formatters, API client stubs
+src/components/members/
+  sections/
+    dashboard/            # Phase 1
+    directory/            # Phase 2 — members list
+    profile/              # Phase 3 — Control Center (reflection)
+    subscriptions/        # Phase 4
+    discord/              # Phase 5
+    referrals/            # Phase 6
+
+src/types/admin/          # Shell-only types
+src/types/members/        # Domain types
+src/lib/admin/            # Shell utilities (minimal)
+src/lib/members/hooks/    # Domain hooks
 ```
+
+**Do not** use `src/components/admin/modules/` or `src/components/admin/sections/` — domain code belongs in `members/sections/` so future admin product areas (Analysts, Content) do not duplicate paths under `admin/`.
 
 Use **Background + Content decomposition** for admin page shells:
 

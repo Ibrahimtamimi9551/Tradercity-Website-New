@@ -2,10 +2,10 @@
 
 ## Chapter 03 — Module Specifications
 
-**Document Version:** 1.0  
+**Document Version:** 2.1  
 **Status:** Living Specification
 
-> This chapter defines each module's responsibility, layout, fields, and interaction contracts. Future modules must extend this pattern — not introduce new interaction models.
+> Authoritative vision and scope: [`07_Vision_Before_Implementation.md`](07_Vision_Before_Implementation.md). Master report: [`05_Operations_Center_Vision_Report.md`](05_Operations_Center_Vision_Report.md). **Current build = Member Management Phases 0–6.**
 
 **Design references:** [`assets/member-control-center-reference.png`](assets/member-control-center-reference.png), [`assets/subscription-management-reference.png`](assets/subscription-management-reference.png)
 
@@ -13,93 +13,164 @@
 
 ## Module Status Legend
 
-| Status | Meaning |
-|--------|---------|
-| **Phase 1** | Build now — frontend UI with mock data |
-| **Future** | Document only — do not implement without approval |
+| Status | Build Phase |
+|--------|-------------|
+| **Phase 1** | Dashboard — Operations Center |
+| **Phase 2–4** | Members, User Profile, Subscriptions |
+| **Phase 5–6** | Discord, Referrals |
+| **Deferred** | Reports, Settings, Notifications (Phases 7–9 — not Member Management) |
 
 ---
 
-## Module 1: Members (Phase 1)
+## Deep-Link Query Contracts
 
-**Route:** `/admin/members`  
-**Operational question:** Who are our members, and what is their high-level status?
+| Parameter | Values | Module |
+|-----------|--------|--------|
+| `?status=` | `pending_verification`, `verification_required`, `successful` | Subscriptions |
+| `?sync=` | `failed`, `pending`, `synced` | Discord |
+| `?health=` | `healthy`, `needs_attention`, `action_required` | Members |
+| `?referral=` | `pending_approval`, `eligible` | Referrals |
+| `?memberId=` | UUID | Cross-module pre-selection |
+
+---
+
+## Module 0: Dashboard (Phase 1)
+
+**Route:** `/admin`  
+**Operational question:** *"What requires my attention right now?"*
 
 ### Responsibility
 
-- Member list and search
-- High-level membership overview columns
-- Navigation entry point to Member Control Center
-- Add/Edit member identity (UI shell — backend later)
+- Platform health monitoring
+- **Operations Queue** (Needs Attention inbox)
+- Workload widgets with Action Driven Navigation
+- Recent Activity feed
+- Quick Actions (Add Member, Manual Verification, Export — UI stubs OK)
+- Platform Health status bar
+- No detailed management — routing only
+
+### Page section order
+
+```text
+Header → Operational Widgets → Operations Queue → Recent Activity → Quick Actions → Platform Health
+```
+
+Revenue Overview widget: **Super Admin only** (locked/hidden for other roles).
 
 ### Does Not Own
 
-- Payment verification workflow (Subscriptions)
-- Discord role management (Discord)
-- Referral calculations (Referrals)
+- Any business logic or member/subscription actions
+
+### Widgets
+
+| Widget | Deep-Link |
+|--------|-----------|
+| Total Members | `/admin/members` |
+| VIP Members | `/admin/members?membership=vip` |
+| Pending Verification | `/admin/subscriptions?status=pending_verification` |
+| Discord Issues | `/admin/discord?sync=failed` |
+| Referral Requests | `/admin/referrals?referral=pending_approval` |
+| Membership Expiring Today | `/admin/members?expiry=today` |
+| **Total Actions** | Operations Queue expanded |
+
+### Operations Queue Example
+
+```text
+Needs Attention (7)
+• 3 Pending Subscription Verifications  → /admin/subscriptions?status=pending_verification
+• 1 Discord Sync Failure                → /admin/discord?sync=failed
+• 2 Referral Redemption Requests        → /admin/referrals?referral=pending_approval
+• 1 Membership Expired Today            → /admin/members?expiry=today
+```
+
+---
+
+## Module 1: Members (Phase 2)
+
+**Route:** `/admin/members`  
+**Operational question:** *"Which users exist — and who needs attention?"*
+
+Members is **directory and search** — not the primary work queue. Work starts at Dashboard widgets or domain modules.
+
+### Responsibility
+
+- Member directory with cross-module summary columns
+- **System Health** for prioritization
+- Search and filters
+- Navigation to Member Control Center (username click)
+
+### Does Not Own
+
+- Payment verification (Subscriptions)
+- Discord sync (Discord)
+- Referral validation (Referrals)
+- Ticket processing of any kind
 
 ### Page Layout
 
 ```text
-Page Header
+Statistics Widgets
   ↓
 Search + Filters
   ↓
-Member Table
+Members Table
   ↓
 Pagination
 ```
 
-No details panel on the list page — row click or username opens **Member Control Center**.
+### Statistics Widgets
 
-### Table Columns
+| Widget | Notes |
+|--------|-------|
+| Total Members | All registered |
+| VIP Members | Active VIP count |
+| Pending Verification | Links to Subscriptions module |
+| Action Required | Filter: `?health=needs_attention` |
+| New This Month | Joined in current month |
+
+### Table Columns (Lightweight)
 
 | Column | Notes |
 |--------|-------|
-| Name | Display name |
-| Username | Discord username — links to Member Control Center |
-| Category | Standard / VIP badge |
-| Plan | Current plan label |
-| Joined | Registration date |
-| Expires | Membership expiry |
-| Status | Active / Expired / Suspended / etc. |
-| Days Left | Color-coded urgency (see below) |
-| Renew Count | Number of renewals |
-| Amount | Privacy-toggle masked revenue column |
+| Discord Username | Avatar + username + email — links to Profile |
+| Membership | Free / VIP badge |
+| Subscription | Active / Pending Verification / Verification Required |
+| Discord | Connected / Disconnected / Action Required |
+| Referral Progress | e.g., 3/6 with progress bar; Eligible badge at 100% |
+| Joined Date | Timestamp |
+| **System Health** | Healthy / Needs Attention / Action Required |
+| Actions | Row menu |
 
-### Days Left Color Rules
+### System Health Rules
 
-Align with VIP dashboard RenewalCentre:
+Backend-computed in production. Frontend displays.
 
-| Condition | Color |
-|-----------|-------|
-| VIP (∞) | Gold / neutral |
-| < 7 days | Red |
-| < 30 days | Amber |
-| Otherwise | Green |
+| State | Meaning |
+|-------|---------|
+| **Healthy** | All module states green |
+| **Needs Attention** | One or more modules require review (e.g., pending verification) |
+| **Action Required** | Critical issue (e.g., sync failed + verification required) |
 
 ### Filters
 
-- Search (name, username, email)
-- Status dropdown: Active, Expired, Suspended, Left, VIP, Hidden, New Joiners
-- Date range
-- Clear filters
+- Search: Discord username, email
+- Membership: All, Free, VIP
+- Subscription status: All, Active, Pending Verification, Verification Required
+- Discord status: All, Connected, Disconnected, Action Required
+- Referral status: All, In Progress, Eligible
+- System Health: All, Healthy, Needs Attention, Action Required
+- Reset filters
 
-### Toolbar Actions
+### Toolbar (Secondary)
 
-- Add User
 - Export CSV
 - Refresh
-- Revenue visibility toggle
 
-### Modals
-
-- **Add/Edit Member** — identity + subscription fields; VIP override ($0, Lifetime, ∞ days)
-- **Delete Confirmation** — destructive guard
+Add/Edit/Delete member identity — Phase 2+ edge case only; not primary workflow.
 
 ---
 
-## Module 2: Member Control Center (Phase 1)
+## Module 2: User Profile / Control Center (Phase 3)
 
 **Route:** `/admin/members/[id]`  
 **Operational question:** What is the complete current state of this member?
@@ -124,21 +195,23 @@ Align with VIP dashboard RenewalCentre:
 
 | Tab | Phase | Purpose |
 |-----|-------|---------|
-| Overview | Phase 1 | Aggregated cards (default) |
-| Subscription | Phase 1 | Extended subscription view |
-| Discord | Future | Extended Discord view |
-| Referral | Future | Extended referral view |
-| Notes | Phase 1 | Internal notes (also on Overview) |
-| Activity | Phase 1 | Full activity timeline |
+| Overview | Phase 3 | Aggregated cards (default) |
+| Subscription | Phase 3 | Extended subscription view |
+| Discord | Phase 5 | Extended Discord view |
+| Referral | Phase 6 | Extended referral view |
+| Notes | Phase 3 | Internal notes (also on Overview) |
+| Activity | Phase 3 | Full activity timeline |
 
 ### Header
 
 **Identity**
 
-- Discord Avatar
+- Discord Avatar (from Discord — no upload)
 - Discord Username (+ VIP badge when applicable)
 - Registered Email
 - Discord username with external link
+
+**Not included:** Full Name, profile photo upload, duplicate joined dates.
 
 **Status Widgets**
 
@@ -246,7 +319,7 @@ Include "View All" link to Activity tab.
 
 ---
 
-## Module 3: Subscriptions (Phase 1)
+## Module 3: Subscriptions (Phase 4)
 
 **Route:** `/admin/subscriptions`  
 **Operational question:** What is the payment state, and what needs verification?
@@ -295,6 +368,9 @@ Pagination
 | Successful | Successful payments | Green |
 | Pending Verification | Pending Verification | Amber |
 | Verification Required | Verification Required | Red |
+| Rejected | Admin rejected | Rose/Grey |
+
+**No Expired state** — expiration belongs to Membership lifecycle, not Subscriptions.
 
 Each widget includes count, optional trend, and "View all" action.
 
@@ -312,7 +388,7 @@ Matches member payment submission fields (`PaymentSection`).
 
 | Filter | Options |
 |--------|---------|
-| Status | Successful, Pending Verification, Verification Required |
+| Status | Successful, Pending Verification, Verification Required, Rejected |
 | Plan | Monthly, Quarterly, Yearly, Lifetime, Custom |
 | Payment Method | Crypto USDT, Stripe, etc. |
 | Date Range | Start — End |
@@ -416,33 +492,109 @@ Reject includes reason field (UI shell + TODO if backend not ready).
 
 ---
 
-## Future Modules (Document Only)
+## Module 4: Discord (Phase 5)
 
-Do not implement without explicit approval.
+**Route:** `/admin/discord`  
+**Operational question:** *"Is Discord synchronized with TraderCity?"*
 
-### Discord
+### Principle
 
-```text
-Discord Table → Discord Details → Open Member Profile
-```
-
-Owns: role sync, connection status, community access, role history.
-
-### Referrals
+Backend decides. Discord executes. TraderCity Database is source of truth.
 
 ```text
-Referral Table → Referral Details → Open Member Profile
+Payment Successful → Backend updates DB → Discord Bot → VIP Role → Dashboard reflects
 ```
 
-Owns: referral progress, credits, redemption workflow.
+### Responsibility
 
-### Reports / Learning / Community / Media Library
+- Discord synchronization monitoring and resolution
+- Sync ticket processing (Sync Now, Send Invite)
+- Role and connection state display
 
-Content modules follow table → details pattern without Member Profile as primary hub (unless member-linked).
+### Does Not Own
 
-### Notifications / Audit Logs / Settings
+- Subscription logic
+- Member identity (beyond display)
 
-System modules follow same UI consistency rules but may omit statistics widgets where not applicable.
+### Widgets
+
+| Widget | Deep-Link |
+|--------|-----------|
+| Connected Members | Table filter: connected |
+| VIP Members | Table filter: role=vip |
+| Sync Issues | `?sync=failed` |
+| Pending Invites | `?sync=pending` |
+
+### Table Columns
+
+| Column | Notes |
+|--------|-------|
+| Discord Username | Avatar + ID |
+| Discord Role | VIP / Public / etc. |
+| Connection Status | Connected / Left Server / Suspended |
+| Sync Status | Synced / Sync Failed / Not Synced |
+| Joined Discord | Date |
+| Last Sync | Date |
+| Actions | View, Sync Now, More |
+
+### Details Panel
+
+- Current Role, Connection State, Role History
+- Synchronization status (last sync, auto sync enabled)
+- Linked Membership (plan, status, expiry) + Open in Membership →
+- Actions: View Member Profile, Sync Now, Send Invite
+- Footer note: *"Discord is the communication platform. TraderCity is the source of truth."*
+
+---
+
+## Module 5: Referrals (Phase 6)
+
+**Route:** `/admin/referrals`  
+**Operational question:** *"What referral progress exists — and what needs validation?"*
+
+### Business Rules
+
+- $10 credit per successful referral
+- 6 successful referrals required for redemption
+- Member requests redemption → administrator validates → membership extended on approval
+
+### Responsibility
+
+- Referral validation and redemption approval
+- Referral history and settings
+- Ticket processing for redemption requests
+
+### Does Not Own
+
+- Referral marketing (website concern)
+- Profile display (reflection only in member-profile module)
+
+### Profile Reflects
+
+- Progress (e.g., 3/6)
+- Eligibility status
+- Credits earned
+
+---
+
+## Deferred Modules (Phases 7–9)
+
+**Not in scope for Member Management.** Do not build routes, sidebar links, or components during Phases 0–6.
+
+### Phase 7 — Reports, Community, Media Library
+
+**Future home:** Website Content Management  
+Educational content, community management, media library.
+
+### Phase 8 — Settings
+
+**Future home:** Configuration area (TBD)  
+Platform configuration: payment wallet, blockchain, membership plans, pricing, discounts, referral config, Discord config, email templates.
+
+### Phase 9 — Notifications, Audit Logs
+
+**Future home:** Analysts or system-wide ops (TBD)  
+System notifications and audit trail.
 
 ---
 
@@ -454,8 +606,8 @@ System modules follow same UI consistency rules but may omit statistics widgets 
 | Subscriptions details | Open Member Profile | Member Control Center |
 | Subscriptions details | View on Blockchain Explorer | External |
 | Member Control Center | Manage Subscription | Subscriptions (filtered) |
-| Member Control Center | Manage Discord | Discord module (future) |
-| Member Control Center | Manage Referral | Referral module (future) |
+| Member Control Center | Manage Discord | Discord module |
+| Member Control Center | Manage Referral | Referral module |
 | Members table | Click row / username | Member Control Center |
 
 All cross-module links are UI navigation in Phase 1 — mark backend sync TODOs where state must refresh.

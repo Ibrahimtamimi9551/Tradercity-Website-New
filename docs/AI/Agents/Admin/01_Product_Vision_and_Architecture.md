@@ -2,10 +2,21 @@
 
 ## Chapter 01 — Product Vision and Architecture
 
-**Document Version:** 1.0  
+**Document Version:** 2.1  
 **Status:** Living Specification
 
-> This chapter defines what the Admin Dashboard is, why it exists, and how modules relate to each other. Every future admin decision must align with the principles described here.
+> Read [`07_Vision_Before_Implementation.md`](07_Vision_Before_Implementation.md) for authoritative philosophy and scope. This chapter defines module relationships. Full workflow narrative: [`05_Operations_Center_Vision_Report.md`](05_Operations_Center_Vision_Report.md).
+
+---
+
+## Two Products, Not One
+
+| Product | Purpose |
+|---------|---------|
+| **TraderCity Website** | Sells TraderCity (public) |
+| **TraderCity Admin** | Operates TraderCity (internal) |
+
+The Admin Dashboard is **never** an extension of the marketing website. See [`06_Application_Isolation_and_Folder_Architecture.md`](06_Application_Isolation_and_Folder_Architecture.md).
 
 ---
 
@@ -30,10 +41,11 @@ The goal is to ensure every future module preserves architectural integrity inst
 
 ## What This Platform Is
 
+- An **Operations Center** built around workflows and tickets — not pages
 - A **modular management system** organized by business domain
-- An **operational decision platform** for administrators
-- A **Member Control Center** that aggregates cross-module state
-- A **scalable frontend ecosystem** designed for modular expansion
+- An **operational inbox** that routes administrators to pre-filtered work
+- A **Member Control Center** that reflects cross-module state (never manages)
+- A **scalable frontend ecosystem** isolated from the marketing website
 
 ## What This Platform Is Not
 
@@ -70,13 +82,22 @@ Every page should answer **one operational question**:
 
 | Module | Operational Question |
 |--------|---------------------|
-| Dashboard | What needs attention? |
-| Members | Who is this member? |
-| Member Control Center | What is the complete current state of this member? |
-| Subscriptions | What is the payment state? |
-| Discord | Is Discord synchronized? |
-| Referrals | What is the referral progress? |
-| Settings | How is the platform configured? |
+| Dashboard | What needs attention today? (Operations Queue) |
+| Members | Which users exist — and who needs attention? (directory/search) |
+| Member Control Center | What is the complete operational state of this user? (reflection) |
+| Subscriptions | How do I resolve payment tickets? |
+| Discord | How do I resolve sync tickets? |
+| Referrals | How do I validate referral rewards? |
+
+Settings, Reports, Notifications — **deferred** (Phases 7–9, not Member Management scope).
+
+### Action Driven Navigation
+
+Dashboard widgets are not decorative. Each workload widget deep-links to a module with filters pre-applied. See chapter 05, section 8.
+
+### Operations Queue
+
+The Dashboard **Needs Attention** section aggregates actionable items across modules into a single inbox.
 
 ---
 
@@ -110,6 +131,8 @@ Pending Verification
 Verification Required
   ↓
 Successful
+  ↓
+Rejected
 ```
 
 Expiry belongs to **membership lifecycle**, not payment verification. Do not conflate subscription payment status with membership expiry in the Subscriptions module.
@@ -152,28 +175,31 @@ Do not invent alternative architectures, mock databases, or localStorage persist
 
 ## Dashboard Navigation Architecture
 
-### Sidebar Groups
+### Scope
+
+**Member Management (Phases 0–6)** is the current build. Sidebar items come from the **architecture flowchart** — not UI mockup sidebars.
+
+### Canonical Sidebar
 
 ```text
 Dashboard
-
-Management
-├── Members
-├── Subscriptions
-├── Discord          (future)
-├── Referrals        (future)
-
-Content
-├── Reports          (future)
-├── Learning         (future)
-├── Community        (future)
-├── Media Library    (future)
-
-System
-├── Notifications    (future)
-├── Audit Logs       (future)
-├── Settings         (future)
+Members
+Subscriptions
+Discord
+Referrals
 ```
+
+User Profile is reached via Members table or cross-module links — **not** a sidebar item.
+
+### Future Top-Level Areas (deferred)
+
+```text
+Analysts                         — future
+Website Content Management       — future (Reports, Community, Media)
+Configuration / System           — future (Settings, Notifications, Audit Logs)
+```
+
+Do not add deferred items to the sidebar during Phases 0–6.
 
 ### Management Module Flow
 
@@ -223,16 +249,18 @@ The header contains only identity and current status.
 
 **Identity**
 
-- Discord Avatar
+- Discord Avatar (from Discord — no upload)
 - Discord Username
 - Registered Email
+
+**Not included:** Full Name, profile photo upload, duplicate joined dates.
 
 **Status**
 
 - Membership Status
 - Discord Status
 - Discord Role
-- Joined Date
+- Joined Date (single field only)
 
 **Quick Actions**
 

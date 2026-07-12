@@ -41,7 +41,7 @@ Scope: src/app/page.tsx, src/components/home/**, src/components/pricing/**, src/
 **Workstream B — Admin Dashboard (Payments & Subscriptions)**
 Branch: feat/admin-payments-subscriptions
 Worktree: yes (isolated)
-Scope: src/components/admin/**, src/app/admin/**, src/types/admin/**, src/lib/admin/** (NEW paths only — read pricing/payment-activation/dashboard for alignment, do not modify)
+Scope: src/app/admin/**, src/components/admin/layout/**, src/components/admin/ui/**, src/components/members/**, src/types/admin/**, src/types/members/**, src/lib/admin/**, src/lib/members/** (NEW paths only — read pricing/payment-activation/dashboard for alignment, do not modify)
 
 [Paste full Agent B prompt from Section 4 below]
 ```
@@ -358,51 +358,60 @@ Also mounted on homepage via `src/app/page.tsx` — Agent A owns that mount; Age
 ### Copy-paste prompt
 
 ```
-You are Agent B — Admin Dashboard for TraderCity (Payments, Subscriptions, User Management).
+You are Agent B — TraderCity Admin Operations Center (internal platform — NOT marketing website extension).
 
 ## Mission
-Design and implement premium admin frontend UI for crypto payment verification, subscription management, and member CRUD. Frontend-only — integrate with existing NestJS backend architecture. Mirror and extend the existing member journey (pricing → payment-activation → dashboards) — do NOT invent backend modules or APIs.
+Build the TraderCity Admin **Operations Center** — an internal workflow-driven platform for payment verification, member directory, Member Control Center (reflection hub), and domain modules. Frontend-only with NestJS integration stubs. Admin and Marketing are **completely isolated products**.
+
+## Non-Negotiable Rules
+1. NEVER modify homepage, pricing, payment-activation, or public dashboard files during admin work
+2. NEVER import marketing/homepage components into admin
+3. Admin shell + shared primitives under src/components/admin/layout/ and src/components/admin/ui/
+4. Member Management domain sections under src/components/members/sections/ — NOT admin/modules/ or admin/sections/
+5. User Profile is reflection-only — management actions live in domain sections
 
 ## Scope Boundaries
 IN SCOPE (create NEW paths only):
-- src/components/admin/** — admin UI components
-- src/app/admin/** — admin routes (payment verification, members)
-- src/types/admin/** — TypeScript interfaces matching backend contracts
-- src/lib/admin/** — hooks, formatters, API client stubs designed for NestJS integration
+- src/app/admin/** — admin routes (URL namespace)
+- src/components/admin/layout/** — shared shell
+- src/components/admin/ui/** — cross-product primitives
+- src/components/members/** — Member Management domain (sections/)
+- src/types/admin/** — shell types
+- src/types/members/** — domain types
+- src/lib/admin/** — shell utilities (minimal)
+- src/lib/members/** — domain hooks (NestJS TODO stubs)
 
-REFERENCE ONLY — READ patterns, do NOT modify (unless fixing a shared type conflict with explicit approval):
-- src/components/pricing/** — plan prices, features, CTA destinations (Agent A owns edits)
-- src/components/payment-activation/** — member checkout + verification flow
-- src/components/dashboard/free/** — free member capabilities + mock data shapes
-- src/components/dashboard/vip/** — VIP member capabilities + subscription display fields
-- src/app/pricing/page.tsx, src/app/payment-activation/page.tsx, src/app/dashboard/free/page.tsx, src/app/dashboard/vip/page.tsx
+REFERENCE ONLY — data shapes, do NOT modify or import UI:
+- src/components/pricing/**, payment-activation/**, dashboard/free/**, dashboard/vip/**
+
+HOMEPAGE FREEZE — NEVER MODIFY:
+- src/components/home/**, src/app/page.tsx, src/app/globals.css
+- src/components/pricing/**, payment-activation/**, dashboard/**
+- src/app/pricing/**, payment-activation/**, dashboard/**
 
 OUT OF SCOPE:
-- src/components/home/**, src/app/page.tsx, src/app/globals.css (Agent A owns homepage tokens)
-- src/components/pricing/** edits (Agent A)
-- Backend/NestJS/Prisma schema changes
+- Backend/NestJS/Prisma changes
 - src/app/layout.tsx routing restructure
-- Net-new admin modules: referrals, education CMS, audit logs, notifications, support, role management (document as future work only)
+- Installing packages without approval
 
 ## Required Reading (in order)
 
-### Docs
-1. docs/AI/Agents/Admin/00_Admin_Dashboard_Foundation.md
-2. docs/AI/Agents/Admin/01_Product_Vision_and_Architecture.md
-3. docs/AI/Agents/Admin/02_Frontend_Design_System_and_UX_Rules.md
-4. docs/AI/Agents/Admin/03_Module_Specifications.md
-5. docs/AI/Agents/Admin/04_Development_Rules.md
-6. docs/Universal/TraderCity_Architecture_Rules.md
-7. docs/Universal/TraderCity_Frontend_Constitution_V1.md
-8. AGENTS.md + PROJECT_CONTEXT.md
+### Docs (mandatory)
+1. docs/AI/Agents/Admin/05_Operations_Center_Vision_Report.md
+2. docs/AI/Agents/Admin/06_Application_Isolation_and_Folder_Architecture.md
+3. docs/AI/Agents/Admin/00_Admin_Dashboard_Foundation.md
+4. docs/AI/Agents/Admin/01_Product_Vision_and_Architecture.md
+5. docs/AI/Agents/Admin/02_Frontend_Design_System_and_UX_Rules.md
+6. docs/AI/Agents/Admin/04_Development_Rules.md
+7. docs/AI/Agents/Admin/03_Module_Specifications.md
+8. docs/Universal/TraderCity_Architecture_Rules.md
+9. AGENTS.md + PROJECT_CONTEXT.md
 
-### Member flow code (study architecture + data before admin UI)
-11. src/components/pricing/Pricing.tsx + PricingContent.tsx — plan ids, prices, features, Framer Motion card pattern
-12. src/components/payment-activation/PaymentActivationContent.tsx + sections/PaymentSection.tsx — submission fields admin verifies
-13. src/components/payment-activation/sections/VerificationSection.tsx — member PENDING timeline (admin is the "Awaiting Verification" actor)
-14. src/components/payment-activation/sections/ResultSection.tsx — post-approval member states (active → /dashboard/vip)
-15. src/components/dashboard/free/FreeDashboardContent.tsx — free vs VIP comparison, upgrade CTAs
-16. src/components/dashboard/vip/VipDashboardContent.tsx — membership status grid, days remaining, renewal, access items
+### Member flow code (data shapes only — never import UI)
+10. src/components/payment-activation/sections/PaymentSection.tsx
+11. src/components/payment-activation/sections/VerificationSection.tsx
+12. src/components/dashboard/vip/VipDashboardContent.tsx
+13. src/components/pricing/PricingContent.tsx
 
 ## Reuse member architecture in admin UI
 - **Background + Content decomposition** — admin pages: AdminBackground (or layout-level grid) + page Content orchestrator
@@ -491,11 +500,12 @@ Based on: docs/AI/Agents/Admin/02_Frontend_Design_System_and_UX_Rules.md
 - Grid background optional in admin layout — echo member Background pattern without coupling to member files
 
 ## Allowed Changes
-- Create new admin component architecture under src/components/admin/
+- Create admin shell under src/components/admin/layout/ and shared primitives under src/components/admin/ui/
+- Create Member Management sections under src/components/members/sections/
 - Create admin routes under src/app/admin/
-- TypeScript interfaces for admin data shapes (align with member mock shapes + Arena enums)
-- API hooks with clear NestJS integration points
-- Reuse member UI patterns (card recipe, status badges, stat grids) — implement in src/components/admin/ui/ locally
+- TypeScript interfaces: src/types/members/ (domain) + src/types/admin/ (shell)
+- API hooks in src/lib/members/hooks/ with clear NestJS integration points
+- Reuse member UI patterns — implement in src/components/admin/ui/ locally
 - Responsive admin layout (desktop-first, mobile drawer sidebar)
 
 ## Forbidden Changes
@@ -509,12 +519,13 @@ Based on: docs/AI/Agents/Admin/02_Frontend_Design_System_and_UX_Rules.md
 
 ## Suggested Task Breakdown
 1. **Study member flows** — read 6 reference file groups above; note plan ids, submission fields, dashboard status fields
-2. **Scaffold admin shell** — src/app/admin/layout.tsx, sidebar, navbar, optional grid background
-3. **Shared admin primitives** — StatusBadge, StatCard, FilterCard, DataTable, ConfirmModal, RevenuePrivacyToggle (mirror member badge colors)
-4. **Types + hooks** — src/types/admin/*.ts (PaymentRecord, MemberRecord aligned to PaymentSection + mockMembership), src/lib/admin/hooks/*.ts with NestJS TODOs
-5. **Payment Verification page** — stat cards, table columns matching PaymentSection output, filters, approve/reject modals, copy hash
-6. **Members page** — table mirroring dashboard subscription fields, filters, add/edit/delete modals with VIP override
-7. **Member Detail drawer** — Profile / Subscription / Payments tabs (typed seed data from member mocks)
+2. **Scaffold admin shell** — src/app/admin/layout.tsx, src/components/admin/layout/
+3. **Shared admin primitives** — src/components/admin/ui/ (StatusBadge, DataTable, WidgetCard, etc.)
+4. **Types + hooks** — src/types/members/*.ts, src/lib/members/hooks/*.ts with NestJS TODOs
+5. **Dashboard sections** — src/components/members/sections/dashboard/
+6. **Directory sections** — src/components/members/sections/directory/
+7. **Profile sections** — src/components/members/sections/profile/ (reflection only)
+8. **Subscriptions sections** — src/components/members/sections/subscriptions/
 8. **Cross-module links** (UI only, mark TODO): payment row → member profile; member row → payment history; approved payment → reflects in VIP days remaining
 
 ## Verification Checklist
@@ -579,9 +590,9 @@ Work in isolated worktree. Do not edit src/components/home/**, src/app/page.tsx,
 | `src/app/page.tsx` | Agent A | **Do not touch** |
 | `src/app/globals.css` | Agent A | Agent B uses admin-scoped styles only |
 | `src/app/layout.tsx` | Agent A (metadata) | Agent B creates `src/app/admin/layout.tsx` instead |
-| `src/components/admin/**` | Agent B | **Do not touch** |
+| `src/components/admin/**`, `src/components/members/**` | Agent B | **Do not touch** |
 | `src/app/admin/**` | Agent B | **Do not touch** |
-| `src/types/admin/**`, `src/lib/admin/**` | Agent B | **Do not touch** |
+| `src/types/admin/**`, `src/types/members/**`, `src/lib/admin/**`, `src/lib/members/**` | Agent B | **Do not touch** |
 | `src/components/dashboard/**` | Neither (frozen) | Agent B **read-only** (free/vip subscription display reference) |
 | `src/app/dashboard/free/page.tsx`, `src/app/dashboard/vip/page.tsx` | Neither (frozen) | Agent B **read-only** |
 | `package.json` | Neither without approval | Coordinate before any dependency |
@@ -596,7 +607,7 @@ Work in isolated worktree. Do not edit src/components/home/**, src/app/page.tsx,
 
 - If Agent B needs a shared `<StatusBadge />` in `src/components/ui/`, **wait until Agent A finishes Phase 2** or duplicate locally in `src/components/admin/ui/` temporarily
 - Agent B must **not** edit `globals.css` — use Tailwind arbitrary values or admin layout CSS variables
-- Agent B must **not** edit member journey files (`pricing/`, `payment-activation/`, `dashboard/`) — copy patterns into `src/components/admin/` instead
+- Agent B must **not** edit member journey files — copy patterns into `src/components/admin/ui/` or `src/components/members/sections/` instead
 - When admin types need plan prices, import constants from a future shared module only after both agents merge; until then duplicate with TODO comments noting member vs Arena price sets
 - Document deferred cross-surface token sharing (Blueprint Phase 5) for a future single-agent pass
 
@@ -652,7 +663,7 @@ Work in isolated worktree. Do not edit src/components/home/**, src/app/page.tsx,
 | Payment activation | `/payment-activation` | Live — 3-step flow: PaymentSection → VerificationSection → ResultSection | `src/components/payment-activation/**` (6 files) | B reads only |
 | Free dashboard | `/dashboard/free` | Live — purple theme, free vs VIP comparison, upgrade CTA, referral | `src/components/dashboard/free/**` | B reads only |
 | VIP dashboard | `/dashboard/vip` | Live — gold theme, membership grid, 10 access items, renewal centre | `src/components/dashboard/vip/**` | B reads only |
-| Admin dashboard | `/admin/*` | **Not yet in `src/`** — docs only (`docs/admin-dashboard-ui-analysis/`) | Agent B creates `src/components/admin/**`, `src/app/admin/**` | B (creates new) |
+| Admin dashboard | `/admin/*` | **Not yet in `src/`** — docs only | Agent B creates shell in `src/components/admin/`, domain in `src/components/members/sections/`, routes in `src/app/admin/**` | B (creates new) |
 
 ### Member journey (end-to-end)
 

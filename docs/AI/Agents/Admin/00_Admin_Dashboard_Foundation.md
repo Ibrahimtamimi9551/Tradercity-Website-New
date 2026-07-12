@@ -1,10 +1,19 @@
 # TraderCity Admin Dashboard — Foundation
 
-**Version:** 1.0  
+**Version:** 2.1  
 **Status:** Living specification — primary execution guide for Admin Dashboard work  
-**Scope:** Admin frontend architecture, UI ecosystem, and module specifications (`src/app/admin/**`, `src/components/admin/**`, `src/types/admin/**`, `src/lib/admin/**`)
+**Scope:** Member Management admin frontend (Phases 0–6)
 
-> Read this document **first** before any Admin Dashboard work. Chapters 01–04 in this folder define **how to think**; this document sequences **what to build, in what order, and what never to break**.
+```text
+src/app/admin/**                    — routes
+src/components/admin/layout/**      — shared shell
+src/components/admin/ui/**          — shared primitives
+src/components/members/**           — domain sections
+src/types/admin/** + src/types/members/**
+src/lib/admin/** + src/lib/members/**
+```
+
+> Read this document **first**, then [`07_Vision_Before_Implementation.md`](07_Vision_Before_Implementation.md), [`05_Operations_Center_Vision_Report.md`](05_Operations_Center_Vision_Report.md), and [`06_Application_Isolation_and_Folder_Architecture.md`](06_Application_Isolation_and_Folder_Architecture.md) before any Admin Dashboard work.
 
 ---
 
@@ -12,19 +21,23 @@
 
 The TraderCity Admin Dashboard is not a collection of pages.
 
-It is the **operational platform** that powers the TraderCity ecosystem.
+It is an **Operations Center** — the internal platform that operates the TraderCity ecosystem.
 
-Every screen exists to help administrators make faster and better decisions.
+The homepage **sells** TraderCity.
+
+The admin dashboard **operates** TraderCity.
+
+Those are two entirely different products.
+
+Every screen exists to help administrators resolve operational issues — not browse data.
 
 Every module owns one responsibility.
 
-Every piece of information has one source of truth.
+Every piece of information has one source of truth: the **database**.
 
 The Member Control Center unifies information without duplicating business logic.
 
 The system is designed to evolve through **modular expansion** rather than architectural redesign.
-
-Simplicity, consistency, scalability, and operational efficiency take priority over visual complexity.
 
 ---
 
@@ -33,205 +46,128 @@ Simplicity, consistency, scalability, and operational efficiency take priority o
 | Document | Role |
 |----------|------|
 | **This file** | Foundation index, manifesto, reading order |
-| [`01_Product_Vision_and_Architecture.md`](01_Product_Vision_and_Architecture.md) | What the platform is and why it exists |
-| [`02_Frontend_Design_System_and_UX_Rules.md`](02_Frontend_Design_System_and_UX_Rules.md) | Reusable components, layout patterns, design language |
-| [`03_Module_Specifications.md`](03_Module_Specifications.md) | Members, Subscriptions, Discord, Referrals, and future modules |
-| [`04_Development_Rules.md`](04_Development_Rules.md) | Coding standards, boundaries, implementation principles |
-| [`docs/Universal/TraderCity_Architecture_Rules.md`](../../Universal/TraderCity_Architecture_Rules.md) | Backend assumptions — do not invent |
-| [`docs/Universal/TraderCity_Frontend_Constitution_V1.md`](../../Universal/TraderCity_Frontend_Constitution_V1.md) | Global frontend constraints |
-| [`docs/AI/Playbooks/multitask-prompts.md`](../../Playbooks/multitask-prompts.md) | Agent B copy-paste prompt for parallel work |
+| [`05_Operations_Center_Vision_Report.md`](05_Operations_Center_Vision_Report.md) | **Master report** — workflows, Operations Queue, System Health, module summaries |
+| [`07_Vision_Before_Implementation.md`](07_Vision_Before_Implementation.md) | **Authoritative** — philosophy, scope (Phases 0–6), sidebar authority |
+| [`06_Application_Isolation_and_Folder_Architecture.md`](06_Application_Isolation_and_Folder_Architecture.md) | **Non-negotiable** — Admin vs Marketing isolation, folder structure |
+| [`01_Product_Vision_and_Architecture.md`](01_Product_Vision_and_Architecture.md) | Platform purpose, module ownership |
+| [`02_Frontend_Design_System_and_UX_Rules.md`](02_Frontend_Design_System_and_UX_Rules.md) | Admin-only component library, responsive behavior |
+| [`03_Module_Specifications.md`](03_Module_Specifications.md) | Per-module UI contracts |
+| [`04_Development_Rules.md`](04_Development_Rules.md) | Coding boundaries, Homepage Freeze, integration |
+| [`docs/Universal/TraderCity_Architecture_Rules.md`](../../Universal/TraderCity_Architecture_Rules.md) | Backend assumptions |
 | [`AGENTS.md`](../../../AGENTS.md) | Global agent constraints |
 
 ---
 
-## Handbook Index (Chapters 01–04)
+## Handbook Index (Chapters 01–07)
 
 | # | Chapter | Read when you need… |
 |---|---------|---------------------|
-| 01 | [Product Vision and Architecture](01_Product_Vision_and_Architecture.md) | Platform purpose, module ownership, navigation model |
-| 02 | [Frontend Design System and UX Rules](02_Frontend_Design_System_and_UX_Rules.md) | Reusable primitives, visual hierarchy, responsive behavior |
-| 03 | [Module Specifications](03_Module_Specifications.md) | Member Control Center, Subscriptions, and future module contracts |
-| 04 | [Development Rules](04_Development_Rules.md) | File structure, backend boundaries, member journey alignment |
+| 07 | [Vision Before Implementation](07_Vision_Before_Implementation.md) | **Before anything** — philosophy, scope, sidebar authority |
+| 05 | [Operations Center Vision Report](05_Operations_Center_Vision_Report.md) | Workflows, inbox model, cross-module narratives |
+| 06 | [Application Isolation and Folder Architecture](06_Application_Isolation_and_Folder_Architecture.md) | **Before coding** — isolation rules, folders |
+| 01 | [Product Vision and Architecture](01_Product_Vision_and_Architecture.md) | Management vs Reflection, source of truth |
+| 02 | [Frontend Design System and UX Rules](02_Frontend_Design_System_and_UX_Rules.md) | Admin primitives, mobile operations |
+| 04 | [Development Rules](04_Development_Rules.md) | Forbidden paths, data alignment |
+| 03 | [Module Specifications](03_Module_Specifications.md) | Per-module UI contracts (Phases 0–6) |
 
-**Agent reading order:** 00 (this file) → 01 → 02 → 04 (before coding) → 03 (module-specific) → member flow reference code.
-
----
-
-## Project Overview
-
-The TraderCity Admin Dashboard is the internal operating platform used by administrators to manage the TraderCity ecosystem.
-
-This dashboard is **not a traditional CRUD admin panel**.
-
-Instead, it is designed as a **modular management system**, where every business domain owns its own responsibility while remaining connected through a unified **Member Control Center** (User Profile).
-
-The objective is to build a dashboard that can scale from hundreds to thousands of members without requiring architectural redesign.
-
-The frontend should be built in a modular way so that future modules can be added without affecting existing implementation.
+**Agent reading order:** 00 → **07** → **05** → **06** → 01 → 02 → 04 → 03 → [`Phase-Roadmap.md`](../../Development/Admin/Phase-Roadmap.md) → member flow reference code (data shapes only).
 
 ---
 
-## Current Development Scope
+## Homepage Freeze (Permanent Rule)
 
-This documentation focuses only on **frontend architecture and interface design**.
+While building Admin, do **not** modify unless explicitly requested:
 
-Backend APIs, database schema, authentication, and business logic will be integrated later.
+- `src/components/home/**`, `src/app/page.tsx`
+- `src/components/pricing/**`, `src/components/payment-activation/**`
+- `src/components/dashboard/**` (public member dashboards)
+- `src/app/globals.css` (coordinate separately)
 
-At this stage, the objective is to build the complete frontend ecosystem and interaction flow.
-
-### Design References (Phase 1)
-
-| Reference | Asset | Purpose |
-|-----------|-------|---------|
-| Member Control Center | [`assets/member-control-center-reference.png`](assets/member-control-center-reference.png) | Operational hub for a single member |
-| Subscription Management | [`assets/subscription-management-reference.png`](assets/subscription-management-reference.png) | Payment verification and subscription lifecycle |
-
-Future modules will follow the exact same design philosophy.
+Full list: [`06_Application_Isolation_and_Folder_Architecture.md`](06_Application_Isolation_and_Folder_Architecture.md)
 
 ---
 
 ## Core Design Philosophy
 
-The Admin Dashboard is designed around **business modules**, not around pages.
+### Operations Center, Not CRUD
 
-Every module owns one responsibility.
+Built around **workflows** and **tickets**, not database tables.
 
-No module should duplicate another module's responsibility.
+### Management vs Reflection
 
-The User Profile aggregates information from every module but **never owns business logic**.
+- **Management modules** perform actions (Subscriptions, Discord, Referrals)
+- **Member Control Center** reflects state only — cards link to owning modules
+
+### Action Driven Navigation
+
+Dashboard widgets deep-link to pre-filtered module views. Admin resolves work — never hunts for it.
 
 ### Single Source of Truth
 
-The backend database is always the source of truth.
-
-The frontend never creates business logic.
-
-Discord is not the source of truth.
-
-Payments are not the source of truth.
-
-Referral calculations are not the source of truth.
-
-Every module reflects the current backend state.
+Database only. Frontend displays. Backend decides.
 
 ---
 
-## Dashboard Structure
+## Sidebar (Member Management — Phases 0–6)
+
+Canonical nav from architecture flowchart. UI mockup sidebars are layout reference only.
 
 ```text
-Dashboard
-
-Management
-├── Members
-├── Subscriptions
-├── Discord
-├── Referrals
-
-Content
-├── Reports
-├── Learning
-├── Community
-├── Media Library
-
-System
-├── Notifications
-├── Audit Logs
-├── Settings
+Dashboard        — Phase 1: Operations inbox
+Members          — Phase 2: Directory / search
+Subscriptions    — Phase 4: Payment tickets
+Discord          — Phase 5: Sync tickets
+Referrals        — Phase 6: Validation tickets
 ```
 
-Every module is independent.
+User Profile (`/admin/members/[id]`) is a **route**, not a sidebar item.
 
-Every module owns one business domain.
-
-Phase 1 implementation focuses on **Members**, **Member Control Center**, and **Subscriptions**. All other modules are documented as future work — do not implement without explicit approval.
+**Deferred (not built now):** Reports, Community, Media, Settings, Notifications, Audit Logs → future Website Content Management / Analysts areas.
 
 ---
 
 ## Standard Module Pattern
 
-Every management module follows the same structure:
-
 ```text
-Management Module
-
-↓
-
-Widgets / Statistics
-
-↓
-
-Search + Filters
-
-↓
-
-Data Table
-
-↓
-
-Module Details Panel
-
-↓
-
-(Optional) Open Member Control Center
+Widgets → Search + Filters → Table → Details Panel → (Open Member Profile)
 ```
-
-This layout must remain consistent across the entire dashboard.
 
 Build pages around **administrator workflows**, not database tables.
 
 ---
 
-## Module Connection Philosophy
+## Member Management Implementation Roadmap (Phases 0–6)
 
-Every module owns one business responsibility.
+Full rationale, exit criteria, and dependency map: [`Phase-Roadmap.md`](../../Development/Admin/Phase-Roadmap.md)
 
-The Member Control Center reflects the latest state from every module.
-
-```text
-Subscription Module → Updates Database → User Profile Subscription Card updates
-Discord Module      → Updates Database → User Profile Discord Card updates
-Referral Module     → Updates Database → User Profile Referral Card updates
-```
-
-This avoids duplicated logic.
+Phases 7–9 are deferred — see chapter 07 scope boundary.
 
 ---
 
 ## Cursor Implementation Guidelines
 
-When implementing this dashboard:
-
-1. Follow the modular architecture described in Chapters 01–04.
-2. Build reusable components (widgets, tables, filters, detail panels, cards).
-3. Keep all data mocked for now; backend integration will happen later.
-4. Do not invent additional fields or workflows beyond those defined.
-5. Ensure every module follows the same interaction pattern.
-6. The Member Control Center is the hub that aggregates information; all modules should navigate to it, and it should link back to the appropriate module for management actions.
-7. Study member journey code before building admin UI — admin mirrors member submission and dashboard fields.
-8. Do not modify homepage, pricing, payment-activation, or member dashboard files.
-
----
-
-## Phase 1 Deliverables
-
-1. Admin shell (sidebar, navbar, layout)
-2. Shared admin UI primitives
-3. Members list module
-4. Member Control Center (User Profile)
-5. Subscriptions module (widgets, table, details panel)
-6. TypeScript types and hook stubs for NestJS integration
-7. Backend endpoint requirements list (documentation only)
+1. Read chapters 07, 05, and 06 before any code.
+2. Admin and Marketing are **completely isolated** — no cross-imports.
+3. Build routes under `src/app/admin/**`; shell under `src/components/admin/`; domain sections under `src/components/members/sections/`.
+4. User Profile is reflection only — management stays in domain modules.
+5. Dashboard widgets must deep-link with pre-applied filters.
+6. System Health is backend-computed — frontend displays.
+7. Mobile operations are first-class (bottom nav, full-screen details).
+8. Mock data only until NestJS hooks land — no localStorage persistence.
+9. Reference member code for **data shapes only**, never UI components.
+10. Do not modify marketing/homepage files during admin work.
 
 ---
 
 ## Success Criteria
 
-After Phase 1, an administrator should:
+After Phase 6 (Referrals complete), an administrator should:
 
-- Immediately understand any module page because every page follows the same interaction pattern
-- Open a member profile and see aggregated state from all connected modules
-- Navigate from any module to the Member Control Center and back to the owning module
-- Verify subscription payments without leaving the standard module layout
-- Use the same components (badges, tables, panels) across every screen
+- Open Dashboard and immediately see workload requiring attention
+- Click a widget and land in the correct filtered module
+- Search Members and see System Health at a glance
+- Open a member profile and understand complete operational state without visiting four modules
+- Resolve a payment from Subscriptions and see Profile + Members + Dashboard update conceptually
+- Never need marketing UI components in the admin experience
 
-If a change introduces a one-off interaction model or duplicates business logic in the frontend, do not implement it.
+If a change introduces cross-imports, duplicated business logic, or marketing file edits, do not implement it.

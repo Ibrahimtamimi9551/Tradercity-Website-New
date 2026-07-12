@@ -2,10 +2,10 @@
 
 ## Chapter 04 — Development Rules
 
-**Document Version:** 1.0  
+**Document Version:** 2.1  
 **Status:** Living Specification
 
-> This chapter defines coding boundaries, file structure, data alignment, and integration readiness. Follow these rules on every admin implementation task.
+> Non-negotiable isolation rules: [`06_Application_Isolation_and_Folder_Architecture.md`](06_Application_Isolation_and_Folder_Architecture.md). Authoritative vision: [`07_Vision_Before_Implementation.md`](07_Vision_Before_Implementation.md). Master report: [`05_Operations_Center_Vision_Report.md`](05_Operations_Center_Vision_Report.md).
 
 ---
 
@@ -14,72 +14,101 @@
 ### In Scope (create NEW paths only)
 
 ```text
-src/components/admin/**     — admin UI components
-src/app/admin/**            — admin routes
-src/types/admin/**          — TypeScript interfaces
-src/lib/admin/**            — hooks, formatters, API client stubs
-docs/AI/Agents/Admin/**     — this documentation set
-docs/Development/Admin/**   — phase logs, changelog, debt (when implementing)
+src/app/admin/**                              — admin routes (URL namespace)
+src/components/admin/layout/**                — shared admin shell
+src/components/admin/ui/**                    — cross-product admin primitives
+src/components/members/**                     — Member Management domain (sections)
+src/types/admin/**                            — shell-only shared types
+src/types/members/**                          — Member Management domain types
+src/lib/admin/**                              — shell-only shared utilities
+src/lib/members/**                            — domain hooks, services, utils
+docs/AI/Agents/Admin/**                       — this documentation set
+docs/Development/Admin/**                     — phase logs, changelog, debt
 ```
 
-### Reference Only — Read patterns, do NOT modify
+**Path rule:** Domain sections go in `members/sections/` — **never** `admin/modules/` or `admin/sections/`.
+
+### Homepage Freeze — NEVER MODIFY During Admin Work
 
 ```text
+src/components/home/**
+src/app/page.tsx
 src/components/pricing/**
 src/components/payment-activation/**
-src/components/dashboard/free/**
-src/components/dashboard/vip/**
-src/app/pricing/page.tsx
-src/app/payment-activation/page.tsx
-src/app/dashboard/free/page.tsx
-src/app/dashboard/vip/page.tsx
+src/components/dashboard/**
+src/app/pricing/**
+src/app/payment-activation/**
+src/app/dashboard/**
+src/app/globals.css                       — coordinate separately if needed
 ```
 
-### Out of Scope
+### Reference Only — Data Shapes, NOT UI Imports
 
-- `src/components/home/**`, `src/app/page.tsx`, `src/app/globals.css` (Homepage Agent owns)
-- Backend / NestJS / Prisma schema changes
-- `src/app/layout.tsx` routing restructure
-- Net-new modules beyond Phase 1 without approval (Referrals CMS, Audit Logs, Notifications, Support, Role Management)
-- Installing packages without approval
+```text
+src/components/pricing/**                   — plan ids, prices (read only)
+src/components/payment-activation/**        — submission fields (read only)
+src/components/dashboard/free/**          — mock data shapes (read only)
+src/components/dashboard/vip/**             — mock data shapes (read only)
+```
+
+**Never import marketing/homepage components into admin.**
 
 ---
 
 ## Implementation Principles
 
-1. **Modular architecture** — one module, one responsibility
-2. **Reusable components** — no one-off page-specific duplicates
-3. **Mock data only** — typed seed data matching backend contracts; no localStorage persistence
-4. **Backend-ready hooks** — clear TODO comments for NestJS endpoints
-5. **Member journey alignment** — admin mirrors member submission and dashboard fields
-6. **Consistent interaction pattern** — widgets → search → filters → table → details → profile
-7. **TraderCity brand** — institutional, premium dark — not Arena copy-paste
+1. **Admin ≠ Marketing** — completely isolated applications (ch. 06)
+2. **Homepage frozen** — no marketing file edits during admin work
+3. **Modular architecture** — one module, one responsibility
+4. **Reflection vs Management** — profile cards read-only; actions in domain modules
+5. **Operations Center** — Action Driven Navigation from Dashboard widgets
+6. **System Health** — backend-computed; frontend displays
+7. **Mock data only** — typed seed data; no localStorage persistence
+8. **Backend-ready hooks** — NestJS TODO comments on every hook
+9. **Admin-only design system** — no homepage component imports
+10. **Member Management Phases 0–6** — see below; do not skip phases or build Phases 7–9
+11. **Mockup sidebar ≠ implementation sidebar** — architecture flowchart is nav authority
 
 ---
 
-## Route Map (Phase 1)
+## Route Map (Member Management — Phases 0–6)
 
-| Route | Module |
-|-------|--------|
-| `/admin` | Dashboard shell / redirect |
-| `/admin/members` | Members list |
-| `/admin/members/[id]` | Member Control Center |
-| `/admin/subscriptions` | Subscriptions management |
+| Route | Phase | Module |
+|-------|-------|--------|
+| `/admin` | 0–1 | Shell + Dashboard inbox |
+| `/admin/members` | 2 | Members directory |
+| `/admin/members/[id]` | 3 | User Profile (Control Center) |
+| `/admin/subscriptions` | 4 | Subscriptions |
+| `/admin/discord` | 5 | Discord |
+| `/admin/referrals` | 6 | Referrals |
 
-Legacy prompt alias: `/admin/payment-verification` should redirect to or be consolidated under `/admin/subscriptions` per this architecture.
+**Do not create routes** for Reports, Settings, Notifications, or Audit Logs during Phases 0–6.
 
 ---
 
-## Suggested Implementation Order
+## Member Management Implementation Order (Phases 0–6)
 
-1. Study member flows — read reference code groups (see Module Specs)
-2. Scaffold admin shell — `layout.tsx`, sidebar, navbar, optional grid background
-3. Shared admin primitives — StatusBadge, StatCard, DataTable, SearchBar, FilterBar, DetailsPanel, ConfirmModal, Timeline, Pagination
-4. Types + hooks — `src/types/admin/*.ts`, `src/lib/admin/hooks/*.ts` with NestJS TODOs
-5. Subscriptions module — widgets, table, filters, details panel, approve/reject modals
-6. Members list — table, filters, add/edit/delete modals
-7. Member Control Center — header, overview cards, notes, activity timeline
-8. Cross-module navigation — wire links with TODO for backend state refresh
+| Phase | Deliverables |
+|-------|--------------|
+| **0** | Admin layout, sidebar (5 items), header, theme, shared UI primitives |
+| **1** | Dashboard inbox, Operations Queue, Recent Activity, Quick Actions, Platform Health |
+| **2** | Members table, System Health, search/filters |
+| **3** | User Profile — reflection cards, notes, timeline, tabs |
+| **4** | Subscriptions — table, details panel, approve/reject, mobile detail |
+| **5** | Discord module |
+| **6** | Referral module |
+
+Do not begin Phase N+1 until Phase N acceptance criteria are met.
+
+**Full roadmap:** [`docs/Development/Admin/Phase-Roadmap.md`](../../Development/Admin/Phase-Roadmap.md)
+
+### Deferred (Phases 7–9 — not Member Management)
+
+| Phase | Modules | Future home |
+|-------|---------|-------------|
+| 7 | Reports, Community, Media | Website Content Management |
+| 8 | Settings | Future configuration area |
+| 9 | Notifications, Audit Logs | Future Analysts / system |
 
 ---
 
@@ -123,7 +152,7 @@ Map to backend + member `VerificationSection`:
 | FAILED | On-chain or processing failure |
 | REJECTED | Admin rejected — show reason UI |
 
-Admin Subscriptions module UI consolidates to three **display** states (Successful, Pending Verification, Verification Required) while types preserve full backend enum for integration.
+Admin Subscriptions module UI consolidates to four **display** states (Successful, Pending Verification, Verification Required, Rejected) while types preserve full backend enum for integration.
 
 ### Dashboard Fields Admin Must Reflect
 
@@ -156,27 +185,26 @@ Assume these exist — design frontend to consume them:
 ### Frontend Hook Pattern
 
 ```typescript
-// src/lib/admin/hooks/useSubscriptions.ts
+// src/lib/members/hooks/useSubscriptions.ts
 // TODO: Replace mock data with GET /api/admin/subscriptions
 // NestJS: SubscriptionsController.findAll(query)
 export function useSubscriptions(filters: SubscriptionFilters) {
-  // Phase 1: return typed mock data
+  // Phase 4: return typed mock data
 }
 ```
 
 ---
 
-## Reuse Member Architecture in Admin UI
+## Reuse Member Data in Admin UI (Not Components)
 
-| Pattern | Admin Application |
-|---------|-------------------|
-| Background + Content | AdminBackground + page Content orchestrator |
-| Inline typed data | Seed tables/panels until NestJS hooks land |
-| Card/status badge vocabulary | Purple=pending, gold=VIP, emerald=success, amber=warning, blue=verification |
-| Lucide icons | Crown, Shield, Calendar, Bitcoin, etc. |
-| Client/server split | Server layout; `"use client"` for tables/modals |
+| Reference | Use For |
+|-----------|---------|
+| PaymentSection fields | Subscription table columns |
+| VerificationSection states | Subscription status badges |
+| VipDashboard mockMembership | Profile card field names |
+| PricingContent plan ids | Plan labels in types |
 
-Implement admin UI primitives locally under `src/components/admin/ui/` — do not modify member files to share.
+Implement admin shell under `src/components/admin/`. Implement Member Management sections under `src/components/members/sections/` — **never import** from `components/home`, `pricing`, or `dashboard`.
 
 ---
 
@@ -185,13 +213,17 @@ Implement admin UI primitives locally under `src/components/admin/ui/` — do no
 ### Documentation (in order)
 
 1. [`00_Admin_Dashboard_Foundation.md`](00_Admin_Dashboard_Foundation.md)
-2. [`01_Product_Vision_and_Architecture.md`](01_Product_Vision_and_Architecture.md)
-3. [`02_Frontend_Design_System_and_UX_Rules.md`](02_Frontend_Design_System_and_UX_Rules.md)
-4. [`03_Module_Specifications.md`](03_Module_Specifications.md)
-5. This file
-6. [`docs/Universal/TraderCity_Architecture_Rules.md`](../../Universal/TraderCity_Architecture_Rules.md)
-7. [`docs/Universal/TraderCity_Frontend_Constitution_V1.md`](../../Universal/TraderCity_Frontend_Constitution_V1.md)
-8. [`AGENTS.md`](../../../AGENTS.md) + [`PROJECT_CONTEXT.md`](../../../PROJECT_CONTEXT.md)
+2. [`07_Vision_Before_Implementation.md`](07_Vision_Before_Implementation.md) — **mandatory**
+3. [`05_Operations_Center_Vision_Report.md`](05_Operations_Center_Vision_Report.md) — **mandatory**
+4. [`06_Application_Isolation_and_Folder_Architecture.md`](06_Application_Isolation_and_Folder_Architecture.md) — **mandatory before coding**
+5. [`docs/Development/Admin/Phase-Roadmap.md`](../../Development/Admin/Phase-Roadmap.md) — **mandatory**
+6. [`01_Product_Vision_and_Architecture.md`](01_Product_Vision_and_Architecture.md)
+7. [`02_Frontend_Design_System_and_UX_Rules.md`](02_Frontend_Design_System_and_UX_Rules.md)
+8. This file
+9. [`03_Module_Specifications.md`](03_Module_Specifications.md)
+10. [`docs/Universal/TraderCity_Architecture_Rules.md`](../../Universal/TraderCity_Architecture_Rules.md)
+11. [`docs/Universal/TraderCity_Frontend_Constitution_V1.md`](../../Universal/TraderCity_Frontend_Constitution_V1.md)
+12. [`AGENTS.md`](../../../AGENTS.md) + [`PROJECT_CONTEXT.md`](../../../PROJECT_CONTEXT.md)
 
 ### Member Flow Code
 
