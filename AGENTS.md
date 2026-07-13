@@ -24,6 +24,14 @@ Increase perceived premium quality without changing the product vision.
 - Rewrite working architecture
 - Introduce unnecessary complexity
 
+## Admin Dashboard Design Freeze
+
+The approved `/admin` Dashboard UI is the **official Admin design language**.
+
+- **Do not redesign** admin pages (Members, Profile, Subscriptions, Discord, Referrals, future modules).
+- Inherit shell, `WidgetCard`, `modulePanelSurface`, typography, spacing, and interaction patterns.
+- Authority: `docs/AI/Agents/Admin/02_Frontend_Design_System_and_UX_Rules.md`
+
 ## Design Philosophy
 Less is more.
 Premium over flashy.

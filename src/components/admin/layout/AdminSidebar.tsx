@@ -57,7 +57,7 @@ export function AdminSidebar({
       <div
         className={cn(
           "fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden",
-          mobileOpen ? "block" : "hidden"
+          mobileOpen ? "pointer-events-auto" : "pointer-events-none hidden"
         )}
         onClick={onMobileClose}
         aria-hidden
@@ -65,8 +65,10 @@ export function AdminSidebar({
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-white/10 bg-[#070b18]/95 backdrop-blur-xl transition-transform lg:translate-x-0",
-          mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-white/10 bg-[#070b18]/95 backdrop-blur-xl transition-transform lg:pointer-events-auto lg:translate-x-0",
+          mobileOpen
+            ? "pointer-events-auto translate-x-0"
+            : "pointer-events-none -translate-x-full lg:translate-x-0",
           collapsed ? "lg:w-[72px]" : "lg:w-64"
         )}
       >

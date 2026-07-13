@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { Plus, CheckCircle, Download, FileText, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/admin/cn";
+import { modulePanelSurface } from "@/lib/admin/module-surfaces";
 
 const actions = [
   {
@@ -36,17 +38,20 @@ const actions = [
 
 export function QuickActions() {
   return (
-    <div className="rounded-xl border border-white/10 bg-[#0A0A0A] p-5">
+    <div className={modulePanelSurface("purple")}>
       <h3 className="mb-6 text-base font-medium text-white">Quick Actions</h3>
       <div className="grid gap-3 sm:grid-cols-2">
         {actions.map((action) => (
           <Link
             key={action.id}
             href={action.href}
-            className="group flex items-center justify-between rounded-lg border border-white/5 bg-white/[0.02] p-4 transition-colors hover:border-white/10 hover:bg-white/[0.04]"
+            className={cn(
+              "group flex items-center justify-between rounded-lg border border-violet-400/15 bg-black/20 p-4 transition-colors",
+              "hover:border-violet-400/25 hover:bg-violet-500/10"
+            )}
           >
             <div className="flex items-center gap-3">
-              <div className="text-tc-muted group-hover:text-white">
+              <div className="text-violet-300/80 group-hover:text-violet-200">
                 <action.icon className="h-5 w-5" />
               </div>
               <div>

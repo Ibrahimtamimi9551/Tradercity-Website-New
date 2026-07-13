@@ -281,7 +281,7 @@ Phase 0 (`WidgetCard`, `OperationsQueue`, shell)
 
 ## Phase 2 — Members (Directory)
 
-**Status:** Not started  
+**Status:** Complete — see [`Phase-02-Members-Directory.md`](Phase-02-Members-Directory.md)  
 **Route:** `/admin/members`
 
 ### Goal
@@ -318,17 +318,18 @@ Phase 0 (`DataTable`, `SystemHealthBadge`) + Phase 1 (deep-link from Dashboard)
 
 ### Exit criteria
 
-- [ ] Search member by Discord username or email
-- [ ] System Health column visible on every row
-- [ ] Username click opens `/admin/members/[id]`
-- [ ] Dashboard “Action Required” opens filtered member list
+- [x] Search member by Discord username or email
+- [x] System Health column visible on every row
+- [x] Username click opens `/admin/members/[id]`
+- [x] Dashboard “Action Required” opens filtered member list
 
 ---
 
 ## Phase 3 — User Profile (Control Center)
 
-**Status:** Not started  
+**Status:** Complete  
 **Route:** `/admin/members/[id]`
+**Phase record:** [`Phase-03-User-Profile.md`](Phase-03-User-Profile.md)
 
 ### Goal
 
@@ -362,10 +363,10 @@ Phase 2 (navigation from Members table)
 
 ### Exit criteria
 
-- [ ] Open a member — see full cross-module state on Overview tab
-- [ ] All “Manage →” links route to correct module (stubs OK)
-- [ ] Mobile: stacked cards, scrollable tabs, bottom nav shell
-- [ ] Identity rules enforced (Discord-primary, one joined date)
+- [x] Open a member — see full cross-module state on Overview tab
+- [x] All “Manage →” links route to correct module (stubs OK)
+- [x] Mobile: stacked cards, scrollable tabs, bottom nav shell
+- [x] Identity rules enforced (Discord-primary, one joined date)
 
 ### Why before Phases 4–6
 
@@ -541,6 +542,7 @@ Build order follows the same paths the admin will walk.
 | **One phase at a time** | Avoid half-built shell + half-built modules |
 | **Exit criteria gate** | Do not start Phase N+1 until Phase N checklist passes |
 | **Homepage Freeze** | Admin branch never touches marketing files |
+| **Dashboard UI Design Freeze** | Approved `/admin` is the official design language — do not redesign; Phases 2–6+ inherit shell, widgets, panels, spacing |
 | **Pages stay thin** | `page.tsx` composes module components only |
 | **Mock data per phase** | Typed seeds in `lib/members/hooks/` with NestJS TODOs |
 | **Document each phase** | Create `Phase-0X-*.md` record when phase completes |
@@ -559,7 +561,7 @@ Build order follows the same paths the admin will walk.
 | Skip Phase 0, jump to Subscriptions | One-off UI, massive rework |
 | Build Profile after Discord | No return hub for workflows |
 | Build Dashboard last | Modules exist with no inbox routing |
-| Mix marketing + admin in one PR | Violates application isolation |
+| Redesign admin pages after Dashboard approval | Breaks design freeze — reuse `/admin` system instead |
 | Implement backend in Phases 0–4 | UI flows unproven; integration churn |
 | Embed approve actions in Profile cards | Breaks Management vs Reflection |
 | Add Settings/Reports to sidebar now | Scope creep — deferred to future areas |
@@ -576,8 +578,8 @@ Update this table as phases complete. Mirror summary in [`PROJECT_STATUS.md`](PR
 | Pre-work | Documentation | Complete | ch. 07 + this roadmap |
 | 0 | Admin Foundation | Complete | Phase-00-Admin-Foundation.md |
 | 1 | Dashboard (Operations Center) | Complete | Phase-01-Dashboard.md |
-| 2 | Members Directory | Not started | — |
-| 3 | User Profile (Control Center) | Not started | — |
+| 2 | Members Directory | Complete | [`Phase-02-Members-Directory.md`](Phase-02-Members-Directory.md) |
+| 3 | User Profile (Control Center) | Complete | [`Phase-03-User-Profile.md`](Phase-03-User-Profile.md) |
 | 4 | Subscriptions | Not started | — |
 | 5 | Discord | Not started | — |
 | 6 | Referrals | Not started | — |

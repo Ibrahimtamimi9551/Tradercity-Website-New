@@ -1,26 +1,35 @@
 # Phase 1 — Dashboard (Operations Center)
 
-**Status:** Complete  
+**Status:** Complete — **UI Design Frozen**  
 **Date:** July 2026  
+
+## Design freeze
+
+The Phase 1 Dashboard at `/admin` is the **approved official design language** for all TraderCity Admin modules.
+
+**Do not redesign.** Phases 2–6 (Members, User Profile, Subscriptions, Discord, Referrals) and future admin sections must inherit this visual system via shared primitives.
+
+Authority: [`02_Frontend_Design_System_and_UX_Rules.md`](../../AI/Agents/Admin/02_Frontend_Design_System_and_UX_Rules.md) → *Dashboard UI Design Freeze*.
 
 ## Delivered
 
 ### Route
-- `/admin` — The main entry point now renders the `DashboardPage` instead of the foundation preview.
+- `/admin` — Operations Center inbox (`DashboardPage`)
 
 ### Dashboard Sections (`src/components/members/sections/dashboard/`)
-- `DashboardPage` — The main compositor for the dashboard.
-- `OperationalWidgets` — Top row of 8 KPI widgets with trend indicators and deep links.
-- `OperationsQueueSection` — The "Needs Attention" list with avatars and action links.
-- `RecentActivity` — System-wide operational event feed.
-- `QuickActions` — Links to common tasks (Add Member, Manual Verification, Export, Audit Logs).
-- `RevenueOverview` — Locked section for Super Admins.
-- `PlatformHealth` — Real-time status of critical system components.
+- `DashboardPage` — compositor
+- `OperationalWidgets` — 8 KPI widgets (accent priority + mobile 2-up grid)
+- `OperationsQueueSection` — Needs Attention list (count + Oldest Waiting + CTA; no avatars)
+- `RecentActivity` — operational event feed
+- `QuickActions` — Add Member, Manual Verification, Export, Audit Logs
+- `RevenueOverview` — Super Admin locked panel
+- `PlatformHealth` — system component status
 
-### Shared UI Updates (`src/components/admin/ui/`)
-- Updated `WidgetCard` to support `trend`, `linkText`, `iconTone`, and a layout matching the design reference.
-- Updated `OperationsQueue` to support `description`, `icon`, `iconTone`, `linkText`, `avatars`, and `extraCount` to match the design reference.
-- Added `DiscordIcon` to `src/components/admin/ui/icons/DiscordIcon.tsx`.
+### Shared UI / surfaces
+- `WidgetCard` — accent gradients, priority levels (critical / important / informational)
+- `OperationsQueue` — operational metrics rows
+- `module-surfaces.ts` — module panel tones (burgundy, navy, purple, gold, emerald)
+- Shell: `AdminSidebar`, `AdminHeader`, `AdminMobileNav`, `AdminBackground`
 
 ## Exit criteria
 
@@ -28,10 +37,13 @@
 - [x] Section order matches spec
 - [x] Every workload widget deep-links with correct query params
 - [x] Operations Queue items are clickable
-- [x] Revenue widget hidden or locked for non–Super Admin (locked UI implemented)
+- [x] Revenue widget locked for non–Super Admin
+- [x] Visual priority + module panel color identity approved
+- [x] Mobile widgets 2-up
 - [x] `npm run build` passes
+- [x] **Design freeze declared** for all subsequent admin pages
 
 ## Next Step
 
 **Phase 2 — Members (Directory)**  
-Domain sections under `src/components/members/sections/directory/`.
+`src/components/members/sections/directory/` — **reuse Dashboard design language; no redesign.**

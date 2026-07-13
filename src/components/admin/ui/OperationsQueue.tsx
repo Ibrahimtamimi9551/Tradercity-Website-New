@@ -1,17 +1,20 @@
 ﻿import Link from "next/link";
 import { cn } from "@/lib/admin/cn";
+import { modulePanelAccent, modulePanelSurface } from "@/lib/admin/module-surfaces";
 
 export type OperationsQueueItem = {
   id: string;
   label: string;
-  description?: string;
+  /** Number of open items in this queue */
   count: number;
+  /** Human-readable wait for oldest unresolved item, e.g. "6 Hours" */
+  oldestWaiting: string;
   href: string;
   icon?: React.ElementType;
   iconTone?: "default" | "warning" | "danger" | "purple" | "blue";
+  /** Primary CTA label without trailing arrow */
   linkText?: string;
-  avatars?: string[];
-  extraCount?: number;
+  countLabel?: string;
 };
 
 const iconToneMap = {
@@ -20,6 +23,14 @@ const iconToneMap = {
   danger: "bg-rose-500 text-white",
   purple: "bg-tc-purple text-white",
   blue: "bg-blue-500 text-white",
+};
+
+const actionToneMap = {
+  default: "border-white/10 bg-white/[0.04] text-white hover:bg-white/[0.07]",
+  warning: "border-amber-500/30 bg-amber-500/10 text-amber-200 hover:bg-amber-500/15",
+  danger: "border-rose-500/30 bg-rose-500/10 text-rose-200 hover:bg-rose-500/15",
+  purple: "border-violet-500/30 bg-violet-500/10 text-violet-200 hover:bg-violet-500/15",
+  blue: "border-blue-500/30 bg-blue-500/10 text-blue-200 hover:bg-blue-500/15",
 };
 
 export function OperationsQueue({
@@ -34,71 +45,70 @@ export function OperationsQueue({
   viewAllHref?: string;
 }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-[#0A0A0A] p-5">
+    <div className={modulePanelSurface("burgundy")}>
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <h3 className="text-base font-medium text-white">{title}</h3>
           {typeof total === "number" ? (
-            <span className="flex h-5 items-center justify-center rounded-full bg-rose-500/15 px-2 text-xs font-medium text-rose-400">
+            <span className="flex h-5 items-center justify-center rounded-full bg-rose-500/20 px-2 text-xs font-medium text-rose-300">
               {total}
             </span>
           ) : null}
         </div>
-        <button className="text-tc-muted hover:text-white">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-            <circle cx="12" cy="12" r="1" />
-            <circle cx="12" cy="5" r="1" />
-            <circle cx="12" cy="19" r="1" />
-          </svg>
-        </button>
       </div>
-      <ul className="space-y-1">
-        {items.map((item) => (
-          <li key={item.id}>
-            <div className="flex items-center justify-between rounded-lg p-2 transition-colors hover:bg-white/[0.02]">
-              <div className="flex items-center gap-4">
-                {item.icon ? (
-                  <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-full", iconToneMap[item.iconTone ?? "default"])}>
-                    <item.icon className="h-5 w-5" />
-                  </div>
-                ) : null}
-                <span className="text-xl font-medium text-white w-8 text-center">{item.count}</span>
-                <div>
-                  <p className="text-sm font-medium text-white/90">{item.label}</p>
-                  {item.description ? (
-                    <p className="text-xs text-tc-muted">{item.description}</p>
-                  ) : null}
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                {item.avatars && item.avatars.length > 0 && (
-                  <div className="flex items-center">
-                    <div className="flex -space-x-2">
-                      {item.avatars.map((avatar, i) => (
-                        <div key={i} className="h-6 w-6 rounded-full border border-[#0A0A0A] bg-white/10 overflow-hidden">
-                          <img src={avatar} alt="Avatar" className="h-full w-full object-cover" />
-                        </div>
-                      ))}
+
+      <ul className="space-y-3">
+        {items.map((item) => {
+          const tone = item.iconTone ?? "default";
+          return (
+            <li key={item.id}>
+              <div className="flex flex-col gap-3 rounded-xl border border-white/[0.06] bg-black/20 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex min-w-0 items-start gap-3">
+                  {item.icon ? (
+                    <div
+                      className={cn(
+                        "mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
+                        iconToneMap[tone]
+                      )}
+                    >
+                      <item.icon className="h-5 w-5" />
                     </div>
-                    {item.extraCount && (
-                      <span className="ml-2 text-xs font-medium text-tc-muted">+{item.extraCount}</span>
-                    )}
+                  ) : null}
+
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-white">{item.label}</p>
+                    <p className="mt-1 text-sm tabular-nums text-white/90">
+                      <span className="text-lg font-semibold text-white">{item.count}</span>{" "}
+                      <span className="text-tc-muted">{item.countLabel ?? "Requests"}</span>
+                    </p>
+                    <p className="mt-2 text-xs text-tc-muted">
+                      Oldest Waiting:{" "}
+                      <span className="font-medium text-white/85">{item.oldestWaiting}</span>
+                    </p>
                   </div>
-                )}
+                </div>
+
                 <Link
                   href={item.href}
-                  className="rounded-lg border border-white/5 bg-white/[0.02] px-3 py-1.5 text-xs font-medium text-tc-purple transition-colors hover:bg-white/[0.04] hover:text-purple-300"
+                  className={cn(
+                    "inline-flex shrink-0 items-center justify-center rounded-lg border px-3.5 py-2 text-xs font-medium transition-colors sm:self-center",
+                    actionToneMap[tone]
+                  )}
                 >
-                  {item.linkText || "Review →"}
+                  {item.linkText || "Review"}
                 </Link>
               </div>
-            </div>
-          </li>
-        ))}
+            </li>
+          );
+        })}
       </ul>
+
       {viewAllHref ? (
-        <div className="mt-4 border-t border-white/5 pt-4 text-center">
-          <Link href={viewAllHref} className="text-sm font-medium text-tc-purple hover:text-purple-300">
+        <div className="mt-5 border-t border-white/10 pt-4 text-center">
+          <Link
+            href={viewAllHref}
+            className={cn("text-sm font-medium hover:opacity-90", modulePanelAccent("burgundy"))}
+          >
             View all in Operations Queue &rarr;
           </Link>
         </div>

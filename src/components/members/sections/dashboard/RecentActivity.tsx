@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CheckCircle2, Clock, UserPlus } from "lucide-react";
 import { DiscordIcon } from "@/components/admin/ui/icons/DiscordIcon";
 import { cn } from "@/lib/admin/cn";
+import { modulePanelAccent, modulePanelSurface } from "@/lib/admin/module-surfaces";
 
 type ActivityItem = {
   id: string;
@@ -74,19 +75,27 @@ const iconToneMap = {
 
 export function RecentActivity() {
   return (
-    <div className="flex flex-col rounded-xl border border-white/10 bg-[#0A0A0A] p-5">
+    <div className={cn("flex flex-col", modulePanelSurface("navy"))}>
       <div className="mb-6 flex items-center justify-between">
         <h3 className="text-base font-medium text-white">Recent Activity</h3>
-        <Link href="/admin/activity" className="text-sm font-medium text-tc-purple hover:text-purple-300">
+        <Link
+          href="/admin/activity"
+          className={cn("text-sm font-medium hover:opacity-90", modulePanelAccent("navy"))}
+        >
           View all
         </Link>
       </div>
-      
+
       <div className="flex-1">
         <ul className="space-y-6">
           {activities.map((item) => (
             <li key={item.id} className="flex gap-4">
-              <div className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-full", iconToneMap[item.iconTone])}>
+              <div
+                className={cn(
+                  "flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
+                  iconToneMap[item.iconTone]
+                )}
+              >
                 <item.icon className="h-4 w-4" />
               </div>
               <div className="flex flex-1 items-start justify-between gap-4">

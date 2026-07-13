@@ -3,17 +3,25 @@
 type PageTitleProps = {
   title: string;
   subtitle?: string;
+  icon?: React.ElementType;
   actions?: React.ReactNode;
 };
 
-export function PageTitle({ title, subtitle, actions }: PageTitleProps) {
+export function PageTitle({ title, subtitle, icon: Icon, actions }: PageTitleProps) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-white">{title}</h1>
-        {subtitle ? (
-          <p className="mt-1 max-w-2xl text-sm text-tc-muted">{subtitle}</p>
+      <div className="flex items-start gap-3">
+        {Icon ? (
+          <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-violet-500/30 bg-violet-500/15 text-violet-200">
+            <Icon className="h-5 w-5" aria-hidden />
+          </div>
         ) : null}
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-white">{title}</h1>
+          {subtitle ? (
+            <p className="mt-1 max-w-2xl text-sm text-tc-muted">{subtitle}</p>
+          ) : null}
+        </div>
       </div>
       {actions ? <div className="flex shrink-0 items-center gap-2">{actions}</div> : null}
     </div>

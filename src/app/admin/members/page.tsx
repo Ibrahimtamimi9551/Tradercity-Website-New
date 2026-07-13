@@ -1,11 +1,5 @@
-﻿import { ModulePlaceholder } from "@/components/admin/layout/ModulePlaceholder";
+﻿import { MembersDirectoryPage } from "@/components/members/sections/directory";
 
 export default function MembersPage() {
-  return (
-    <ModulePlaceholder
-      title="Members"
-      subtitle="Directory, search, filters, and system health."
-      phase="Phase 2"
-    />
-  );
+  return <MembersDirectoryPage />;
 }

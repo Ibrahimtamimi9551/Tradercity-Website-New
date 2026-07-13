@@ -2,10 +2,72 @@
 
 ## Chapter 02 — Frontend Design System and UX Rules
 
-**Document Version:** 2.0  
-**Status:** Living Specification
+**Document Version:** 2.3  
+**Status:** Living Specification — **Dashboard UI Design Frozen (July 2026)**
 
 > Admin has its **own** design system — independent from the marketing website. Never import homepage components. See [`06_Application_Isolation_and_Folder_Architecture.md`](06_Application_Isolation_and_Folder_Architecture.md).
+
+---
+
+## Dashboard UI Design Freeze (AUTHORITATIVE)
+
+**Status:** Finalized and approved — July 2026  
+**Source of truth (live UI):** `/admin` — Phase 1 Dashboard Operations Center  
+**Canonical implementation:**
+
+```text
+src/components/members/sections/dashboard/
+src/components/admin/ui/WidgetCard.tsx
+src/components/admin/ui/OperationsQueue.tsx
+src/lib/admin/module-surfaces.ts
+src/components/admin/layout/
+```
+
+### Rule
+
+**DO NOT redesign the Admin interface.**
+
+The current Dashboard visual system is the **official design language** for the entire TraderCity Admin Dashboard.
+
+Every new module or page **must inherit** this exact visual system — do not invent new card styles, color philosophies, spacing scales, or interaction patterns.
+
+### Applies to all present and future surfaces
+
+| Module | Route |
+|--------|-------|
+| Dashboard | `/admin` |
+| Members | `/admin/members` |
+| User Profile | `/admin/members/[id]` |
+| Subscriptions | `/admin/subscriptions` |
+| Discord | `/admin/discord` |
+| Referrals | `/admin/referrals` |
+| Future sections | Any later admin modules |
+
+### What is frozen (must be reused)
+
+1. **Shell** — sidebar, header, mobile bottom nav, page background
+2. **Typography** — page titles, section headers, body/meta hierarchy
+3. **Statistic widgets** — `WidgetCard` accents, priority (critical / important / informational), mobile 2-up grid
+4. **Module panels** — tinted gradients via `modulePanelSurface` (burgundy, navy, purple, gold, emerald)
+5. **Operations patterns** — queue metrics (count + Oldest Waiting + primary CTA), activity lists, quick actions
+6. **Spacing & density** — card padding, grid gaps, section rhythm
+7. **Interaction** — deep links, hover treatments, CTA styles
+8. **Shared primitives** — `src/components/admin/ui/*` only; no page-one-off redesigns
+
+### What is still allowed
+
+- New **content** and **workflows** for Phases 2–6 (tables, filters, detail panels, actions)
+- Extending shared tokens/helpers when a new module needs an additional panel tone — **matching the same philosophy**
+- Bug fixes, accessibility, and responsiveness that **preserve** the approved look
+
+### What is forbidden
+
+- Redesigning pages to look “different” or “fresher”
+- Flat generic dark cards when module-colored surfaces are the standard
+- New widget/card visual languages outside `WidgetCard` / `module-surfaces`
+- Marketing / homepage visual patterns inside admin
+
+**When in doubt:** match `/admin` and extend shared primitives — never fork a new aesthetic.
 
 ---
 
@@ -162,6 +224,28 @@ Align with member dashboard vocabulary:
 | Expired | Rose |
 | Suspended | Amber |
 | Verification queue (on-chain verified, admin pending) | Blue |
+
+### Module Panel Color Identity
+
+Large dashboard sections communicate **module identity through color** while keeping layout, typography, spacing, and interaction patterns unchanged.
+
+| Panel | Tone | Helper |
+|-------|------|--------|
+| Operations Queue | Dark Burgundy | `modulePanelSurface("burgundy")` |
+| Recent Activity | Dark Navy Blue | `modulePanelSurface("navy")` |
+| Quick Actions | Deep Purple | `modulePanelSurface("purple")` |
+| Revenue Overview | Dark Gold | `modulePanelSurface("gold")` |
+| Platform Health | Dark Emerald | `modulePanelSurface("emerald")` |
+
+Implementation: `src/lib/admin/module-surfaces.ts` — soft tinted gradients, light borders (no heavy frames).
+
+### Operations Queue Metrics
+
+Queue rows prioritize operational urgency over decorative content:
+
+- **No** avatar stacks
+- **No** descriptive subtitles
+- Show **count**, **Oldest Waiting** (from oldest unresolved item), and a **primary action** CTA
 
 ---
 

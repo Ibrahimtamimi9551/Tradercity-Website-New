@@ -8,8 +8,10 @@
 
 ## Current Phase
 
-**Phase 1 — Dashboard (Operations Center) (complete)**  
-**Next:** Phase 2 — Members (Directory)
+**Phase 3 — User Profile (Control Center) (complete)**  
+**UI Design Language:** **Frozen / approved** — see [`02_Frontend_Design_System_and_UX_Rules.md`](../../AI/Agents/Admin/02_Frontend_Design_System_and_UX_Rules.md)  
+**Phase record:** [`Phase-03-User-Profile.md`](Phase-03-User-Profile.md)  
+**Next:** Phase 4 — Subscriptions — inherit Dashboard visual system (no redesign)
 
 ## Scope
 
@@ -17,14 +19,22 @@
 
 Phases 7–9 deferred to future Website Content Management / Analysts areas.
 
+## Design Freeze
+
+**Dashboard UI Design Freeze is active.**
+
+Do **not** redesign admin interfaces. Members, User Profile, Subscriptions, Discord, Referrals, and all future admin pages must reuse the approved language from `/admin` (`WidgetCard`, `modulePanelSurface`, shell, typography, spacing, interaction patterns).
+
+**Homepage Freeze active** — no marketing file changes during admin implementation.
+
 ## Member Management Implementation Roadmap
 
 | Phase | Scope | Status |
 |-------|-------|--------|
 | 0 | Admin Foundation (shell, sidebar, shared UI) | **Complete** |
 | 1 | Dashboard — Operations Center | **Complete** |
-| 2 | Members — directory + System Health | Not started |
-| 3 | User Profile — Control Center | Not started |
+| 2 | Members — directory + System Health | **Complete** |
+| 3 | User Profile — Control Center | **Complete** |
 | 4 | Subscriptions | Not started |
 | 5 | Discord | Not started |
 | 6 | Referrals | Not started |
@@ -37,7 +47,8 @@ Phases 7–9 deferred to future Website Content Management / Analysts areas.
 | Route | Status |
 |-------|--------|
 | `/admin` | Dashboard (Phase 1) |
-| `/admin/members` | Placeholder → Phase 2 |
+| `/admin/members` | Directory (Phase 2) |
+| `/admin/members/[id]` | Control Center (Phase 3) |
 | `/admin/subscriptions` | Placeholder → Phase 4 |
 | `/admin/discord` | Placeholder → Phase 5 |
 | `/admin/referrals` | Placeholder → Phase 6 |
@@ -53,8 +64,9 @@ src/lib/admin/ + src/lib/members/
 
 ## Next Step
 
-Begin **Phase 2: Members Directory** — `src/components/members/sections/directory/`
+Begin **Phase 4: Subscriptions** — `src/components/members/sections/subscriptions/`
 
-Run `npm run dev` and open `/admin`.
+Run `npm run dev` and open `/admin/members` → any username → Control Center.
 
+**Dashboard UI Design Freeze active** — inherit `/admin` visual system for Phases 4–6+.  
 **Homepage Freeze active** — no marketing file changes during admin implementation.

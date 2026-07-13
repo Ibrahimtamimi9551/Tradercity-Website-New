@@ -14,6 +14,8 @@ type DataTableProps<T> = {
   onRowClick?: (row: T) => void;
   emptyTitle?: string;
   className?: string;
+  /** Tighter cell padding on mobile only — keeps desktop spacing unchanged */
+  compactMobile?: boolean;
 };
 
 export function DataTable<T>({
@@ -23,7 +25,11 @@ export function DataTable<T>({
   onRowClick,
   emptyTitle = "No records found",
   className,
+  compactMobile = false,
 }: DataTableProps<T>) {
+  const cellPad = compactMobile ? "px-2 py-2 sm:px-4 sm:py-3" : "px-4 py-3";
+  const headerPad = compactMobile ? "px-2 py-2 sm:px-4 sm:py-3" : "px-4 py-3";
+
   if (data.length === 0) {
     return (
       <div className={cn("overflow-hidden rounded-xl border border-white/10", className)}>
@@ -35,7 +41,12 @@ export function DataTable<T>({
   return (
     <div className={cn("overflow-hidden rounded-xl border border-white/10", className)}>
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-white/10 text-sm">
+        <table
+          className={cn(
+            "min-w-full divide-y divide-white/10",
+            compactMobile ? "text-xs sm:text-sm" : "text-sm"
+          )}
+        >
           <thead className="bg-white/[0.02]">
             <tr>
               {columns.map((column) => (
@@ -43,7 +54,8 @@ export function DataTable<T>({
                   key={column.key}
                   scope="col"
                   className={cn(
-                    "px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-tc-muted",
+                    headerPad,
+                    "text-left text-[10px] font-medium uppercase tracking-wider text-tc-muted sm:text-xs",
                     column.className
                   )}
                 >
@@ -60,7 +72,10 @@ export function DataTable<T>({
                 className={cn(onRowClick && "cursor-pointer hover:bg-white/[0.03]")}
               >
                 {columns.map((column) => (
-                  <td key={column.key} className={cn("px-4 py-3 text-white/90", column.className)}>
+                  <td
+                    key={column.key}
+                    className={cn(cellPad, "text-white/90", column.className)}
+                  >
                     {column.render(row)}
                   </td>
                 ))}

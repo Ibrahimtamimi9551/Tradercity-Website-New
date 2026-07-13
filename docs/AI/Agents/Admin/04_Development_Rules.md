@@ -2,7 +2,7 @@
 
 ## Chapter 04 — Development Rules
 
-**Document Version:** 2.1  
+**Document Version:** 2.2  
 **Status:** Living Specification
 
 > Non-negotiable isolation rules: [`06_Application_Isolation_and_Folder_Architecture.md`](06_Application_Isolation_and_Folder_Architecture.md). Authoritative vision: [`07_Vision_Before_Implementation.md`](07_Vision_Before_Implementation.md). Master report: [`05_Operations_Center_Vision_Report.md`](05_Operations_Center_Vision_Report.md).
@@ -59,15 +59,16 @@ src/components/dashboard/vip/**             — mock data shapes (read only)
 
 1. **Admin ≠ Marketing** — completely isolated applications (ch. 06)
 2. **Homepage frozen** — no marketing file edits during admin work
-3. **Modular architecture** — one module, one responsibility
-4. **Reflection vs Management** — profile cards read-only; actions in domain modules
-5. **Operations Center** — Action Driven Navigation from Dashboard widgets
-6. **System Health** — backend-computed; frontend displays
-7. **Mock data only** — typed seed data; no localStorage persistence
-8. **Backend-ready hooks** — NestJS TODO comments on every hook
-9. **Admin-only design system** — no homepage component imports
-10. **Member Management Phases 0–6** — see below; do not skip phases or build Phases 7–9
-11. **Mockup sidebar ≠ implementation sidebar** — architecture flowchart is nav authority
+3. **Dashboard UI Design Freeze** — approved `/admin` look is the official admin design language; **do not redesign**; Phases 2–6+ inherit it (ch. 02)
+4. **Modular architecture** — one module, one responsibility
+5. **Reflection vs Management** — profile cards read-only; actions in domain modules
+6. **Operations Center** — Action Driven Navigation from Dashboard widgets
+7. **System Health** — backend-computed; frontend displays
+8. **Mock data only** — typed seed data; no localStorage persistence
+9. **Backend-ready hooks** — NestJS TODO comments on every hook
+10. **Admin-only design system** — no homepage component imports; reuse `admin/ui` + `module-surfaces`
+11. **Member Management Phases 0–6** — see below; do not skip phases or build Phases 7–9
+12. **Mockup sidebar ≠ implementation sidebar** — architecture flowchart is nav authority
 
 ---
 

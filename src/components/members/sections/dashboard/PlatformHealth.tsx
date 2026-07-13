@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { CheckCircle2, Hexagon, Mail, Database, Server, HardDrive } from "lucide-react";
 import { DiscordIcon } from "@/components/admin/ui/icons/DiscordIcon";
+import { cn } from "@/lib/admin/cn";
+import { modulePanelAccent, modulePanelSurface } from "@/lib/admin/module-surfaces";
 
 const services = [
   { id: "payment", name: "Payment System", status: "Operational", icon: CheckCircle2 },
@@ -16,22 +18,25 @@ const services = [
 
 export function PlatformHealth() {
   return (
-    <div className="rounded-xl border border-white/10 bg-[#0A0A0A] p-5">
-      <div className="mb-6 flex items-start justify-between">
+    <div className={modulePanelSurface("emerald")}>
+      <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <h3 className="text-base font-medium text-white">Platform Health</h3>
           <p className="mt-1 text-sm text-tc-muted">Real-time status of critical system components</p>
         </div>
-        <Link href="/admin/health" className="text-sm font-medium text-tc-purple hover:text-purple-300">
+        <Link
+          href="/admin/health"
+          className={cn("shrink-0 text-sm font-medium hover:opacity-90", modulePanelAccent("emerald"))}
+        >
           View detailed status &rarr;
         </Link>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
         {services.map((service) => (
           <div
             key={service.id}
-            className="flex items-center gap-3 rounded-lg border border-white/5 bg-white/[0.02] p-3"
+            className="flex items-center gap-3 rounded-lg border border-emerald-400/15 bg-black/20 p-3"
           >
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
               <service.icon className="h-4 w-4" />

@@ -54,13 +54,21 @@ export function AdminFoundationPreview() {
       <section>
         <SectionHeader title="Widget preview" description="Composable KPI cards for operational modules." />
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          <WidgetCard label="Total Members" value="1,248" hint="All registered" icon={Users} href="/admin/members" />
+          <WidgetCard
+            label="Total Members"
+            value="1,248"
+            hint="All registered"
+            icon={Users}
+            accent="purple"
+            href="/admin/members"
+          />
           <WidgetCard
             label="Pending Verification"
             value={24}
             hint="Requires review"
             icon={CreditCard}
-            tone="warning"
+            accent="amber"
+            priority="critical"
             href="/admin/subscriptions?status=pending_verification"
           />
           <WidgetCard
@@ -68,7 +76,8 @@ export function AdminFoundationPreview() {
             value={18}
             hint="System health critical"
             icon={AlertTriangle}
-            tone="danger"
+            accent="rose"
+            priority="critical"
             href="/admin/members?health=action_required"
           />
         </div>
