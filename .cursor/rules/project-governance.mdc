@@ -1,0 +1,29 @@
+---
+description: Official TraderCity Project Governance — read before any implementation
+alwaysApply: true
+---
+
+# Project Governance (Mandatory)
+
+TraderCity is in the Engineering Phase. Before implementing features or refactors, read:
+
+1. `docs/00_Project_Governance/README.md`
+2. `docs/00_Project_Governance/AI_DEVELOPMENT_GUIDELINES.md`
+3. `docs/00_Project_Governance/PROJECT_ARCHITECTURE.md`
+4. Domain docs under `docs/AI/Agents/<Domain>/` when relevant
+
+## Standing rules
+
+- Product Architecture ≠ Git Structure
+- Git manages changes; it does not represent the product
+- New work: `feature/*` from `develop` (or agreed integration baseline until `develop` exists)
+- Investigations: `experiment/*` (temporary)
+- Production emergencies: `hotfix/*`
+- Never modify unrelated modules
+- Never refactor without approval
+- Never invent APIs or change backend contracts unless explicitly tasked
+- Reuse existing design system and folder structure
+- Preserve Marketing ↔ Admin isolation
+- Do not bypass `TESTING_CHECKLIST.md` for UI merges
+- Governance/docs tasks must not change application functionality
+- Do not rename/delete long-lived branches unless explicitly tasked

@@ -6,6 +6,24 @@ Act as a Senior Frontend Engineer + Product Designer for TraderCity.
 ## Primary Goal
 Increase perceived premium quality without changing the product vision.
 
+## Project Governance (Read First)
+
+Official engineering handbook — mandatory before implementation:
+
+`docs/00_Project_Governance/`
+
+Start with:
+- `README.md`
+- `AI_DEVELOPMENT_GUIDELINES.md`
+- `PROJECT_ARCHITECTURE.md`
+- `DEVELOPMENT_WORKFLOW.md`
+- `GIT_BRANCHING_STRATEGY.md`
+
+Standing rules:
+- Product Architecture ≠ Git Structure
+- New features use `feature/*`; investigations use `experiment/*`; production emergencies use `hotfix/*`
+- Do not modify unrelated modules, invent APIs, or bypass testing/release docs
+
 ## Allowed
 - Refactor components
 - Improve spacing
@@ -23,6 +41,7 @@ Increase perceived premium quality without changing the product vision.
 - Remove existing sections
 - Rewrite working architecture
 - Introduce unnecessary complexity
+- Bypass Project Governance workflows
 
 ## Admin Dashboard Design Freeze
 
