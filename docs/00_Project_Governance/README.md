@@ -21,11 +21,28 @@ Foundation Phase
 Governance v1.0
         │
         ▼
-Engineering Platform v2.0   ← next execution
+Engineering Platform v2.0 (plan)
+        │
+        ▼
+UI Stabilization Sprint
+        │
+        ▼
+Engineering Freeze
+        │
+        ▼
+Preview + Device Validation
+        │
+        ▼
+Engineering Baseline v1.0
+        │
+        ▼
+Engineering Platform v2.0 (execution)
         │
         ▼
 Engineering Phase
 ```
+
+**Freeze policy:** [`ENGINEERING_FREEZE.md`](./ENGINEERING_FREEZE.md) — no features, no polish, no refactors; release-blocking bugs only until Migration v2.0 completes.
 
 ---
 
@@ -71,6 +88,7 @@ Foundation branches are history. They are not renamed. After Platform v2.0 they 
 | File | Contents |
 |------|----------|
 | [ENGINEERING_PLATFORM_V2.md](./ENGINEERING_PLATFORM_V2.md) | **Master v2.0 plan — all five layers** |
+| [ENGINEERING_FREEZE.md](./ENGINEERING_FREEZE.md) | Pre-baseline freeze — no feature work |
 | [PROJECT_ARCHITECTURE.md](./PROJECT_ARCHITECTURE.md) | Business domains and responsibilities |
 | [PROJECT_ROADMAP.md](./PROJECT_ROADMAP.md) | Master delivery roadmap (`feature/*` source) |
 | [MODULE_OWNERSHIP.md](./MODULE_OWNERSHIP.md) | Source ownership mirrors product domains |

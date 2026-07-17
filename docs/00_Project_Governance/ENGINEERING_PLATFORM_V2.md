@@ -43,7 +43,22 @@ Foundation Phase
 Governance v1.0          ← standards documented (commit f979e8d+)
         │
         ▼
-Engineering Platform v2.0  ← this plan (Git + docs + AI + ownership + release)
+Engineering Platform v2.0 plan documented (e623bbb+)
+        │
+        ▼
+UI Stabilization Sprint  ← required before baseline (see docs/Development/Stabilization/)
+        │
+        ▼
+Engineering Freeze       ← no features / polish / refactors (ENGINEERING_FREEZE.md)
+        │
+        ▼
+Preview + Device Validation
+        │
+        ▼
+Engineering Baseline v1.0 (READY only after Preview + real-device gates)
+        │
+        ▼
+Engineering Platform v2.0 execution  ← Git + ownership + AI cutover
         │
         ▼
 Engineering Phase        ← daily life: develop → feature/* → develop → master

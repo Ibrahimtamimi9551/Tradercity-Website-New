@@ -31,5 +31,7 @@ Product · Repository (Git) · Source ownership · Documentation · AI
 - Preserve Marketing ↔ Admin isolation
 - Do not bypass `TESTING_CHECKLIST.md` for UI merges
 - Do not start new product features until Engineering Platform v2.0 is complete
+- While `ENGINEERING_FREEZE.md` is active: no features, no design polish, no refactors — release-blocking bugs only
 - Do not use Foundation branches (`prototype-redesign`, `homepage-cursor-experiment`, `mobile-investigation`) for new work
 - Do not rename/delete Foundation branches unless explicitly tasked
+- Do not begin Repository Migration until stabilization report verdict is READY
