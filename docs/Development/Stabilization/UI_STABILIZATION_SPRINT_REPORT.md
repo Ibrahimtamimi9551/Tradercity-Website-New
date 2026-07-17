@@ -43,19 +43,29 @@ NOT READY
 
 ### Why not READY yet
 
-Code-side stability for this sprint is strong (build + multi-viewport overflow checks passed; critical interaction bugs fixed). Formal **Engineering Baseline v1.0** still requires two gates from the sprint completion criteria that were **not closed in this session**:
+Code stabilization, push, and **Vercel Preview** of the freeze tip are done. Formal **Engineering Baseline v1.0** still requires:
 
-1. **Vercel Preview deployment** of this stabilized tip  
-2. **Real mobile device** confirmation (Safari iPhone / Chrome Android) against that Preview  
+1. ~~Vercel Preview deployment of this stabilized tip~~ ✅  
+2. **Real mobile device** confirmation (Chrome Android + Safari iPhone if available) against that Preview ⏳  
 
-Prior `mobile-investigation` work already showed Preview + real-device could work for an earlier tip; that does **not** automatically certify *this* stabilized commit.
+### Preview evidence (this tip)
+
+| Field | Value |
+|-------|--------|
+| Freeze commits | `8562056` (UI stabilization) → `a77b8bf` (Engineering Freeze) |
+| Branch | `homepage-cursor-experiment` |
+| Deployment ID | `dpl_6qGuzASHf9Z8S2sZBBhVRPeznfo3` |
+| Preview URL | https://tradercitycrypto-appr38von-ibrahimtamimi9551s-projects.vercel.app |
+| Inspect | https://vercel.com/ibrahimtamimi9551s-projects/tradercitycrypto/6qGuzASHf9Z8S2sZBBhVRPeznfo3 |
+| Build | Ready (Next.js 16.2.6) |
+| Note | May require Vercel login if Deployment Protection is enabled |
 
 ### What would flip the verdict to READY
 
-- [ ] Push / deploy this tip to Vercel Preview  
+- [x] Push / deploy this tip to Vercel Preview  
 - [ ] Confirm Admin drawer + bottom nav + Members on a real phone  
 - [ ] Spot-check Homepage, Login, Free/VIP dashboards on the same device  
-- [ ] Record Preview URL + device model in this report  
+- [ ] Record device model(s) + pass/fail in this report  
 
 After that, the next and only next step is **Repository Migration v2.0 / Engineering Platform v2.0 execution**.
 
@@ -144,9 +154,10 @@ None remaining after fixes.
 | Routes generated | `/`, `/pricing`, `/login`, `/payment-activation`, `/dashboard/free`, `/dashboard/vip`, `/admin`, `/admin/members`, `/admin/members/[id]`, placeholders |
 | Automated overflow matrix | **55/55 OK**, `overflowX = 0` across desktop / tablet / mobile / 320px / landscape |
 | Browser used for automation | Chrome (system channel) via Playwright |
-| Vercel Preview (this tip) | **Not run** |
-| Real device (this tip) | **Not run** |
+| Vercel Preview (this tip) | **Ready** — see Preview evidence above |
+| Real device (this tip) | **Not run** — operator gate |
 | Git migration | **Not started** (as required) |
+| Engineering Freeze | **Active** — `ENGINEERING_FREEZE.md` |
 
 ---
 
