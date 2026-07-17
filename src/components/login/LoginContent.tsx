@@ -178,7 +178,7 @@ export default function LoginPage() {
           {/* CENTER LOGIN CARD (Visual Dominance) */}
           {/* -------------------------------------- */}
           <div
-            className="w-full max-w-[760px] rounded-[24px] p-12 lg:p-14 z-20 bg-[#0A0C10] relative shadow-[0_0_100px_rgba(59,130,246,0.15)] order-first lg:order-none pointer-events-auto flex flex-col items-center"
+            className="w-full max-w-[760px] rounded-[24px] p-6 sm:p-12 lg:p-14 z-20 bg-[#0A0C10] relative shadow-[0_0_100px_rgba(59,130,246,0.15)] order-first lg:order-none pointer-events-auto flex flex-col items-center"
             style={{
               background: "linear-gradient(#0A0C10, #0A0C10) padding-box, linear-gradient(135deg, rgba(56,189,248,0.9), rgba(168,85,247,0.7)) border-box",
               borderWidth: "1.5px",
@@ -220,26 +220,30 @@ export default function LoginPage() {
             </button>
 
             {/* Trust Indicators */}
-            <div className="flex items-center justify-between w-full mb-12 px-2">
-              <div className="flex flex-col items-center gap-2.5 flex-1">
+            <div className="mb-12 grid w-full grid-cols-3 gap-2 px-1 sm:gap-4 sm:px-2">
+              <div className="flex min-w-0 flex-col items-center gap-2.5 text-center">
                 <div className="text-[#A855F7]">
-                  <Shield className="w-6 h-6" />
+                  <Shield className="h-6 w-6" />
                 </div>
-                <span className="text-white text-xs font-medium whitespace-nowrap">Secure & Private</span>
+                <span className="text-[10px] font-medium leading-snug text-white sm:text-xs">
+                  Secure &amp; Private
+                </span>
               </div>
-              <div className="w-px h-8 bg-[#1F2129]"></div>
-              <div className="flex flex-col items-center gap-2.5 flex-1">
+              <div className="flex min-w-0 flex-col items-center gap-2.5 text-center">
                 <div className="text-[#FACC15]">
-                  <Lock className="w-6 h-6" />
+                  <Lock className="h-6 w-6" />
                 </div>
-                <span className="text-white text-xs font-medium whitespace-nowrap">No Password</span>
+                <span className="text-[10px] font-medium leading-snug text-white sm:text-xs">
+                  No Password
+                </span>
               </div>
-              <div className="w-px h-8 bg-[#1F2129]"></div>
-              <div className="flex flex-col items-center gap-2.5 flex-1">
+              <div className="flex min-w-0 flex-col items-center gap-2.5 text-center">
                 <div className="text-[#3B82F6]">
-                  <Users className="w-6 h-6" />
+                  <Users className="h-6 w-6" />
                 </div>
-                <span className="text-white text-xs font-medium whitespace-nowrap">Trusted by Traders</span>
+                <span className="text-[10px] font-medium leading-snug text-white sm:text-xs">
+                  Trusted by Traders
+                </span>
               </div>
             </div>
 

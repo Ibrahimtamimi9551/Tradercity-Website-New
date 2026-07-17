@@ -178,12 +178,18 @@ const VipHeroSection = () => (
         </div>
       </div>
       
-      <div className="flex gap-3">
-        <button className="flex-1 flex items-center justify-center gap-2 border border-yellow-500/30 text-yellow-500 hover:bg-yellow-500/10 py-2.5 rounded-lg text-sm font-medium transition-colors">
-          <Download className="w-4 h-4" /> Download Invoice
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <button
+          type="button"
+          className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg border border-yellow-500/30 py-2.5 text-sm font-medium text-yellow-500 transition-colors hover:bg-yellow-500/10"
+        >
+          <Download className="h-4 w-4" /> Download Invoice
         </button>
-        <button className="flex-1 flex items-center justify-center gap-2 border border-yellow-500/30 text-yellow-500 hover:bg-yellow-500/10 py-2.5 rounded-lg text-sm font-medium transition-colors">
-          <FileText className="w-4 h-4" /> Billing History
+        <button
+          type="button"
+          className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg border border-yellow-500/30 py-2.5 text-sm font-medium text-yellow-500 transition-colors hover:bg-yellow-500/10"
+        >
+          <FileText className="h-4 w-4" /> Billing History
         </button>
       </div>
     </div>
@@ -205,13 +211,19 @@ const AccessGrid = () => (
     </div>
     <p className="text-gray-400 text-sm mb-6">You have full access to all premium content and features.</p>
     
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-      {mockAccessItems.map(item => (
-        <div key={item.id} className="bg-[#0c0e14] border border-yellow-900/20 rounded-xl p-6 flex flex-col items-center text-center hover:bg-[#12151d] hover:border-yellow-700/40 transition-all duration-300 group cursor-default">
-          <item.icon className="w-12 h-12 text-yellow-500 mb-5 group-hover:scale-110 transition-transform duration-300 drop-shadow-[0_0_10px_rgba(234,179,8,0.2)]" strokeWidth={1.5} />
-          <h3 className="text-white text-sm font-medium mb-4 flex-grow px-2">{item.title}</h3>
-          <div className="flex items-center justify-center text-[11px] font-bold text-yellow-500 bg-yellow-500/10 px-3 py-1 rounded-full w-full">
-            Access Granted <Check className="w-3 h-3 ml-1" strokeWidth={3} />
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+      {mockAccessItems.map((item) => (
+        <div
+          key={item.id}
+          className="group flex cursor-default flex-col items-center rounded-xl border border-yellow-900/20 bg-[#0c0e14] p-6 text-center transition-all duration-300 hover:border-yellow-700/40 hover:bg-[#12151d]"
+        >
+          <item.icon
+            className="mb-5 h-12 w-12 text-yellow-500 drop-shadow-[0_0_10px_rgba(234,179,8,0.2)] transition-transform duration-300 group-hover:scale-110"
+            strokeWidth={1.5}
+          />
+          <h3 className="mb-4 flex-grow px-2 text-sm font-medium text-white">{item.title}</h3>
+          <div className="flex w-full flex-wrap items-center justify-center rounded-full bg-yellow-500/10 px-3 py-1 text-[11px] font-bold text-yellow-500">
+            Access Granted <Check className="ml-1 h-3 w-3" strokeWidth={3} />
           </div>
         </div>
       ))}
@@ -244,11 +256,27 @@ const ReferralCentre = () => (
         <div className="flex items-center bg-[#020408] border border-blue-900/50 rounded-lg p-1.5 mb-4">
           <div className="text-gray-500 mx-2"><Lock className="w-4 h-4"/></div>
           <input type="text" readOnly value={mockReferral.link} className="bg-transparent flex-1 text-sm text-gray-300 outline-none" />
-          <button className="p-2 hover:bg-blue-900/30 rounded text-gray-400 transition-colors"><Copy className="w-4 h-4"/></button>
+          <button
+            type="button"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded text-gray-400 transition-colors hover:bg-blue-900/30"
+            aria-label="Copy referral link"
+          >
+            <Copy className="h-4 w-4" />
+          </button>
         </div>
-        <div className="flex gap-3 mb-6">
-          <button className="flex-1 border border-blue-900/50 text-gray-300 hover:bg-blue-900/20 py-2 rounded-lg text-sm font-medium transition-colors">Edit Link</button>
-          <button className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-sm font-medium transition-colors shadow-[0_0_15px_rgba(37,99,235,0.4)]">Share Link</button>
+        <div className="mb-6 flex gap-3">
+          <button
+            type="button"
+            className="min-h-11 flex-1 rounded-lg border border-blue-900/50 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-blue-900/20"
+          >
+            Edit Link
+          </button>
+          <button
+            type="button"
+            className="min-h-11 flex-1 rounded-lg bg-blue-600 py-2 text-sm font-medium text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] transition-colors hover:bg-blue-500"
+          >
+            Share Link
+          </button>
         </div>
         <div className="text-[10px] text-blue-400 font-bold mb-3 uppercase tracking-wider">Referral Rules</div>
         <ul className="space-y-2 text-[13px] text-gray-400">

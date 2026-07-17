@@ -23,7 +23,9 @@ export function PageTitle({ title, subtitle, icon: Icon, actions }: PageTitlePro
           ) : null}
         </div>
       </div>
-      {actions ? <div className="flex shrink-0 items-center gap-2">{actions}</div> : null}
+      {actions ? (
+        <div className="flex flex-wrap items-center gap-2 sm:shrink-0">{actions}</div>
+      ) : null}
     </div>
   );
 }

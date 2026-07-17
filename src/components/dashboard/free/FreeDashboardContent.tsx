@@ -230,40 +230,66 @@ const JourneySection = () => (
         <p className="text-gray-400 text-sm">Complete 5 more referrals or upgrade anytime using your credit.</p>
       </div>
 
-      <div className="flex-1 w-full flex items-center justify-between relative">
+      <div className="relative w-full flex-1">
         {/* Connecting Line */}
-        <div className="absolute left-10 right-10 top-6 h-px bg-[#1f1633] z-0 hidden md:block" />
-        
-        <div className="flex flex-col items-center relative z-10 bg-[#050505] px-2">
-          <div className="w-12 h-12 rounded-full border-2 border-purple-500 bg-purple-900/20 flex items-center justify-center text-purple-400 mb-4 shadow-[0_0_15px_rgba(168,85,247,0.3)]">
-            <Eye className="w-5 h-5" />
-          </div>
-          <div className="text-white text-xs font-bold uppercase tracking-wider mb-1">1. Observe</div>
-          <div className="text-gray-500 text-[10px] text-center w-24">You're here<br/>Exploring the ecosystem</div>
-        </div>
+        <div className="absolute left-10 right-10 top-6 z-0 hidden h-px bg-[#1f1633] md:block" />
 
-        <div className="flex flex-col items-center relative z-10 bg-[#050505] px-2">
-          <div className="w-12 h-12 rounded-full border-2 border-gray-700 bg-[#111] flex items-center justify-center text-gray-500 mb-4">
-            <BookOpen className="w-5 h-5" />
+        <div className="relative z-10 grid grid-cols-2 gap-6 sm:grid-cols-4 sm:gap-2">
+          <div className="flex flex-col items-center bg-[#050505] px-2">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border-2 border-purple-500 bg-purple-900/20 text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.3)]">
+              <Eye className="h-5 w-5" />
+            </div>
+            <div className="mb-1 text-center text-xs font-bold uppercase tracking-wider text-white">
+              1. Observe
+            </div>
+            <div className="max-w-[6.5rem] text-center text-[10px] text-gray-500">
+              You&apos;re here
+              <br />
+              Exploring the ecosystem
+            </div>
           </div>
-          <div className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">2. Learn</div>
-          <div className="text-gray-600 text-[10px] text-center w-24">Gain knowledge<br/>from elite traders</div>
-        </div>
 
-        <div className="flex flex-col items-center relative z-10 bg-[#050505] px-2">
-          <div className="w-12 h-12 rounded-full border-2 border-gray-700 bg-[#111] flex items-center justify-center text-gray-500 mb-4">
-            <Users className="w-5 h-5" />
+          <div className="flex flex-col items-center bg-[#050505] px-2">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-700 bg-[#111] text-gray-500">
+              <BookOpen className="h-5 w-5" />
+            </div>
+            <div className="mb-1 text-center text-xs font-bold uppercase tracking-wider text-gray-400">
+              2. Learn
+            </div>
+            <div className="max-w-[6.5rem] text-center text-[10px] text-gray-600">
+              Gain knowledge
+              <br />
+              from elite traders
+            </div>
           </div>
-          <div className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">3. Participate</div>
-          <div className="text-gray-600 text-[10px] text-center w-24">Join discussions<br/>and engage</div>
-        </div>
 
-        <div className="flex flex-col items-center relative z-10 bg-[#050505] px-2">
-          <div className="w-12 h-12 rounded-full border-2 border-yellow-900 bg-yellow-900/10 flex items-center justify-center text-yellow-600 mb-4">
-            <Crown className="w-5 h-5" />
+          <div className="flex flex-col items-center bg-[#050505] px-2">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-700 bg-[#111] text-gray-500">
+              <Users className="h-5 w-5" />
+            </div>
+            <div className="mb-1 text-center text-xs font-bold uppercase tracking-wider text-gray-400">
+              3. Participate
+            </div>
+            <div className="max-w-[6.5rem] text-center text-[10px] text-gray-600">
+              Join discussions
+              <br />
+              and engage
+            </div>
           </div>
-          <div className="text-yellow-600 text-xs font-bold uppercase tracking-wider mb-1">4. Upgrade</div>
-          <div className="text-gray-600 text-[10px] text-center w-24">Unlock full access<br/>and grow faster</div>
+
+          <div className="flex flex-col items-center bg-[#050505] px-2">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border-2 border-yellow-900 bg-yellow-900/10 text-yellow-600">
+              <Crown className="h-5 w-5" />
+            </div>
+            <div className="mb-1 text-center text-xs font-bold uppercase tracking-wider text-yellow-600">
+              4. Upgrade
+            </div>
+            <div className="max-w-[6.5rem] text-center text-[10px] text-gray-600">
+              Unlock full access
+              <br />
+              and grow faster
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -285,11 +311,27 @@ const ReferralCentre = () => (
         <div className="flex items-center bg-[#050308] border border-purple-900/50 rounded-lg p-1.5 mb-4">
           <div className="text-gray-500 mx-2"><Lock className="w-4 h-4"/></div>
           <input type="text" readOnly value={mockReferral.link} className="bg-transparent flex-1 text-sm text-gray-300 outline-none" />
-          <button className="p-2 hover:bg-purple-900/30 rounded text-gray-400 transition-colors"><Copy className="w-4 h-4"/></button>
+          <button
+            type="button"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded text-gray-400 transition-colors hover:bg-purple-900/30"
+            aria-label="Copy referral link"
+          >
+            <Copy className="h-4 w-4" />
+          </button>
         </div>
-        <div className="flex gap-3 mb-6">
-          <button className="flex-1 border border-purple-900/50 text-gray-300 hover:bg-purple-900/20 py-2 rounded-lg text-sm font-medium transition-colors">Edit Link</button>
-          <button className="flex-1 bg-purple-600 hover:bg-purple-500 text-white py-2 rounded-lg text-sm font-medium transition-colors shadow-[0_0_15px_rgba(147,51,234,0.3)]">Share Link</button>
+        <div className="mb-6 flex gap-3">
+          <button
+            type="button"
+            className="min-h-11 flex-1 rounded-lg border border-purple-900/50 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-purple-900/20"
+          >
+            Edit Link
+          </button>
+          <button
+            type="button"
+            className="min-h-11 flex-1 rounded-lg bg-purple-600 py-2 text-sm font-medium text-white shadow-[0_0_15px_rgba(147,51,234,0.3)] transition-colors hover:bg-purple-500"
+          >
+            Share Link
+          </button>
         </div>
         <div className="text-[10px] text-purple-400 font-bold mb-3 uppercase tracking-wider">Referral Rules</div>
         <ul className="space-y-2 text-[12px] text-gray-400">

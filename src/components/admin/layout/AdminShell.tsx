@@ -1,6 +1,7 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/admin/cn";
 import { AdminBackground } from "./AdminBackground";
 import { AdminHeader } from "./AdminHeader";
@@ -8,8 +9,27 @@ import { AdminMobileNav } from "./AdminMobileNav";
 import { AdminSidebar } from "./AdminSidebar";
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [mobileOpen]);
 
   return (
     <div className="min-h-screen bg-tc-navy text-white">
@@ -29,7 +49,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       >
         {children}
       </main>
-      <AdminMobileNav />
+      <AdminMobileNav drawerOpen={mobileOpen} />
     </div>
   );
 }

@@ -72,7 +72,7 @@ export function OperationsQueueSection() {
       title="Operations Queue (Needs Attention)"
       total={25}
       items={queueItems}
-      viewAllHref="/admin/queue"
+      viewAllHref="/admin"
     />
   );
 }

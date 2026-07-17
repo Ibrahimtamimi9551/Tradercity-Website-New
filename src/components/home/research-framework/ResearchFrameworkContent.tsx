@@ -393,7 +393,7 @@ export default function ResearchFrameworkContent() {
                       <button
                         key={mod.id}
                         onClick={() => { setActiveModuleIdx(i); setActiveTopicIdx(0); }}
-                        className={`relative flex flex-col items-start justify-center px-4 xl:px-5 py-2 border-r border-white/8 shrink-0 min-w-[130px] xl:min-w-[145px] transition-all duration-200 ${
+                        className={`relative flex min-h-11 flex-col items-start justify-center px-4 xl:px-5 py-2.5 border-r border-white/8 shrink-0 min-w-[130px] xl:min-w-[145px] transition-all duration-200 ${
                           isActive ? 'bg-[#D4AF37]/[0.04]' : 'hover:bg-white/[0.02]'
                         }`}
                       >
@@ -415,7 +415,7 @@ export default function ResearchFrameworkContent() {
                       <button
                         key={cat.id}
                         onClick={() => { setActiveCategoryIdx(i); setActiveReportIdx(0); }}
-                        className={`relative flex flex-col items-start justify-center px-4 xl:px-5 py-2 border-r border-white/8 shrink-0 min-w-[130px] xl:min-w-[145px] transition-all duration-200 ${
+                        className={`relative flex min-h-11 flex-col items-start justify-center px-4 xl:px-5 py-2.5 border-r border-white/8 shrink-0 min-w-[130px] xl:min-w-[145px] transition-all duration-200 ${
                           isActive ? 'bg-[#D4AF37]/[0.04]' : 'hover:bg-white/[0.02]'
                         }`}
                       >

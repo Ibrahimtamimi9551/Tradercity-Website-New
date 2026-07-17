@@ -11,7 +11,8 @@ const actions = [
     title: "Add New Member",
     description: "Create and invite new member",
     icon: Plus,
-    href: "/admin/members/new",
+    // Route not built yet — land on Members directory (stability).
+    href: "/admin/members",
   },
   {
     id: "manual-verification",
@@ -25,14 +26,16 @@ const actions = [
     title: "Export Members",
     description: "Export member data",
     icon: Download,
-    href: "/admin/members/export",
+    // Export route not built yet — land on Members directory (stability).
+    href: "/admin/members",
   },
   {
     id: "audit-logs",
     title: "View Audit Logs",
     description: "View system audit trails",
     icon: FileText,
-    href: "/admin/audit-logs",
+    // Audit logs deferred — land on Operations Dashboard (stability).
+    href: "/admin",
   },
 ];
 

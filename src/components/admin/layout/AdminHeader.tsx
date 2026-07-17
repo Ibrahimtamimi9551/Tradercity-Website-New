@@ -20,7 +20,7 @@ export function AdminHeader({ onOpenMobileNav, sidebarCollapsed }: AdminHeaderPr
         <button
           type="button"
           onClick={onOpenMobileNav}
-          className="rounded-lg border border-white/10 p-2 text-tc-muted hover:text-white lg:hidden"
+          className="flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-white/10 text-tc-muted hover:text-white lg:hidden"
           aria-label="Open menu"
         >
           <Menu className="h-4 w-4" />

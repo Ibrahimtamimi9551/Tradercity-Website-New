@@ -61,19 +61,30 @@ export default function PaymentSection() {
           {/* Network Details (Secondary) */}
           <div className="flex flex-col gap-4">
             <div className="bg-[#0A0D14] rounded-2xl p-5 border border-white/5">
-              <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/5">
-                <span className="text-gray-500 text-sm font-medium">Network</span>
-                <span className="text-white font-bold text-sm">{membershipData.network}</span>
+              <div className="mb-4 flex flex-col gap-1 border-b border-white/5 pb-4 sm:flex-row sm:items-center sm:justify-between">
+                <span className="text-sm font-medium text-gray-500">Network</span>
+                <span className="min-w-0 break-words text-sm font-bold text-white sm:text-right">
+                  {membershipData.network}
+                </span>
               </div>
-              <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/5">
-                <span className="text-gray-500 text-sm font-medium">Currency</span>
-                <span className="text-white font-bold text-sm">{membershipData.currency}</span>
+              <div className="mb-4 flex flex-col gap-1 border-b border-white/5 pb-4 sm:flex-row sm:items-center sm:justify-between">
+                <span className="text-sm font-medium text-gray-500">Currency</span>
+                <span className="text-sm font-bold text-white sm:text-right">
+                  {membershipData.currency}
+                </span>
               </div>
               <div className="flex flex-col gap-3">
-                <span className="text-gray-500 text-sm font-medium">Wallet Address</span>
-                <div className="flex items-center justify-between bg-[#10141D] py-3 px-4 rounded-xl border border-white/5 group hover:border-amber-500/30 transition-colors cursor-pointer">
-                  <span className="text-gray-300 font-mono text-sm truncate mr-4">{membershipData.walletAddress}</span>
-                  <button className="text-amber-500 hover:text-amber-400 text-[11px] font-bold uppercase tracking-wider shrink-0 transition-colors">Copy</button>
+                <span className="text-sm font-medium text-gray-500">Wallet Address</span>
+                <div className="group flex cursor-pointer items-center justify-between rounded-xl border border-white/5 bg-[#10141D] px-4 py-3 transition-colors hover:border-amber-500/30">
+                  <span className="mr-4 min-w-0 truncate font-mono text-sm text-gray-300">
+                    {membershipData.walletAddress}
+                  </span>
+                  <button
+                    type="button"
+                    className="min-h-11 shrink-0 px-2 text-[11px] font-bold uppercase tracking-wider text-amber-500 transition-colors hover:text-amber-400"
+                  >
+                    Copy
+                  </button>
                 </div>
               </div>
             </div>

@@ -107,12 +107,12 @@ export default function PricingSection() {
         {/* ========================================== */}
         {/* SECTION HEADER (MANDATORY)                 */}
         {/* ========================================== */}
-        <div className="flex items-center justify-center gap-4 mb-8">
-          <div className="h-[1px] w-24 bg-gradient-to-l from-yellow-500 to-transparent opacity-60"></div>
-          <span className="text-yellow-500 text-[13px] font-bold tracking-[0.2em] uppercase">
+        <div className="mb-8 flex items-center justify-center gap-3 sm:gap-4">
+          <div className="hidden h-px w-12 bg-gradient-to-l from-yellow-500 to-transparent opacity-60 sm:block sm:w-24" />
+          <span className="text-center text-[11px] font-bold uppercase tracking-[0.2em] text-yellow-500 sm:text-[13px]">
             Become VIP Member
           </span>
-          <div className="h-[1px] w-24 bg-gradient-to-r from-yellow-500 to-transparent opacity-60"></div>
+          <div className="hidden h-px w-12 bg-gradient-to-r from-yellow-500 to-transparent opacity-60 sm:block sm:w-24" />
         </div>
 
         {/* ========================================== */}

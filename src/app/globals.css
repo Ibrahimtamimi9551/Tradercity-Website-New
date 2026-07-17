@@ -42,8 +42,9 @@ html {
   }
 }
 
+/* Homepage bottom nav clearance only — do not pad every <main> in the app. */
 @media (max-width: 1023px) {
-  main {
+  main.home-shell {
     padding-bottom: calc(5.75rem + env(safe-area-inset-bottom));
   }
 }

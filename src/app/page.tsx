@@ -10,7 +10,7 @@ import Pricing from "@/components/pricing/Pricing";
 
 export default function Page() {
   return (
-    <main className="relative">
+    <main className="home-shell relative">
       <div id="nav-scroll-sentinel" className="pointer-events-none absolute top-0 h-[50px] w-full" aria-hidden="true" />
       <HomepageNavigation />
       <Hero />

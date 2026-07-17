@@ -4,7 +4,7 @@ import PaymentActivation from "@/components/payment-activation/PaymentActivation
 
 export default function PaymentActivationPage() {
   return (
-    <main className="min-h-screen bg-[#0A0D14] text-white relative overflow-hidden font-sans">
+    <main className="relative min-h-screen overflow-x-hidden bg-[#0A0D14] font-sans text-white">
       <PaymentActivation />
     </main>
   );
