@@ -1,0 +1,14 @@
+/**
+ * Free Dashboard opaque card surfaces.
+ * Parallel to Admin `.admin-card-surface` — solid fill, no canvas bleed-through.
+ * Colors are set per-element via `--free-card-bg` (see free-surfaces.ts).
+ */
+
+.free-card-surface {
+  --free-card-bg: #141022;
+  background-color: var(--free-card-bg) !important;
+  background-image: none !important;
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
+    0 12px 32px -18px rgba(0, 0, 0, 0.65);
+}

@@ -1,22 +1,37 @@
 import React from 'react';
+import { getPriceBreakdownForPlan, WELCOME_CREDIT } from "@/lib/membership/pricing";
+import { MEMBERSHIP_PLANS } from "@/lib/membership/plans";
 
+// Catalog price from plans.ts; Welcome Credit is a pricing adjustment
 const membershipData = {
   plan: "VIP Monthly",
-  price: "$60",
+  price: MEMBERSHIP_PLANS.monthly.priceDisplay,
   network: "BNB Smart Chain (BEP20)",
   currency: "USDT",
   walletAddress: "0xA43D...7aB8c9DaE7F8a9B0c3D5e6F7a889c",
   fullWalletAddress: "0xA43D7aB8c9DaE7F8a9B0c3D5e6F7a889c"
 };
 
+const welcomeBreakdown = getPriceBreakdownForPlan("monthly", {
+  applyWelcomeCredit: true,
+});
+
+const welcomeAdjustment = welcomeBreakdown.adjustments[0];
+
 export default function PaymentSection() {
   /*
-    TODO: Future Backend Integration States
+    TODO: Future Backend Integration States (capabilities — backend owns implementation)
     - paymentSubmitted
     - verificationStatus
     - membershipStatus
     - discordStatus
     - supportVisible
+    - welcomeCreditEligible → PricingContext.applyWelcomeCredit
+    - Issue Payment Quote when member starts payment (frozen expected amount)
+    - Submit payment proof tied to that quote for verification
+    - Never verify against catalog list price or a live Pricing Engine recalculation
+      — use quote.expectedAmountUsd
+      (see src/lib/membership/pricing/quote.ts + verification/ + docs/.../08_…Architecture.md)
   */
 
   return (
@@ -45,8 +60,11 @@ export default function PaymentSection() {
               </div>
             </div>
           </div>
-          <div className="text-gray-400 text-xs mt-5 text-center">
-            Send exactly <span className="text-white font-bold">{membershipData.price}</span> to this address
+          <div className="text-gray-400 text-xs mt-5 text-center max-w-[280px]">
+            Plan price <span className="text-white font-bold">{membershipData.price}</span>
+            {" · "}
+            Eligible first payment{" "}
+            <span className="text-white font-bold">{welcomeBreakdown.finalPayableDisplay}</span>
           </div>
         </div>
 
@@ -56,6 +74,14 @@ export default function PaymentSection() {
           <div className="mb-8 text-center md:text-left">
             <div className="text-gray-500 text-[10px] font-bold tracking-widest mb-2">ACTIVATING</div>
             <div className="text-4xl font-bold text-white tracking-tight">{membershipData.plan}</div>
+            <div className="mt-3 text-3xl font-bold text-white tracking-tight">
+              {membershipData.price}
+            </div>
+            <p className="mt-2 text-xs text-gray-500 leading-relaxed max-w-sm mx-auto md:mx-0">
+              New Member Offer: {welcomeAdjustment?.amountDisplay ?? `−$${WELCOME_CREDIT.amountUsd}`} Welcome Credit → pay{" "}
+              <span className="text-gray-300 font-medium">{welcomeBreakdown.finalPayableDisplay}</span>
+              {" "}on your first Monthly VIP (once per account). Catalog price remains {membershipData.price}.
+            </p>
           </div>
 
           {/* Network Details (Secondary) */}

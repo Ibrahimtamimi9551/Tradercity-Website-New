@@ -26,10 +26,15 @@ Authority: [`02_Frontend_Design_System_and_UX_Rules.md`](../../AI/Agents/Admin/0
 - `PlatformHealth` — system component status
 
 ### Shared UI / surfaces
-- `WidgetCard` — accent gradients, priority levels (critical / important / informational)
+- `WidgetCard` — solid accent fills (`--admin-card-bg`), priority levels (critical / important / informational)
 - `OperationsQueue` — operational metrics rows
-- `module-surfaces.ts` — module panel tones (burgundy, navy, purple, gold, emerald)
+- `module-surfaces.ts` — solid opaque module panel tones (burgundy, navy, purple, gold, emerald)
 - Shell: `AdminSidebar`, `AdminHeader`, `AdminMobileNav`, `AdminBackground`
+
+### Design amendment (post-freeze, July 2026)
+- Solid opaque cards/tables — no gradient wash, no translucent canvas bleed
+- See [`02_Frontend_Design_System_and_UX_Rules.md`](../../AI/Agents/Admin/02_Frontend_Design_System_and_UX_Rules.md) → *Approved Design Amendment — Solid Opaque Surfaces*
+- **Future phases (4–6+)** must inherit this surface rule via shared primitives
 
 ## Exit criteria
 

@@ -268,13 +268,13 @@ Agent B creates **new** admin paths but must align with the existing member jour
 | `src/components/pricing/PricingBackground.tsx` | Grid overlay background (note: export name typo `LoginBackground` — Agent A hygiene, do not fix unless approved) |
 | `src/components/pricing/PricingContent.tsx` | Plan selector, features list, CTA |
 
-**Inline `plans` array** (default selected: `quarterly`):
+**Inline `plans` array** (default selected: `quarterly`) — sourced from `src/lib/membership/plans.ts`:
 
 | id | name | price | period | duration | notes |
 |----|------|-------|--------|----------|-------|
-| `monthly` | MONTHLY | $50 | / month | 30 DAYS | `oldPrice: $60`, badge "FIRST MEMBERSHIP OFFER", gold accent |
-| `quarterly` | QUARTERLY | $150 | / 3 months | 90 DAYS | `isPopular`, save $30, old $180 |
-| `yearly` | YEARLY | $500 | / year | 365 DAYS | save $220, old $720 |
+| `monthly` | MONTHLY | $60 | / month | 30 DAYS | gold accent |
+| `quarterly` | QUARTERLY | $150 | / 3 months | 90 DAYS | `isPopular`, save $30 vs 3× monthly |
+| `yearly` | YEARLY | $500 | / year | 365 DAYS | save $220 vs 12× monthly |
 
 **Shared VIP features** (all plans): Full Discord Access, Daily Micro-structure and Orderflow Analysis, Weekly BTC Quant Reports, Complete (400+) Microstructure Report Archive, Complete (100+) Learning Framework, Access All Analysts Calls and Context.
 
@@ -308,7 +308,7 @@ Also mounted on homepage via `src/app/page.tsx` — Agent A owns that mount; Age
 
 **ResultSection states:** `dormant` | `active` | `issue`. Active unlocks Membership, Discord Access, VIP Dashboard, Premium Content — CTA `Enter VIP Dashboard` → `/dashboard/vip`. Issue shows Recheck Transaction / Submit New Hash.
 
-> **Price alignment note:** Member pricing page shows Monthly $50 (first-offer); PaymentSection hardcodes $60. Arena admin docs use $150/$400/$1,400/$2,000. Admin types should support backend enum prices (Arena contract) while displaying member-facing labels where relevant. Document mismatches as TODO — do not silently invent a fourth price set.
+> **Official pricing:** Monthly **$60** / Quarterly **$150** / Yearly **$500** — catalog in `src/lib/membership/plans.ts`. **Welcome Credit** ($10 OFF first Monthly only) is a pricing adjustment in `src/lib/membership/pricing/` and does not change catalog prices. Lifetime, Custom, and Arena pricing are not part of TraderCity.
 
 #### Free dashboard (`/dashboard/free`)
 
@@ -322,7 +322,7 @@ Also mounted on homepage via `src/app/page.tsx` — Agent A owns that mount; Age
 
 **Mock data shapes:** `mockUser`, `mockHeroStatus` (memberSince, currentPlan: "Free Member", welcomeCredit $10, discordStatus), `mockComparison` (free vs vip feature lists), `mockReferral`.
 
-**Sections:** `DashboardHeader` → `FreeHeroSection` → `AccessComparisonSection` (Free 15/400 reports, 15/200 lessons vs VIP full access) → `JourneySection` (Observe → Learn → Participate → Upgrade) → `ReferralCentre` → `UpgradeCTASection` ($50 today with $10 credit) → `PricingPlansSection` (Quarterly $150, Yearly $500).
+**Sections:** `DashboardHeader` → `FreeHeroSection` → `AccessComparisonSection` (Free 15/400 reports, 15/200 lessons vs VIP full access) → `JourneySection` (Observe → Learn → Participate → Upgrade) → `ReferralCentre` → `UpgradeCTASection` (Monthly $60 list price; optional referral credit UI) → `PricingPlansSection` (Quarterly $150, Yearly $500).
 
 **Free capabilities:** Free Discord Access, Community Discussions, Public Market Analysis, Limited Reports (15/400), Limited Lessons (15/200).
 
@@ -421,20 +421,20 @@ OUT OF SCOPE:
 - **Framer Motion** — optional, subtle only (pricing uses whileHover scale 1.01); prefer CSS transitions for admin tables/modals
 - **Client/server** — keep admin layout server-friendly; isolate interactive tables/modals in `"use client"` leaf components
 
-## Data alignment (member UI vs Arena backend contract)
+## Data alignment (official membership catalog)
 
-### Member-facing plan prices (src/components/pricing/PricingContent.tsx)
-| Plan id | Display | Duration |
-|---------|---------|----------|
-| monthly | $50 (first offer, was $60) | 30 DAYS |
-| quarterly | $150 (most popular) | 90 DAYS |
-| yearly | $500 | 365 DAYS |
+### Official plan prices (`src/lib/membership/plans.ts`)
+| Plan id | Type | Display | Duration |
+|---------|------|---------|----------|
+| monthly | MONTHLY | $60 | 30 DAYS |
+| quarterly | QUARTERLY | $150 | 90 DAYS |
+| yearly | YEARLY | $500 | 365 DAYS |
 
-PaymentSection hardcodes VIP Monthly at $60 — treat as legacy mock; align admin payment rows to submitted amount + plan label.
+Homepage Pricing, PaymentSection, Admin rows, and backend membership configuration assumptions all use this catalog.
 
-### Arena/backend plan prices (docs/AI/Agents/Admin/04_Development_Rules.md — NestJS contract)
-Monthly $150 | 3 Months $400 | 1 Year $1,400 | Lifetime $2,000 | Custom
-Categories: Standard (plan-driven) | VIP (auto Lifetime, ∞ days, $0, forced Active)
+**Welcome Credit** (`src/lib/membership/pricing/`): $10 once per account, first Monthly VIP only. Payable $50; catalog Monthly stays $60. Admin revenue/reporting uses standard prices; optional breakdown: Standard / Adjustments / Paid Amount.
+
+**Removed from TraderCity:** Lifetime, Custom, VIP Auto Lifetime, Infinite Membership, Arena prices ($150 / $400 / $1,400 / $2,000). Do not treat $50 as the Monthly catalog price.
 
 ### Payment flow alignment (member → admin)
 | Step | Member file | Admin mirror |
@@ -487,7 +487,7 @@ Based on: docs/AI/Agents/Admin/03_Module_Specifications.md + Free/Vip dashboard 
 - Member table: Name, Username, Category (VIP badge), Plan, Joined, Expires, Status, Days Left (color-coded like RenewalCentre), Renew count, Amount (privacy toggle)
 - Filters: search, status dropdown (Active/Expired/Suspended/Left/VIP/Hidden/New Joiners), date range, clear
 - Toolbar: Add User, Export CSV, Refresh, revenue visibility toggle
-- Add/Edit modal: identity + subscription fields, plan-driven payment auto-fill (Arena prices), VIP overrides ($0, Lifetime, ∞)
+- Add/Edit modal: identity + subscription fields, plan-driven payment auto-fill from official catalog (Monthly $60 / Quarterly $150 / Yearly $500)
 - Delete confirmation modal
 - Member Detail drawer: Profile / Subscription / Payments tabs — Subscription tab mirrors VipDashboard membership grid; Payments tab links to verification records
 
@@ -533,9 +533,9 @@ Based on: docs/AI/Agents/Admin/02_Frontend_Design_System_and_UX_Rules.md
 ### Member journey alignment
 - [ ] Payment table columns match PaymentSection submission (Discord username, TX hash, plan, USDT amount, BEP20 network)
 - [ ] Approve flow conceptually unlocks ResultSection active state → VIP dashboard fields (Active status, plan, days remaining)
-- [ ] Members table Days Left uses same urgency colors as VipDashboard RenewalCentre (red <7, amber <30, green otherwise; VIP ∞)
-- [ ] Plan labels consistent with pricing ids (monthly/quarterly/yearly) plus Arena backend enums documented in types
-- [ ] Free vs VIP category behavior matches dashboard comparison (Standard vs VIP Lifetime override)
+- [ ] Members table Days Left uses same urgency colors as VipDashboard RenewalCentre (red <7, amber <30, green otherwise)
+- [ ] Plan labels consistent with pricing ids (`monthly` / `quarterly` / `yearly`) and `src/lib/membership/plans.ts`
+- [ ] Free vs VIP category behavior matches dashboard comparison (paid plans: Monthly / Quarterly / Yearly only)
 
 ### Admin UI (desktop 1280px+)
 - [ ] Admin shell renders with sidebar nav and collapsible behavior
@@ -552,8 +552,8 @@ Based on: docs/AI/Agents/Admin/02_Frontend_Design_System_and_UX_Rules.md
 - [ ] No localStorage mock persistence
 - [ ] Types align with Architecture Rules (Stripe + USDT BEP20, RBAC)
 - [ ] Hooks have clear TODO comments for NestJS endpoints
-- [ ] No homepage, pricing, payment-activation, or dashboard member files modified
-- [ ] Price alignment mismatches documented in types/comments (member $50/$150/$500 vs Arena $150/$400/$1,400/$2,000 vs PaymentSection $60)
+- [ ] No homepage, pricing, payment-activation, or dashboard member files modified (unless explicit pricing-alignment task)
+- [ ] Admin displays use official prices: Monthly $60 / Quarterly $150 / Yearly $500
 
 ### Quality
 - [ ] TypeScript strict
@@ -570,7 +570,7 @@ Work in isolated worktree. Do not edit src/components/home/**, src/app/page.tsx,
 2. Admin shell + Payment Verification page
 3. Members page with CRUD modals
 4. Member Detail drawer (shell)
-5. Types and hook stubs for NestJS integration (with price alignment notes)
+5. Types and hook stubs for NestJS integration (official plan catalog in `src/lib/membership/plans.ts`)
 6. List of backend endpoints needed (documentation only — do not implement backend)
 ```
 
@@ -608,7 +608,7 @@ Work in isolated worktree. Do not edit src/components/home/**, src/app/page.tsx,
 - If Agent B needs a shared `<StatusBadge />` in `src/components/ui/`, **wait until Agent A finishes Phase 2** or duplicate locally in `src/components/admin/ui/` temporarily
 - Agent B must **not** edit `globals.css` — use Tailwind arbitrary values or admin layout CSS variables
 - Agent B must **not** edit member journey files — copy patterns into `src/components/admin/ui/` or `src/components/members/sections/` instead
-- When admin types need plan prices, import constants from a future shared module only after both agents merge; until then duplicate with TODO comments noting member vs Arena price sets
+- When admin types need plan prices, import from `src/lib/membership/plans.ts` (official Monthly $60 / Quarterly $150 / Yearly $500)
 - Document deferred cross-surface token sharing (Blueprint Phase 5) for a future single-agent pass
 
 ### Conflict signals (stop and coordinate)
@@ -659,7 +659,7 @@ Work in isolated worktree. Do not edit src/components/home/**, src/app/page.tsx,
 | Area | Route | Current state | Key files | Agent |
 |------|-------|---------------|-----------|-------|
 | Homepage | `/` | 8 sections + Pricing mount | `src/components/home/**`, `src/app/page.tsx` | A |
-| Pricing | `/pricing` | Live — 3 plans ($50/$150/$500), plan selector, VIP features | `src/components/pricing/Pricing.tsx`, `PricingContent.tsx` | A (owns); B reads |
+| Pricing | `/pricing` | Live — 3 plans ($60/$150/$500), plan selector, VIP features | `src/components/pricing/Pricing.tsx`, `PricingContent.tsx`, `src/lib/membership/plans.ts` | A (owns); B reads |
 | Payment activation | `/payment-activation` | Live — 3-step flow: PaymentSection → VerificationSection → ResultSection | `src/components/payment-activation/**` (6 files) | B reads only |
 | Free dashboard | `/dashboard/free` | Live — purple theme, free vs VIP comparison, upgrade CTA, referral | `src/components/dashboard/free/**` | B reads only |
 | VIP dashboard | `/dashboard/vip` | Live — gold theme, membership grid, 10 access items, renewal centre | `src/components/dashboard/vip/**` | B reads only |
@@ -673,12 +673,12 @@ Work in isolated worktree. Do not edit src/components/home/**, src/app/page.tsx,
   → ResultSection active → /dashboard/vip (or /dashboard/free for free members)
 ```
 
-### Plan price sets (document all three — do not conflate)
+### Official plan prices (single catalog — promotions layered separately)
 
-| Source | Monthly | Quarterly / 3 Mo | Yearly / 1 Yr | Lifetime |
-|--------|---------|------------------|---------------|----------|
-| Member UI (`PricingContent.tsx`) | $50 | $150 | $500 | — |
-| PaymentSection mock | $60 | — | — | — |
-| Arena/backend contract (`03_Subscription_Interface.md`) | $150 | $400 | $1,400 | $2,000 |
+| Source | Monthly | Quarterly | Yearly |
+|--------|---------|-----------|--------|
+| Catalog (`src/lib/membership/plans.ts`) | $60 | $150 | $500 |
+
+Welcome Credit (`src/lib/membership/pricing/`): $10 OFF first Monthly only → Final Payable $50; catalog Monthly remains $60. Admin revenue uses standard prices.
 
 Adjust branch names or phase scope in the one-liners to match what you want each agent to tackle first.

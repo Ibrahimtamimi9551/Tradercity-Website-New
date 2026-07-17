@@ -2,7 +2,7 @@
 
 ## Chapter 02 — Frontend Design System and UX Rules
 
-**Document Version:** 2.3  
+**Document Version:** 2.4  
 **Status:** Living Specification — **Dashboard UI Design Frozen (July 2026)**
 
 > Admin has its **own** design system — independent from the marketing website. Never import homepage components. See [`06_Application_Isolation_and_Folder_Architecture.md`](06_Application_Isolation_and_Folder_Architecture.md).
@@ -19,6 +19,8 @@
 src/components/members/sections/dashboard/
 src/components/admin/ui/WidgetCard.tsx
 src/components/admin/ui/OperationsQueue.tsx
+src/components/admin/ui/DataTable.tsx
+src/components/admin/admin-theme.css
 src/lib/admin/module-surfaces.ts
 src/components/admin/layout/
 ```
@@ -48,22 +50,51 @@ Every new module or page **must inherit** this exact visual system — do not in
 1. **Shell** — sidebar, header, mobile bottom nav, page background
 2. **Typography** — page titles, section headers, body/meta hierarchy
 3. **Statistic widgets** — `WidgetCard` accents, priority (critical / important / informational), mobile 2-up grid
-4. **Module panels** — tinted gradients via `modulePanelSurface` (burgundy, navy, purple, gold, emerald)
-5. **Operations patterns** — queue metrics (count + Oldest Waiting + primary CTA), activity lists, quick actions
-6. **Spacing & density** — card padding, grid gaps, section rhythm
-7. **Interaction** — deep links, hover treatments, CTA styles
-8. **Shared primitives** — `src/components/admin/ui/*` only; no page-one-off redesigns
+4. **Module panels** — solid tinted surfaces via `modulePanelSurface` (burgundy, navy, purple, gold, emerald)
+5. **Card / table opacity** — fully opaque fills via `--admin-card-bg`; **no** gradient washes, **no** translucent cards that bleed the canvas
+6. **Operations patterns** — queue metrics (count + Oldest Waiting + primary CTA), activity lists, quick actions
+7. **Spacing & density** — card padding, grid gaps, section rhythm
+8. **Interaction** — deep links, hover treatments, CTA styles
+9. **Shared primitives** — `src/components/admin/ui/*` only; no page-one-off redesigns
+
+### Approved Design Amendment — Solid Opaque Surfaces (July 2026)
+
+**Status:** Applied to shared primitives (Dashboard, Members, Profile inherit automatically).  
+**Must be followed** by Phases 4–6 and all future admin modules.
+
+| Change | Before | After (required) |
+|--------|--------|------------------|
+| Widget / panel fills | Tinted **gradient wash** (fade from accent → dark) | **Solid opaque** tint via `[--admin-card-bg:#…]` |
+| Card translucency | Semi-transparent gradient stops over canvas glow | Fully opaque; canvas/glow must **not** show through |
+| Tables | Translucent white overlays (`bg-white/[0.02]`, transparent body) | Solid `admin-table-wrap` + theme inset / row-hover tokens |
+| Light mode | Unchanged intent | Still solid white cards (tint tokens reset) |
+
+**Canonical files:**
+
+- `src/components/admin/ui/WidgetCard.tsx`
+- `src/lib/admin/module-surfaces.ts`
+- `src/components/admin/admin-theme.css` (`.admin-card-surface`, `.admin-table-wrap`)
+- `src/components/admin/ui/DataTable.tsx`
+
+**Future implementation checklist (Phases 4–6+):**
+
+- [ ] Use `WidgetCard` / `modulePanelSurface` / `admin-card-surface` only — do not invent local card backgrounds
+- [ ] Never add `linear-gradient` washes on cards, panels, or tables
+- [ ] Never use translucent card fills (`rgba` / `/10`–`/30` backgrounds) as the primary surface
+- [ ] Wrap tables in `admin-table-wrap` (or `DataTable`) so fills stay solid
+- [ ] New module tones extend `module-surfaces.ts` with solid `--admin-card-bg` hex values only
 
 ### What is still allowed
 
 - New **content** and **workflows** for Phases 2–6 (tables, filters, detail panels, actions)
-- Extending shared tokens/helpers when a new module needs an additional panel tone — **matching the same philosophy**
+- Extending shared tokens/helpers when a new module needs an additional panel tone — **matching the same philosophy** (solid opaque tint, not gradient)
 - Bug fixes, accessibility, and responsiveness that **preserve** the approved look
 
 ### What is forbidden
 
 - Redesigning pages to look “different” or “fresher”
 - Flat generic dark cards when module-colored surfaces are the standard
+- Gradient fades / translucent glass cards that inherit the page background
 - New widget/card visual languages outside `WidgetCard` / `module-surfaces`
 - Marketing / homepage visual patterns inside admin
 
@@ -237,7 +268,7 @@ Large dashboard sections communicate **module identity through color** while kee
 | Revenue Overview | Dark Gold | `modulePanelSurface("gold")` |
 | Platform Health | Dark Emerald | `modulePanelSurface("emerald")` |
 
-Implementation: `src/lib/admin/module-surfaces.ts` — soft tinted gradients, light borders (no heavy frames).
+Implementation: `src/lib/admin/module-surfaces.ts` — solid opaque tinted fills, light borders (no heavy frames, no gradient wash).
 
 ### Operations Queue Metrics
 

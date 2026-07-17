@@ -15,6 +15,7 @@
 - [`05_Operations_Center_Vision_Report.md`](../../AI/Agents/Admin/05_Operations_Center_Vision_Report.md)
 - [`06_Application_Isolation_and_Folder_Architecture.md`](../../AI/Agents/Admin/06_Application_Isolation_and_Folder_Architecture.md)
 - [`04_Development_Rules.md`](../../AI/Agents/Admin/04_Development_Rules.md)
+- [`08_Subscription_Pricing_and_Payment_Verification_Architecture.md`](../../AI/Agents/Admin/08_Subscription_Pricing_and_Payment_Verification_Architecture.md) — catalog → pricing → future verification
 
 ---
 
@@ -383,6 +384,15 @@ Every domain workflow **returns here**. Subscriptions without Profile leaves adm
 
 First **ticket processor** — payment verification and VIP activation.
 
+### Architecture note (pricing vs verification)
+
+Frontend separates **Membership Catalog** (`plans.ts`) and **Pricing Engine** (`pricing/`).  
+A **Payment Quote** freezes that pricing decision for one payment attempt.  
+**Payment Verification** validates payment received against the **quote** (not a live recalculation) — implementation is backend-owned.
+
+Frontend types: `src/lib/membership/pricing/quote.ts`, `src/lib/membership/verification/`  
+Ownership + functional requirements: [`08_Subscription_Pricing_and_Payment_Verification_Architecture.md`](../../AI/Agents/Admin/08_Subscription_Pricing_and_Payment_Verification_Architecture.md)
+
 ### Subscription display states
 
 | State | Meaning |
@@ -543,6 +553,7 @@ Build order follows the same paths the admin will walk.
 | **Exit criteria gate** | Do not start Phase N+1 until Phase N checklist passes |
 | **Homepage Freeze** | Admin branch never touches marketing files |
 | **Dashboard UI Design Freeze** | Approved `/admin` is the official design language — do not redesign; Phases 2–6+ inherit shell, widgets, panels, spacing |
+| **Solid opaque surfaces** | Cards/panels/tables use solid `--admin-card-bg` tints — no gradient wash, no translucent canvas bleed (ch. 02 amendment) |
 | **Pages stay thin** | `page.tsx` composes module components only |
 | **Mock data per phase** | Typed seeds in `lib/members/hooks/` with NestJS TODOs |
 | **Document each phase** | Create `Phase-0X-*.md` record when phase completes |
@@ -562,10 +573,40 @@ Build order follows the same paths the admin will walk.
 | Build Profile after Discord | No return hub for workflows |
 | Build Dashboard last | Modules exist with no inbox routing |
 | Redesign admin pages after Dashboard approval | Breaks design freeze — reuse `/admin` system instead |
+| Reintroduce gradient washes / translucent cards | Breaks solid-opaque surface amendment — use shared primitives only |
 | Implement backend in Phases 0–4 | UI flows unproven; integration churn |
 | Embed approve actions in Profile cards | Breaks Management vs Reflection |
 | Add Settings/Reports to sidebar now | Scope creep — deferred to future areas |
 | Copy mockup sidebar verbatim | Includes out-of-scope items |
+
+---
+
+## Approved Design Improvements
+
+Additive freeze amendments — **not** redesigns. Applied to shared primitives first; all future phases must inherit them.
+
+### Solid Opaque Card & Table Surfaces (July 2026)
+
+**Status:** Applied on shared primitives  
+**Spec:** [`02_Frontend_Design_System_and_UX_Rules.md`](../../AI/Agents/Admin/02_Frontend_Design_System_and_UX_Rules.md) → *Approved Design Amendment — Solid Opaque Surfaces*
+
+| Area | Change |
+|------|--------|
+| `WidgetCard` | Solid accent fills via `--admin-card-bg` (replaced gradient wash) |
+| `modulePanelSurface` | Solid module tints (burgundy / navy / purple / gold / emerald) |
+| `.admin-card-surface` | Always opaque; `background-image: none` |
+| `DataTable` / `.admin-table-wrap` | Solid table chrome; theme inset + row hover |
+
+**Already covered (inherit automatically):** Phase 1 Dashboard, Phase 2 Members, Phase 3 User Profile.
+
+**To be implemented / enforced in future phases:**
+
+| Phase | Module | Requirement |
+|-------|--------|-------------|
+| 4 | Subscriptions | Compose with `WidgetCard`, `modulePanelSurface`, `DataTable` only — no local gradients or glass cards |
+| 5 | Discord | Same |
+| 6 | Referrals | Same |
+| 7–9 | Deferred modules | Same when those product areas are built |
 
 ---
 

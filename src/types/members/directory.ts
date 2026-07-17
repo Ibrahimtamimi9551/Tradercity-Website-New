@@ -12,6 +12,9 @@ export type DiscordStatus = "connected" | "disconnected" | "action_required" | "
 
 export type ReferralStatus = "in_progress" | "eligible";
 
+/** Account login/access state — independent from Discord connection status. */
+export type AccountStatus = "active" | "suspended";
+
 export type DirectoryMember = {
   id: string;
   username: string;
@@ -20,6 +23,7 @@ export type DirectoryMember = {
   membership: MembershipTier;
   subscription: SubscriptionStatus;
   discord: DiscordStatus;
+  accountStatus: AccountStatus;
   referralCurrent: number;
   referralTarget: number;
   referralEligible: boolean;

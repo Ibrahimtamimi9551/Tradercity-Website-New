@@ -60,6 +60,7 @@ src/components/dashboard/vip/**             — mock data shapes (read only)
 1. **Admin ≠ Marketing** — completely isolated applications (ch. 06)
 2. **Homepage frozen** — no marketing file edits during admin work
 3. **Dashboard UI Design Freeze** — approved `/admin` look is the official admin design language; **do not redesign**; Phases 2–6+ inherit it (ch. 02)
+3a. **Solid opaque surfaces** — cards, panels, and tables use opaque `--admin-card-bg` fills; **no** gradient washes or translucent cards that bleed the canvas (ch. 02 amendment; required for Phases 4–6+)
 4. **Modular architecture** — one module, one responsibility
 5. **Reflection vs Management** — profile cards read-only; actions in domain modules
 6. **Operations Center** — Action Driven Navigation from Dashboard widgets
@@ -115,31 +116,102 @@ Do not begin Phase N+1 until Phase N acceptance criteria are met.
 
 ## Data Alignment
 
-### Member-Facing Plan Prices
+> **Full stack blueprint:** [`08_Subscription_Pricing_and_Payment_Verification_Architecture.md`](08_Subscription_Pricing_and_Payment_Verification_Architecture.md)
 
-From `src/components/pricing/PricingContent.tsx`:
+### Architecture layers (must stay separated)
 
-| Plan id | Display | Duration |
-|---------|---------|----------|
-| monthly | $50 (first offer, was $60) | 30 DAYS |
-| quarterly | $150 (most popular) | 90 DAYS |
-| yearly | $500 | 365 DAYS |
+```text
+Membership Catalog (`src/lib/membership/plans.ts`)     — list prices only
+        ↓
+Pricing Engine (`src/lib/membership/pricing/`)         — expected payable for this user
+        ↓
+Payment Quote (`pricing/quote.ts`)                     — frozen decision for this attempt
+        ↓
+Payment Verification (`…/verification/`)               — FUTURE: quote expected == received
+        ↓
+Membership Activation → Discord Access                   — FUTURE
+```
 
-`PaymentSection` hardcodes VIP Monthly at $60 — treat as legacy mock. Admin rows use submitted amount + plan label.
+Admin UI sits alongside as the operational ticket / reporting surface. It must not hardcode plan prices inside verification logic (when built). Verification must use the **Payment Quote**, not a live Pricing Engine recalculation.
 
-### Backend Plan Prices (NestJS contract)
+### Official Membership Plans (single source of truth)
 
-| Plan | Price |
-|------|-------|
-| Monthly | $150 |
-| 3 Months | $400 |
-| 1 Year | $1,400 |
-| Lifetime | $2,000 |
-| Custom | Variable |
+Authoritative constants: `src/lib/membership/plans.ts`  
+Also reflected in Homepage Pricing (`PricingContent.tsx`), Payment Flow, VIP Activation, Member Dashboard, and Admin Dashboard.
 
-**Categories:** Standard (plan-driven) | VIP (auto Lifetime, ∞ days, $0, forced Active)
+| Plan type | Plan id | Price | Duration |
+|-----------|---------|------:|----------|
+| `MONTHLY` | `monthly` | **$60** | 30 DAYS |
+| `QUARTERLY` | `quarterly` | **$150** | 90 DAYS |
+| `YEARLY` | `yearly` | **$500** | 365 DAYS |
 
-Document price mismatches in types/comments — do not silently reconcile.
+Admin Subscription rows display plan label + **standard catalog price** (e.g. Monthly → $60, Quarterly → $150, Yearly → $500). Revenue, membership records, and analytics always use these standard prices — never replace them with a discounted payable amount.
+
+**Not supported** (removed from TraderCity; do not reintroduce unless product docs explicitly revive them):
+
+- Lifetime plan / VIP Auto Lifetime / Infinite Membership
+- Custom plan
+- Legacy Arena pricing ($150 / $400 / $1,400 / $2,000)
+- Treating promotional payable amounts (e.g. $50) as the Monthly catalog price
+
+### Welcome Credit & pricing adjustments (promotion layer — not catalog)
+
+Pricing adjustments live in `src/lib/membership/pricing/` and must stay **independent** of `plans.ts`. The engine applies: Standard Plan Price → Adjustments → Final Payable. This allows future campaigns (referral credits, coupons, seasonal offers, admin credit, wallet balance) without changing official membership prices.
+
+**Active today — Welcome Credit ($10):**
+
+| Rule | Detail |
+|------|--------|
+| Eligibility | New account + joined Free Community + never purchased VIP before |
+| Amount | $10 once per account |
+| Transferable | No |
+| Applies to | First **Monthly** VIP purchase only |
+| Consumption | Automatic on first successful VIP activation; not reusable |
+
+**Payment calculation (Monthly + eligible Welcome Credit):**
+
+| Line | Amount |
+|------|-------:|
+| Standard Price (catalog) | $60 |
+| Adjustments — Welcome Credit | −$10 |
+| Final Payable | $50 |
+
+The membership price **remains $60**. Adjustments only reduce the first payment.
+
+**Admin display** — always store/show standard plan price for reporting. When payment details expose adjustments, show a generic breakdown:
+
+```text
+Standard Price: $60
+Adjustments:
+  - Welcome Credit: -$10
+Paid Amount: $50
+```
+
+Frontend types: `PriceBreakdown` / `getPriceBreakdown()` in `src/lib/membership/pricing/`. Do not invent NestJS credit APIs or DB schemas yet.
+
+### Payment Quote & Payment Verification (future capabilities — backend-owned implementation)
+
+**Payment Quote** (`src/lib/membership/pricing/quote.ts`) is the frozen pricing decision for one payment attempt (standard price, adjustments, expected amount). Backend may call the persisted form a Payment Quote or Payment Intent — frontend defines the product concept only.
+
+**Verification** types: `src/lib/membership/verification/`.
+
+**Functional requirement:** verification is **quote-specific**, not “recalculate now”:
+
+```text
+Payment Quote.Expected Amount
+        ==
+Payment Received
+```
+
+Never assume Monthly always equals $60. Never re-run Pricing Engine at verify time (promotions may have expired; credits may have been revoked).
+
+**Do not** implement verification algorithms, invent quote tables, or invent APIs in this frontend. Backend chooses persistence. See [`08_Subscription_Pricing_and_Payment_Verification_Architecture.md`](08_Subscription_Pricing_and_Payment_Verification_Architecture.md).
+
+### Backend Membership Configuration (integration assumptions)
+
+Backend should expose configurable membership records for `MONTHLY` | `QUARTERLY` | `YEARLY` matching the official catalog above — not hardcoded Arena prices. Future adjustment endpoints (when added) must not mutate catalog list prices.
+
+Do **not** invent NestJS controllers, Prisma schemas, or API routes in this frontend. Types and mocks anticipate the official plan catalog + optional `PriceBreakdown.adjustments` only.
 
 ### Payment Status Enums
 
@@ -203,7 +275,9 @@ export function useSubscriptions(filters: SubscriptionFilters) {
 | PaymentSection fields | Subscription table columns |
 | VerificationSection states | Subscription status badges |
 | VipDashboard mockMembership | Profile card field names |
-| PricingContent plan ids | Plan labels in types |
+| PricingContent / `src/lib/membership/plans.ts` + `pricing/` | Plan labels + official prices + Welcome Credit offer copy |
+| `src/lib/membership/pricing/quote.ts` | Payment Quote concept (frozen expected amount for an attempt) |
+| `src/lib/membership/verification/` | FUTURE: quote expected vs payment received (types only) |
 
 Implement admin shell under `src/components/admin/`. Implement Member Management sections under `src/components/members/sections/` — **never import** from `components/home`, `pricing`, or `dashboard`.
 
@@ -251,14 +325,14 @@ Implement admin shell under `src/components/admin/`. Implement Member Management
 - [ ] Subscription table columns match PaymentSection submission fields
 - [ ] Approve flow conceptually unlocks VIP dashboard active state
 - [ ] Days Left colors match VipDashboard RenewalCentre urgency
-- [ ] Plan labels consistent with pricing ids + backend enums documented in types
-- [ ] Free vs VIP category matches dashboard comparison
+- [ ] Plan labels consistent with official ids (`monthly` / `quarterly` / `yearly`) and types in `src/lib/membership/plans.ts`
+- [ ] Free vs VIP category matches dashboard comparison (paid plans only: Monthly / Quarterly / Yearly)
 
 ### Admin UI (Desktop 1280px+)
 
 - [ ] Admin shell: sidebar, collapsible, navbar
 - [ ] Subscriptions: widgets, table, filters, details panel, approve modal
-- [ ] Members: table, filters, add/edit modal with VIP override
+- [ ] Members: table, filters, add/edit modal with plan auto-fill from official catalog
 - [ ] Member Control Center: header, cards, notes, timeline
 - [ ] Status badges match color system
 
@@ -271,10 +345,10 @@ Implement admin shell under `src/components/admin/`. Implement Member Management
 ### Integration Readiness
 
 - [ ] No localStorage mock persistence
-- [ ] Types align with Architecture Rules
+- [ ] Types align with Architecture Rules and official membership plans (`MONTHLY` / `QUARTERLY` / `YEARLY`)
 - [ ] Hooks have NestJS TODO comments
-- [ ] No member/homepage/pricing/payment-activation/dashboard files modified
-- [ ] Price alignment mismatches documented in types/comments
+- [ ] No member/homepage/pricing/payment-activation/dashboard files modified (unless an explicit pricing-alignment task)
+- [ ] Admin displays use official prices: Monthly $60 / Quarterly $150 / Yearly $500
 
 ### Quality
 

@@ -1,0 +1,485 @@
+/**
+ * Admin theme — scoped to the operations dashboard only.
+ *
+ * Dark: approved Operations Center look (unchanged).
+ * Light: reference UI — pale-purple canvas, light chrome, solid white cards.
+ *
+ * Light matching uses both:
+ * - html[data-admin-theme] (boot script + provider — FOUC safe)
+ * - .admin-shell[data-admin-theme] (React state — reliable mobile paint)
+ */
+
+.admin-shell {
+  --admin-canvas-bg: #05081a;
+  --admin-canvas-fg: #ffffff;
+  --admin-canvas-muted: #8f9bb3;
+  --admin-canvas-soft: rgba(255, 255, 255, 0.85);
+  --admin-canvas-faint: rgba(255, 255, 255, 0.3);
+  --admin-canvas-control-bg: rgba(255, 255, 255, 0.03);
+  --admin-canvas-control-border: rgba(255, 255, 255, 0.1);
+  --admin-canvas-control-fg: rgba(255, 255, 255, 0.8);
+  --admin-glow: rgba(155, 93, 229, 0.12);
+  --admin-grid-line: rgba(255, 255, 255, 0.02);
+  --admin-chrome-bg: rgba(7, 11, 24, 0.95);
+  --admin-chrome-border: rgba(255, 255, 255, 0.1);
+  --admin-chrome-shadow: none;
+  --admin-card-bg: #0c101c;
+  --admin-card-border: rgba(255, 255, 255, 0.1);
+  --admin-card-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
+    0 12px 32px -18px rgba(0, 0, 0, 0.65);
+  --admin-fg: #ffffff;
+  --admin-fg-soft: rgba(255, 255, 255, 0.9);
+  --admin-muted: #8f9bb3;
+  --admin-input-bg: rgba(255, 255, 255, 0.03);
+  --admin-input-border: rgba(255, 255, 255, 0.1);
+  --admin-input-fg: #ffffff;
+  --admin-nav-active-bg: rgba(155, 93, 229, 0.2);
+  --admin-nav-active-fg: #ffffff;
+  --admin-nav-hover-bg: rgba(255, 255, 255, 0.04);
+  --admin-divider: rgba(255, 255, 255, 0.1);
+  --admin-row-hover: rgba(255, 255, 255, 0.03);
+  --admin-inset-bg: rgba(0, 0, 0, 0.2);
+  --admin-ghost-border: rgba(255, 255, 255, 0.1);
+  --admin-ghost-fg: rgba(255, 255, 255, 0.8);
+  color: var(--admin-canvas-fg);
+  background-color: var(--admin-canvas-bg);
+  /* Force native <select> / form popups to follow admin theme, not OS preference */
+  color-scheme: dark;
+}
+
+html[data-admin-theme="light"] .admin-shell,
+.admin-shell[data-admin-theme="light"] {
+  --admin-canvas-bg: #f8f6ff;
+  --admin-canvas-fg: #1a1430;
+  --admin-canvas-muted: #6b6585;
+  --admin-canvas-soft: #2a2340;
+  --admin-canvas-faint: rgba(26, 20, 48, 0.28);
+  --admin-canvas-control-bg: #ffffff;
+  --admin-canvas-control-border: rgba(91, 84, 117, 0.16);
+  --admin-canvas-control-fg: #2a2340;
+  --admin-glow: rgba(155, 93, 229, 0.08);
+  --admin-grid-line: rgba(91, 84, 117, 0.05);
+  --admin-chrome-bg: #f3f0ff;
+  --admin-chrome-border: rgba(91, 84, 117, 0.12);
+  --admin-chrome-shadow: 0 8px 28px -18px rgba(26, 20, 48, 0.2);
+  --admin-card-bg: #ffffff !important;
+  --admin-card-border: rgba(91, 84, 117, 0.12);
+  --admin-card-shadow: 0 4px 24px -10px rgba(26, 20, 48, 0.14),
+    0 1px 3px rgba(26, 20, 48, 0.04);
+  --admin-fg: #1a1430;
+  --admin-fg-soft: #2a2340;
+  --admin-muted: #6b6585;
+  --admin-input-bg: #ffffff;
+  --admin-input-border: rgba(91, 84, 117, 0.16);
+  --admin-input-fg: #1a1430;
+  --admin-nav-active-bg: rgba(124, 58, 237, 0.12);
+  --admin-nav-active-fg: #6d28d9;
+  --admin-nav-hover-bg: rgba(124, 58, 237, 0.06);
+  --admin-divider: rgba(91, 84, 117, 0.12);
+  --admin-row-hover: rgba(124, 58, 237, 0.04);
+  --admin-inset-bg: rgba(248, 246, 255, 0.9);
+  --admin-ghost-border: rgba(91, 84, 117, 0.16);
+  --admin-ghost-fg: #2a2340;
+  --color-tc-muted: #6b6585;
+  color: var(--admin-canvas-fg);
+  background-color: var(--admin-canvas-bg);
+  color-scheme: light;
+}
+
+/* ——— Background ——— */
+.admin-background {
+  background-color: var(--admin-canvas-bg);
+}
+
+.admin-background-glow {
+  background: radial-gradient(ellipse at top, var(--admin-glow), transparent 55%);
+}
+
+.admin-background-grid {
+  background-image: linear-gradient(to bottom, var(--admin-grid-line) 1px, transparent 1px);
+  background-size: 100% 32px;
+  opacity: 0.2;
+}
+
+html[data-admin-theme="light"] .admin-background-grid,
+.admin-shell[data-admin-theme="light"] .admin-background-grid {
+  opacity: 0.55;
+}
+
+/* ——— Chrome (sidebar / header / mobile nav) ——— */
+.admin-chrome {
+  background-color: var(--admin-chrome-bg) !important;
+  border-color: var(--admin-chrome-border) !important;
+  box-shadow: var(--admin-chrome-shadow);
+}
+
+.admin-chrome-border {
+  border-color: var(--admin-chrome-border) !important;
+}
+
+.admin-chrome-title {
+  color: var(--admin-fg) !important;
+}
+
+.admin-nav-link {
+  color: var(--admin-muted);
+}
+
+.admin-nav-link:hover {
+  background-color: var(--admin-nav-hover-bg);
+  color: var(--admin-fg);
+}
+
+.admin-nav-link-active {
+  background-color: var(--admin-nav-active-bg) !important;
+  color: var(--admin-nav-active-fg) !important;
+}
+
+.admin-ghost-btn {
+  border-color: var(--admin-ghost-border) !important;
+  color: var(--admin-ghost-fg) !important;
+}
+
+.admin-ghost-btn:hover:not(:disabled) {
+  background-color: var(--admin-nav-hover-bg);
+  color: var(--admin-fg) !important;
+}
+
+/* ——— Cards / panels ——— */
+.admin-card-surface {
+  background-color: var(--admin-card-bg) !important;
+  background-image: none !important;
+  border-color: var(--admin-card-border) !important;
+  box-shadow: var(--admin-card-shadow) !important;
+  color: var(--admin-fg);
+}
+
+html[data-admin-theme="light"] .admin-card-surface,
+.admin-shell[data-admin-theme="light"] .admin-card-surface {
+  /* Beat Tailwind [--admin-card-bg:#…] utilities that set dark tints on the element */
+  --admin-card-bg: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  --tw-gradient-from: transparent !important;
+  --tw-gradient-to: transparent !important;
+  --tw-gradient-stops: transparent !important;
+}
+
+html[data-admin-theme="light"] .admin-card-surface.ring-1,
+html[data-admin-theme="light"] .admin-card-surface[class*="ring-"],
+.admin-shell[data-admin-theme="light"] .admin-card-surface.ring-1,
+.admin-shell[data-admin-theme="light"] .admin-card-surface[class*="ring-"] {
+  --tw-ring-color: rgba(124, 58, 237, 0.12);
+}
+
+.admin-fg {
+  color: var(--admin-fg) !important;
+}
+
+.admin-fg-soft {
+  color: var(--admin-fg-soft) !important;
+}
+
+.admin-muted {
+  color: var(--admin-muted) !important;
+}
+
+.admin-divider {
+  border-color: var(--admin-divider) !important;
+}
+
+.admin-inset {
+  background-color: var(--admin-inset-bg) !important;
+  border-color: var(--admin-divider) !important;
+}
+
+html[data-admin-theme="light"] .admin-widget-label,
+html[data-admin-theme="light"] .admin-widget-value,
+.admin-shell[data-admin-theme="light"] .admin-widget-label,
+.admin-shell[data-admin-theme="light"] .admin-widget-value {
+  color: var(--admin-fg) !important;
+}
+
+html[data-admin-theme="light"] .admin-widget-hint,
+.admin-shell[data-admin-theme="light"] .admin-widget-hint {
+  color: var(--admin-muted) !important;
+}
+
+html[data-admin-theme="light"] .admin-widget-footer,
+.admin-shell[data-admin-theme="light"] .admin-widget-footer {
+  border-color: var(--admin-divider) !important;
+}
+
+html[data-admin-theme="light"] .admin-card-surface .text-violet-300,
+.admin-shell[data-admin-theme="light"] .admin-card-surface .text-violet-300 {
+  color: #7c3aed !important;
+}
+html[data-admin-theme="light"] .admin-card-surface .text-violet-200,
+.admin-shell[data-admin-theme="light"] .admin-card-surface .text-violet-200 {
+  color: #6d28d9 !important;
+}
+html[data-admin-theme="light"] .admin-card-surface .text-amber-300,
+html[data-admin-theme="light"] .admin-card-surface .text-amber-200,
+.admin-shell[data-admin-theme="light"] .admin-card-surface .text-amber-300,
+.admin-shell[data-admin-theme="light"] .admin-card-surface .text-amber-200 {
+  color: #d97706 !important;
+}
+html[data-admin-theme="light"] .admin-card-surface .text-rose-300,
+html[data-admin-theme="light"] .admin-card-surface .text-rose-200,
+.admin-shell[data-admin-theme="light"] .admin-card-surface .text-rose-300,
+.admin-shell[data-admin-theme="light"] .admin-card-surface .text-rose-200 {
+  color: #e11d48 !important;
+}
+html[data-admin-theme="light"] .admin-card-surface .text-emerald-300,
+html[data-admin-theme="light"] .admin-card-surface .text-emerald-200,
+.admin-shell[data-admin-theme="light"] .admin-card-surface .text-emerald-300,
+.admin-shell[data-admin-theme="light"] .admin-card-surface .text-emerald-200 {
+  color: #059669 !important;
+}
+html[data-admin-theme="light"] .admin-card-surface .text-blue-300,
+html[data-admin-theme="light"] .admin-card-surface .text-blue-200,
+.admin-shell[data-admin-theme="light"] .admin-card-surface .text-blue-300,
+.admin-shell[data-admin-theme="light"] .admin-card-surface .text-blue-200 {
+  color: #2563eb !important;
+}
+html[data-admin-theme="light"] .admin-card-surface .text-teal-300,
+html[data-admin-theme="light"] .admin-card-surface .text-teal-200,
+.admin-shell[data-admin-theme="light"] .admin-card-surface .text-teal-300,
+.admin-shell[data-admin-theme="light"] .admin-card-surface .text-teal-200 {
+  color: #0d9488 !important;
+}
+html[data-admin-theme="light"] .admin-card-surface .text-\[\#E8C96A\],
+html[data-admin-theme="light"] .admin-card-surface .text-\[\#F0D78A\],
+.admin-shell[data-admin-theme="light"] .admin-card-surface .text-\[\#E8C96A\],
+.admin-shell[data-admin-theme="light"] .admin-card-surface .text-\[\#F0D78A\] {
+  color: #b45309 !important;
+}
+
+html[data-admin-theme="light"] .admin-card-surface [class*="text-white"]:not(.admin-on-accent):not(.admin-on-accent *),
+.admin-shell[data-admin-theme="light"] .admin-card-surface [class*="text-white"]:not(.admin-on-accent):not(.admin-on-accent *) {
+  color: var(--admin-fg) !important;
+}
+
+html[data-admin-theme="light"] .admin-on-accent,
+html[data-admin-theme="light"] .admin-on-accent *,
+.admin-shell[data-admin-theme="light"] .admin-on-accent,
+.admin-shell[data-admin-theme="light"] .admin-on-accent * {
+  color: #ffffff !important;
+}
+
+/* ——— Canvas typography ——— */
+.admin-canvas-title {
+  color: var(--admin-canvas-fg);
+}
+
+.admin-canvas-muted {
+  color: var(--admin-canvas-muted);
+}
+
+.admin-canvas-soft {
+  color: var(--admin-canvas-soft);
+}
+
+.admin-canvas-faint {
+  color: var(--admin-canvas-faint);
+}
+
+.admin-canvas-control {
+  border-color: var(--admin-canvas-control-border);
+  background-color: var(--admin-canvas-control-bg);
+  color: var(--admin-canvas-control-fg);
+  box-shadow: var(--admin-card-shadow);
+}
+
+.admin-canvas-tab {
+  color: var(--admin-canvas-muted);
+}
+
+.admin-canvas-tab:hover {
+  color: var(--admin-canvas-soft);
+}
+
+.admin-canvas-tab[aria-selected="true"],
+.admin-canvas-tab-active {
+  color: #7c3aed;
+}
+
+html[data-admin-theme="dark"] .admin-canvas-tab[aria-selected="true"],
+html[data-admin-theme="dark"] .admin-canvas-tab-active,
+.admin-shell[data-admin-theme="dark"] .admin-canvas-tab[aria-selected="true"],
+.admin-shell[data-admin-theme="dark"] .admin-canvas-tab-active,
+html:not([data-admin-theme]) .admin-canvas-tab[aria-selected="true"],
+html:not([data-admin-theme]) .admin-canvas-tab-active {
+  color: #ddd6fe;
+}
+
+.admin-canvas-rule {
+  border-color: var(--admin-canvas-control-border);
+}
+
+.admin-canvas-link {
+  color: inherit;
+  transition: color 150ms ease;
+}
+
+.admin-canvas-link:hover {
+  color: #c4b5fd;
+}
+
+html[data-admin-theme="light"] .admin-canvas-link:hover,
+.admin-shell[data-admin-theme="light"] .admin-canvas-link:hover {
+  color: #7c3aed;
+}
+
+.admin-canvas-icon {
+  color: #ddd6fe;
+}
+
+html[data-admin-theme="light"] .admin-canvas-icon,
+.admin-shell[data-admin-theme="light"] .admin-canvas-icon {
+  color: #7c3aed;
+}
+
+.admin-canvas-panel {
+  background-color: var(--admin-card-bg) !important;
+  border-color: var(--admin-card-border) !important;
+  box-shadow: var(--admin-card-shadow);
+  color: var(--admin-fg);
+}
+
+html[data-admin-theme="light"] .admin-canvas-panel .text-white,
+.admin-shell[data-admin-theme="light"] .admin-canvas-panel .text-white {
+  color: var(--admin-fg) !important;
+}
+
+/* ——— Form controls ——— */
+.admin-input {
+  border-color: var(--admin-input-border) !important;
+  background-color: var(--admin-input-bg) !important;
+  color: var(--admin-input-fg) !important;
+}
+
+.admin-input::placeholder {
+  color: var(--admin-muted);
+}
+
+.admin-select {
+  border-color: var(--admin-input-border) !important;
+  background-color: var(--admin-input-bg) !important;
+  color: var(--admin-input-fg) !important;
+  color-scheme: dark;
+}
+
+.admin-select option {
+  background-color: #0c101c;
+  color: #f8fafc;
+}
+
+html[data-admin-theme="light"] .admin-select,
+.admin-shell[data-admin-theme="light"] .admin-select {
+  color-scheme: light;
+}
+
+html[data-admin-theme="light"] .admin-select option,
+.admin-shell[data-admin-theme="light"] .admin-select option {
+  background-color: #ffffff;
+  color: #1a1430;
+}
+
+/* ——— Table ——— */
+.admin-table-wrap {
+  background-color: var(--admin-card-bg) !important;
+  border-color: var(--admin-card-border) !important;
+}
+
+.admin-table-wrap thead {
+  background-color: var(--admin-inset-bg) !important;
+}
+
+.admin-table-wrap tbody {
+  background-color: transparent;
+}
+
+.admin-table-wrap tbody tr:hover {
+  background-color: var(--admin-row-hover) !important;
+}
+
+.admin-table-wrap :is(th) {
+  color: var(--admin-muted) !important;
+}
+
+.admin-table-wrap :is(td) {
+  color: var(--admin-fg-soft) !important;
+}
+
+html[data-admin-theme="light"] .admin-table-wrap :where(thead, tbody).divide-y > :not([hidden]) ~ :not([hidden]),
+.admin-shell[data-admin-theme="light"] .admin-table-wrap :where(thead, tbody).divide-y > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--admin-divider);
+}
+
+html[data-admin-theme="light"] .admin-table-wrap table.divide-y > :not([hidden]) ~ :not([hidden]),
+.admin-shell[data-admin-theme="light"] .admin-table-wrap table.divide-y > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--admin-divider);
+}
+
+/* ——— Status badges ——— */
+html[data-admin-theme="light"] .admin-status-badge[data-tone="success"],
+.admin-shell[data-admin-theme="light"] .admin-status-badge[data-tone="success"] {
+  border-color: rgba(16, 185, 129, 0.25);
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #047857;
+}
+html[data-admin-theme="light"] .admin-status-badge[data-tone="warning"],
+.admin-shell[data-admin-theme="light"] .admin-status-badge[data-tone="warning"] {
+  border-color: rgba(245, 158, 11, 0.3);
+  background-color: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+}
+html[data-admin-theme="light"] .admin-status-badge[data-tone="danger"],
+.admin-shell[data-admin-theme="light"] .admin-status-badge[data-tone="danger"] {
+  border-color: rgba(244, 63, 94, 0.25);
+  background-color: rgba(244, 63, 94, 0.1);
+  color: #be123c;
+}
+html[data-admin-theme="light"] .admin-status-badge[data-tone="info"],
+.admin-shell[data-admin-theme="light"] .admin-status-badge[data-tone="info"] {
+  border-color: rgba(14, 165, 233, 0.25);
+  background-color: rgba(14, 165, 233, 0.1);
+  color: #0369a1;
+}
+html[data-admin-theme="light"] .admin-status-badge[data-tone="neutral"],
+.admin-shell[data-admin-theme="light"] .admin-status-badge[data-tone="neutral"] {
+  border-color: rgba(91, 84, 117, 0.16);
+  background-color: rgba(91, 84, 117, 0.06);
+  color: #5b5475;
+}
+html[data-admin-theme="light"] .admin-status-badge[data-tone="vip"],
+.admin-shell[data-admin-theme="light"] .admin-status-badge[data-tone="vip"] {
+  border-color: rgba(212, 175, 55, 0.35);
+  background-color: rgba(212, 175, 55, 0.14);
+  color: #92400e;
+}
+
+html[data-admin-theme="light"] .admin-health-healthy,
+.admin-shell[data-admin-theme="light"] .admin-health-healthy {
+  color: #047857 !important;
+}
+html[data-admin-theme="light"] .admin-health-attention,
+.admin-shell[data-admin-theme="light"] .admin-health-attention {
+  color: #b45309 !important;
+}
+html[data-admin-theme="light"] .admin-health-action,
+.admin-shell[data-admin-theme="light"] .admin-health-action {
+  color: #be123c !important;
+}
+
+html[data-admin-theme="light"] .admin-card-surface [class*="bg-black/"],
+.admin-shell[data-admin-theme="light"] .admin-card-surface [class*="bg-black/"] {
+  background-color: rgba(248, 246, 255, 0.95) !important;
+  border-color: var(--admin-divider);
+}
+
+html[data-admin-theme="light"] .admin-card-surface [class*="border-white/"],
+.admin-shell[data-admin-theme="light"] .admin-card-surface [class*="border-white/"] {
+  border-color: var(--admin-divider);
+}

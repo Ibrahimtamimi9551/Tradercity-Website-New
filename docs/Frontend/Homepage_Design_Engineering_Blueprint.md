@@ -442,13 +442,15 @@ export interface ReportCategory {
 
 **Trader Solution Features** — 10 items across 3 color-coded columns (purple `#A855F7`, amber `#F59E0B`, cyan `#06D6F7`) plus a highlighted Community row spanning the grid.
 
-**Pricing Plans**
+**Pricing Plans** — official catalog (`src/lib/membership/plans.ts`)
 
-| Plan | Price | Old | Highlight |
-|------|-------|-----|-----------|
-| Monthly | $50/mo | $60 | "FIRST MEMBERSHIP OFFER" |
-| Quarterly | $150/3mo | $180 | Most Popular (default) |
-| Yearly | $500/yr | $720 | Save $220 |
+| Plan | Price | Duration | Highlight |
+|------|------:|----------|-----------|
+| Monthly | $60/mo | 30 DAYS | New Member Offer note (secondary): Welcome Credit $10 → first payment $50; catalog stays $60 |
+| Quarterly | $150/3mo | 90 DAYS | Most Popular (default); Save $30 vs 3× monthly |
+| Yearly | $500/yr | 365 DAYS | Save $220 vs 12× monthly |
+
+Pricing adjustments: `src/lib/membership/pricing/` (independent of catalog).
 
 ---
 

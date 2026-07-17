@@ -79,3 +79,34 @@ body {
 .touch-manipulation {
   touch-action: manipulation;
 }
+
+/**
+ * Minimal Admin/Discord token fallbacks.
+ * Full theme system rolled back with shell; Discord still references these classes.
+ */
+:root {
+  --admin-card-bg: rgba(255, 255, 255, 0.015);
+  --admin-row-hover: rgba(255, 255, 255, 0.04);
+  --admin-fg: #ffffff;
+  --admin-divider: rgba(255, 255, 255, 0.1);
+}
+
+.admin-muted {
+  color: #8f9bb3;
+}
+
+.admin-fg-soft {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.admin-card-surface {
+  background-color: var(--admin-card-bg);
+}
+
+.admin-divider {
+  border-color: var(--admin-divider);
+}
+
+.admin-ghost-btn {
+  color: rgba(255, 255, 255, 0.8);
+}

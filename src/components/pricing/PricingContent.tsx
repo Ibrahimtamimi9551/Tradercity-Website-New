@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import GlassCard from "@/components/home/shared/GlassCard";
 import GradientText from "@/components/home/shared/GradientText";
+import { WELCOME_CREDIT_MONTHLY_OFFER_COPY } from "@/lib/membership/pricing";
+import { MEMBERSHIP_PLANS } from "@/lib/membership/plans";
 
 const FOCUS_PRICING_EVENT = "tc:focus-pricing";
 
@@ -56,46 +58,40 @@ export default function PricingSection() {
     "Access All Analysts Calls and Context",
   ];
 
+  // Official plans — see src/lib/membership/plans.ts (SSOT for Admin, Payment, Backend assumptions)
+  const monthly = MEMBERSHIP_PLANS.monthly;
+  const quarterly = MEMBERSHIP_PLANS.quarterly;
+  const yearly = MEMBERSHIP_PLANS.yearly;
+
   const plans = [
-    // {
-    //   id: "monthly",
-    //   name: "MONTHLY",
-    //   price: "$60",
-    //   period: "/ month",
-    //   duration: "30 DAYS",
-    //   accent: "purple",
-    // },
-        {
-  id: "monthly",
-  name: "MONTHLY",
-  price: "$50",
-  period: "/ month",
-  duration: "30 DAYS",
-  oldPrice: "$60",
-  badge: "FIRST MEMBERSHIP OFFER",
-  helper: "Save $10 on your first membership",
-  accent: "gold",
-},
     {
-      id: "quarterly",
-      name: "QUARTERLY",
-      price: "$150",
-      period: "/ 3 months",
-      duration: "90 DAYS",
+      id: monthly.id,
+      name: monthly.type,
+      price: monthly.priceDisplay,
+      period: monthly.periodLabel,
+      duration: monthly.durationLabel,
+      accent: "gold" as const,
+    },
+    {
+      id: quarterly.id,
+      name: quarterly.type,
+      price: quarterly.priceDisplay,
+      period: quarterly.periodLabel,
+      duration: quarterly.durationLabel,
       save: "Save $30",
       oldPrice: "$180",
       isPopular: true,
-      accent: "gold",
+      accent: "gold" as const,
     },
     {
-      id: "yearly",
-      name: "YEARLY",
-      price: "$500",
-      period: "/ year",
-      duration: "365 DAYS",
+      id: yearly.id,
+      name: yearly.type,
+      price: yearly.priceDisplay,
+      period: yearly.periodLabel,
+      duration: yearly.durationLabel,
       save: "Save $220",
       oldPrice: "$720",
-      accent: "purple",
+      accent: "purple" as const,
     },
   ];
 
@@ -214,7 +210,7 @@ export default function PricingSection() {
                     onClick={() => setSelectedPlan(plan.id)}
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
-                    className={`relative cursor-pointer rounded-2xl border p-5 lg:p-6 transition-all duration-300 flex items-center justify-between group ${
+                    className={`relative cursor-pointer rounded-2xl border p-5 lg:p-6 transition-all duration-300 flex flex-col gap-3 group ${
                       isSelected
                         ? `bg-[#111216] border-yellow-500 shadow-[0_0_30px_rgba(234,179,8,0.12)] ${
                             pulsePlan ? "animate-pulse shadow-[0_0_40px_rgba(234,179,8,0.28)]" : ""
@@ -227,75 +223,104 @@ export default function PricingSection() {
                       <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-yellow-500/5 to-transparent pointer-events-none" />
                     )}
 
-                    <div className="flex items-center gap-5 relative z-10 w-full sm:w-auto">
-                      
-                      {/* Radio Circle */}
-                      <div className="shrink-0 flex items-center justify-center">
-                        {isSelected ? (
-                          <div className="w-[22px] h-[22px] rounded-full border-2 border-yellow-500 flex items-center justify-center">
-                            <div className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
-                          </div>
-                        ) : (
-                          <Circle className="w-[22px] h-[22px] text-[#A855F7] opacity-60 group-hover:opacity-100 transition-opacity" />
-                        )}
-                      </div>
-
-                      {/* Calendar Icon Container */}
-                      <div className={`hidden sm:flex w-[52px] h-[52px] rounded-xl border flex-col items-center justify-center shrink-0 transition-colors ${
-                        isGold 
-                          ? 'border-yellow-500/20 bg-yellow-500/5 text-yellow-500' 
-                          : 'border-purple-500/20 bg-purple-500/5 text-[#A855F7]'
-                      }`}>
-                        <CalendarDays className="w-6 h-6" />
-                      </div>
-
-                      {/* Plan Text Details */}
-                      <div className="flex flex-col flex-1">
-                        <div className="flex items-center gap-3 mb-1">
-                          <span className={`text-[13px] font-bold tracking-widest ${isGold ? 'text-yellow-500' : 'text-[#A855F7]'}`}>
-                            {plan.name}
-                          </span>
-                          {plan.isPopular && (
-                            <span className="px-2 py-0.5 rounded-[4px] text-[10px] font-bold bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 flex items-center gap-1.5 uppercase">
-                              <Crown className="w-3 h-3" /> Most Popular
-                            </span>
+                    <div className="flex items-center justify-between w-full relative z-10">
+                      <div className="flex items-center gap-5 w-full sm:w-auto">
+                        
+                        {/* Radio Circle */}
+                        <div className="shrink-0 flex items-center justify-center">
+                          {isSelected ? (
+                            <div className="w-[22px] h-[22px] rounded-full border-2 border-yellow-500 flex items-center justify-center">
+                              <div className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
+                            </div>
+                          ) : (
+                            <Circle className="w-[22px] h-[22px] text-[#A855F7] opacity-60 group-hover:opacity-100 transition-opacity" />
                           )}
                         </div>
-                        
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-[34px] font-bold text-white tracking-tight leading-none">
-                            {plan.price}
-                          </span>
-                          <span className="text-[#94A3B8] text-[15px] font-medium">{plan.period}</span>
+
+                        {/* Calendar Icon Container */}
+                        <div className={`hidden sm:flex w-[52px] h-[52px] rounded-xl border flex-col items-center justify-center shrink-0 transition-colors ${
+                          isGold 
+                            ? 'border-yellow-500/20 bg-yellow-500/5 text-yellow-500' 
+                            : 'border-purple-500/20 bg-purple-500/5 text-[#A855F7]'
+                        }`}>
+                          <CalendarDays className="w-6 h-6" />
                         </div>
 
-                        {/* Pricing Savings (if any) */}
-                        {(plan.save || plan.oldPrice) && (
-                          <div className="flex items-center gap-2 mt-2.5">
-                            {plan.save && (
-                              <span className={`text-[11px] font-bold px-2 py-0.5 rounded-[4px] uppercase tracking-wider ${
-                                isGold ? 'bg-yellow-500/20 text-yellow-500' : 'bg-purple-500/20 text-[#A855F7]'
-                              }`}>
-                                {plan.save}
-                              </span>
-                            )}
-                            {plan.oldPrice && (
-                              <span className="text-[13px] text-[#64748B] line-through font-medium">
-                                {plan.oldPrice}
+                        {/* Plan Text Details — official catalog price stays primary */}
+                        <div className="flex flex-col flex-1">
+                          <div className="flex items-center gap-3 mb-1">
+                            <span className={`text-[13px] font-bold tracking-widest ${isGold ? 'text-yellow-500' : 'text-[#A855F7]'}`}>
+                              {plan.name}
+                            </span>
+                            {plan.isPopular && (
+                              <span className="px-2 py-0.5 rounded-[4px] text-[10px] font-bold bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 flex items-center gap-1.5 uppercase">
+                                <Crown className="w-3 h-3" /> Most Popular
                               </span>
                             )}
                           </div>
-                        )}
+                          
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-[34px] font-bold text-white tracking-tight leading-none">
+                              {plan.price}
+                            </span>
+                            <span className="text-[#94A3B8] text-[15px] font-medium">{plan.period}</span>
+                          </div>
+
+                          {/* Pricing Savings (if any) */}
+                          {(plan.save || plan.oldPrice) && (
+                            <div className="flex items-center gap-2 mt-2.5">
+                              {plan.save && (
+                                <span className={`text-[11px] font-bold px-2 py-0.5 rounded-[4px] uppercase tracking-wider ${
+                                  isGold ? 'bg-yellow-500/20 text-yellow-500' : 'bg-purple-500/20 text-[#A855F7]'
+                                }`}>
+                                  {plan.save}
+                                </span>
+                              )}
+                              {plan.oldPrice && (
+                                <span className="text-[13px] text-[#64748B] line-through font-medium">
+                                  {plan.oldPrice}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Right side Access Duration */}
+                      <div className="text-right flex-col items-end justify-center relative z-10 border-l border-[#1F2129] pl-8 ml-4 hidden md:flex shrink-0 min-w-[120px]">
+                        <span className={`font-bold text-[17px] mb-0.5 ${isSelected ? 'text-yellow-500' : 'text-white'}`}>
+                          {plan.duration}
+                        </span>
+                        <span className="text-[#94A3B8] text-[14px]">Access</span>
                       </div>
                     </div>
 
-                    {/* Right side Access Duration */}
-                    <div className="text-right flex-col items-end justify-center relative z-10 border-l border-[#1F2129] pl-8 ml-4 hidden md:flex shrink-0 min-w-[120px]">
-                      <span className={`font-bold text-[17px] mb-0.5 ${isSelected ? 'text-yellow-500' : 'text-white'}`}>
-                        {plan.duration}
-                      </span>
-                      <span className="text-[#94A3B8] text-[14px]">Access</span>
-                    </div>
+                    {/* First-time credit — secondary to official $60 price */}
+                    {plan.id === "monthly" && (
+                      <div className="relative z-10 ml-0 sm:ml-[42px] md:ml-[94px] rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2.5">
+                        <p className="text-[11px] font-semibold tracking-wide text-[#CBD5E1]">
+                          {WELCOME_CREDIT_MONTHLY_OFFER_COPY.title}
+                        </p>
+                        <p className="mt-0.5 text-[12px] leading-snug text-[#94A3B8]">
+                          {WELCOME_CREDIT_MONTHLY_OFFER_COPY.bodyLead}
+                          <span className="font-semibold text-[#E8C96A]">
+                            {WELCOME_CREDIT_MONTHLY_OFFER_COPY.bodyEmphasis}
+                          </span>
+                          {WELCOME_CREDIT_MONTHLY_OFFER_COPY.bodyTrail}
+                        </p>
+                        <p className="mt-1 text-[12px] leading-snug text-[#64748B]">
+                          {WELCOME_CREDIT_MONTHLY_OFFER_COPY.payableLead}
+                          <span className="font-medium text-[#94A3B8]">
+                            {WELCOME_CREDIT_MONTHLY_OFFER_COPY.payableAmount}
+                          </span>
+                          {WELCOME_CREDIT_MONTHLY_OFFER_COPY.payableMid}
+                          <span className="font-medium text-[#94A3B8]">
+                            {WELCOME_CREDIT_MONTHLY_OFFER_COPY.standardAmount}
+                          </span>
+                          {WELCOME_CREDIT_MONTHLY_OFFER_COPY.payableEnd}
+                        </p>
+                      </div>
+                    )}
 
                   </motion.div>
                 );

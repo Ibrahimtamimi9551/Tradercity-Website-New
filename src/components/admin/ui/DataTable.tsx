@@ -4,6 +4,8 @@ export type DataTableColumn<T> = {
   key: string;
   header: string;
   className?: string;
+  /** When true, clicks in this cell do not trigger `onRowClick`. */
+  stopRowClick?: boolean;
   render: (row: T) => React.ReactNode;
 };
 
@@ -12,6 +14,8 @@ type DataTableProps<T> = {
   data: T[];
   getRowKey: (row: T) => string;
   onRowClick?: (row: T) => void;
+  /** When set, the matching row receives selected styles (details panel pairing). */
+  selectedKey?: string | null;
   emptyTitle?: string;
   className?: string;
   /** Tighter cell padding on mobile only — keeps desktop spacing unchanged */
@@ -23,6 +27,7 @@ export function DataTable<T>({
   data,
   getRowKey,
   onRowClick,
+  selectedKey = null,
   emptyTitle = "No records found",
   className,
   compactMobile = false,
@@ -65,22 +70,34 @@ export function DataTable<T>({
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5 bg-transparent">
-            {data.map((row) => (
-              <tr
-                key={getRowKey(row)}
-                onClick={onRowClick ? () => onRowClick(row) : undefined}
-                className={cn(onRowClick && "cursor-pointer hover:bg-white/[0.03]")}
-              >
-                {columns.map((column) => (
-                  <td
-                    key={column.key}
-                    className={cn(cellPad, "text-white/90", column.className)}
-                  >
-                    {column.render(row)}
-                  </td>
-                ))}
-              </tr>
-            ))}
+            {data.map((row) => {
+              const key = getRowKey(row);
+              const selected = selectedKey != null && selectedKey === key;
+              return (
+                <tr
+                  key={key}
+                  onClick={onRowClick ? () => onRowClick(row) : undefined}
+                  className={cn(
+                    onRowClick && "cursor-pointer hover:bg-white/[0.03]",
+                    selected && "bg-violet-500/10"
+                  )}
+                >
+                  {columns.map((column) => (
+                    <td
+                      key={column.key}
+                      className={cn(cellPad, "text-white/90", column.className)}
+                      onClick={
+                        column.stopRowClick
+                          ? (event) => event.stopPropagation()
+                          : undefined
+                      }
+                    >
+                      {column.render(row)}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

@@ -257,7 +257,7 @@ Reflect latest subscription/payment state.
 | Renewal Count | 1 |
 | VIP Activated Via | Auto Verification |
 | Transaction Hash | With copy + blockchain explorer |
-| Payment Method | Crypto USDT - TRC20 |
+| Payment Method | Crypto USDT - BEP20 (BSC) |
 | Amount Paid | $60.00 |
 
 **Action:** **Manage Subscription →** (redirects to Subscriptions module)
@@ -337,6 +337,19 @@ The Subscription Module **owns**:
 - Renewal tracking
 - Manual verification when auto-verification fails
 
+**Official plan catalog** (display amounts for plans / revenue / renewals / payment verification):
+
+| Plan | Price | Duration |
+|------|------:|----------|
+| Monthly (`MONTHLY`) | $60 | 30 Days |
+| Quarterly (`QUARTERLY`) | $150 | 90 Days |
+| Yearly (`YEARLY`) | $500 | 365 Days |
+
+Source: `src/lib/membership/plans.ts`. No Lifetime or Custom plans.
+
+**Pricing adjustments** (separate from catalog — `src/lib/membership/pricing/`):
+Welcome Credit = $10 OFF first Monthly VIP only. Catalog Monthly stays **$60**; eligible first payment may be **$50**. Admin revenue and plan records always use standard prices. When available, Subscription Details may show Standard Price / Adjustments / Paid Amount.
+
 ### Does Not Own
 
 - Discord roles
@@ -389,7 +402,7 @@ Matches member payment submission fields (`PaymentSection`).
 | Filter | Options |
 |--------|---------|
 | Status | Successful, Pending Verification, Verification Required, Rejected |
-| Plan | Monthly, Quarterly, Yearly, Lifetime, Custom |
+| Plan | Monthly ($60), Quarterly ($150), Yearly ($500) — see `src/lib/membership/plans.ts` |
 | Payment Method | Crypto USDT, Stripe, etc. |
 | Date Range | Start — End |
 
@@ -430,14 +443,18 @@ Do **not** include "Expired" here. Expiry belongs to membership lifecycle.
 
 | Field | Notes |
 |-------|-------|
-| Subscription Plan | Badge + price |
-| Amount Paid | Currency + network |
+| Subscription Plan | Badge + **standard catalog price** (Monthly $60 / Quarterly $150 / Yearly $500) |
+| Amount Paid | Currency + network (final payable after adjustments, if any) |
+| Standard Price | Optional — catalog list price when payment breakdown is exposed |
+| Adjustments | Optional — ordered list (e.g. Welcome Credit −$10); extensible for future types |
 | Payment Date | Timestamp |
 | Transaction Hash | Copy + link |
 | Wallet Address | Copy + link |
-| Payment Method | Crypto (USDT - TRC20) / Stripe |
+| Payment Method | Crypto (USDT - BEP20 / BSC) / Stripe |
 | Verification Method | Auto Verification / Manual |
 | Current Status | Badge |
+
+Revenue / analytics always attribute membership at the **standard plan price**. Pricing adjustments are layered — never rewrite the catalog.
 
 **Timeline**
 
@@ -458,26 +475,36 @@ VIP Activated
 
 ### Payment Verification Workflow
 
-**Happy path:**
+> Pricing vs Verification separation (frontend ownership / functional requirements): [`08_Subscription_Pricing_and_Payment_Verification_Architecture.md`](08_Subscription_Pricing_and_Payment_Verification_Architecture.md)
+
+**Functional requirement:** verification compares **Payment Quote expected amount** to the payment received — never hardcodes catalog plan prices, and never re-runs the Pricing Engine at verify time. How the backend issues/persists quotes and performs the check is backend-owned.
+
+**Happy path (product flow):**
 
 ```text
-User submits payment
+User selects plan
   ↓
-Automatic Verification
+Pricing Engine
+  ↓
+Payment Quote Created
+  ↓
+User submits TX hash
+  ↓
+Verification → Quote Expected == Received
   ↓
 Successful
   ↓
 Activate Membership
   ↓
-Assign Discord VIP Role (backend)
+Assign Discord VIP Role
   ↓
-Update Member Profile
+Update Member Profile / Persist Subscription
 ```
 
 **Manual path:**
 
 ```text
-Verification Required
+Verification Required (underpaid / overpaid / failed / expired / etc.)
   ↓
 Admin Manual Verification
   ↓
@@ -488,7 +515,9 @@ Reject → Request Additional Proof
 
 Approve requires confirmation modal before irreversible action.
 
-Reject includes reason field (UI shell + TODO if backend not ready).
+Reject includes reason field (UI shell + TODO until backend capability exists).
+
+Future detailed outcomes (`pending`, `verifying`, `successful`, `underpaid`, `overpaid`, `expired`, `failed`, `cancelled`, `refund_required`) are product/UI states — Admin UI today keeps consolidated display states.
 
 ---
 
@@ -589,7 +618,7 @@ Educational content, community management, media library.
 ### Phase 8 — Settings
 
 **Future home:** Configuration area (TBD)  
-Platform configuration: payment wallet, blockchain, membership plans, pricing, discounts, referral config, Discord config, email templates.
+Platform configuration: payment wallet, blockchain, membership plans (**Monthly $60 / Quarterly $150 / Yearly $500** — `src/lib/membership/plans.ts`), discounts, referral config, Discord config, email templates. Do not configure Lifetime or Custom plans.
 
 ### Phase 9 — Notifications, Audit Logs
 

@@ -41,6 +41,12 @@ export function AdminHeader({ onOpenMobileNav, sidebarCollapsed }: AdminHeaderPr
         </div>
 
         <div className="ml-auto flex items-center gap-2">
+          <span
+            className="shrink-0 text-[10px] font-medium tracking-wide text-tc-muted/70"
+            title="Mobile investigation build marker"
+          >
+            Build: MI-01
+          </span>
           <button
             type="button"
             className="relative rounded-lg border border-white/10 p-2 text-tc-muted hover:text-white"

@@ -100,16 +100,14 @@ This register tracks known technical debt for the TraderCity homepage. Items are
 | **Recommended Fix** | Create `home/shared/motion.ts`; re-enable with `viewport: { once: true }` and `useReducedMotion()` |
 | **Target Phase** | Phase 03 |
 
-### 🟠 Price Display Inconsistencies (Cross-Module)
+### ✅ Price Display Alignment (Cross-Module)
 
 | Attribute | Detail |
 |-----------|--------|
-| **Description** | Homepage/pricing UI shows plan prices ($50/$150/$500) that may not match `PaymentSection` ($60) or Arena backend pricing |
-| **Impact** | Conversion trust risk if user sees different prices at checkout |
-| **Affected Files** | `PricingContent.tsx`, payment/dashboard modules (out of Agent A scope) |
-| **Why It Remains** | Requires product/backend alignment — Agent B scope per multitask prompts |
-| **Recommended Fix** | Audit pricing across homepage, `/pricing`, payment-activation, and dashboard; single source of truth |
-| **Target Phase** | Agent B / product decision |
+| **Status** | **Resolved** — single official catalog |
+| **Description** | Platform plans are Monthly **$60** / Quarterly **$150** / Yearly **$500** (`src/lib/membership/plans.ts`). Welcome Credit ($10 OFF first Monthly) is a pricing **adjustment** (`src/lib/membership/pricing/`) — it does not rewrite catalog prices. |
+| **Affected Files** | `PricingContent.tsx`, `src/lib/membership/plans.ts`, Admin docs/mocks |
+| **Target Phase** | Complete |
 
 ---
 

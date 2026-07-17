@@ -1,10 +1,40 @@
-import React from 'react';
-import { 
-  Bell, ChevronDown, Check, Lock, Gift, Users, BookOpen, 
-  Target, BarChart2, MessageSquare, Shield, Clock, ShieldCheck,User,
-  Crown, FileText, Share2, Copy, Eye, Star, Calendar,
-  ArrowRight, Activity, CheckCircle2
-} from 'lucide-react';
+/**
+ * Free Dashboard content — DESIGN FROZEN.
+ * Preserve layout, hierarchy, spacing, typography, and UX.
+ * Card surfaces use freeCardSurface (Admin-equivalent opaque logic).
+ */
+import {
+  Bell,
+  ChevronDown,
+  Check,
+  Lock,
+  Gift,
+  Users,
+  BookOpen,
+  MessageSquare,
+  Clock,
+  ShieldCheck,
+  User,
+  Crown,
+  Share2,
+  Copy,
+  Eye,
+  Star,
+  Calendar,
+  ArrowRight,
+  CheckCircle2,
+} from "lucide-react";
+import TraderCityLogo from "@/components/home/navigation/TraderCityLogo";
+import { MEMBERSHIP_PLANS } from "@/lib/membership/plans";
+import {
+  MONTHLY_WELCOME_UPGRADE_CTA,
+  WELCOME_CREDIT,
+} from "@/lib/membership/pricing";
+import {
+  freeCardSurface,
+  freeInsetSurface,
+  freeWellSurface,
+} from "./free-surfaces";
 
 // --- MOCK DATA ---
 const mockUser = { name: "Ibrahim", avatar: "I", notifications: 2 };
@@ -13,9 +43,9 @@ const mockHeroStatus = {
   memberSince: "08 Jun 2026",
   daysAgo: "7 Days Ago",
   currentPlan: "Free Member",
-  welcomeCredit: 10,
+  welcomeCredit: WELCOME_CREDIT.amountUsd,
   creditExpiry: "1D : 16H : 32M : 16S",
-  discordStatus: "Activated"
+  discordStatus: "Activated",
 };
 
 const mockComparison = {
@@ -24,7 +54,7 @@ const mockComparison = {
     { id: 2, title: "Community Discussions", desc: "Participate in public discussions", type: "check" },
     { id: 3, title: "Public Market Analysis", desc: "Access to public analysis & updates", type: "check" },
     { id: 4, title: "Limited Reports", desc: "Access to limited reports", type: "count", value: "15", total: "400", label: "Reports" },
-    { id: 5, title: "Limited Lessons", desc: "Access to limited lessons", type: "count", value: "15", total: "200", label: "Lessons" }
+    { id: 5, title: "Limited Lessons", desc: "Access to limited lessons", type: "count", value: "15", total: "200", label: "Lessons" },
   ],
   vip: [
     { id: 1, title: "Full Discord Access", desc: "All VIP channels & analyst rooms" },
@@ -34,8 +64,8 @@ const mockComparison = {
     { id: 5, title: "Weekly Quant Research Report", desc: "Advanced quantitative market insights" },
     { id: 6, title: "Multiple Market Perspectives", desc: "Different analysts, different edge" },
     { id: 7, title: "VIP Events & Workshops", desc: "Live sessions, Q&A and workshops" },
-    { id: 8, title: "30 Days Full Access", desc: "Full access for the entire month" }
-  ]
+    { id: 8, title: "30 Days Full Access", desc: "Full access for the entire month" },
+  ],
 };
 
 const mockReferral = {
@@ -46,458 +76,792 @@ const mockReferral = {
     "User registers on TraderCity",
     "User purchases any VIP plan",
     "Payment is successful",
-    "Referral is recorded"
-  ]
+    "Referral is recorded",
+  ],
 };
 
 // --- COMPONENTS ---
 
-const DashboardHeader = () => (
-  <header className="flex items-center justify-between mb-8">
-    <div className="flex items-center gap-3">
-      <div className="w-10 h-10 bg-purple-600 rounded flex items-center justify-center font-bold text-white text-xl">TC</div>
-      <div>
-        <h1 className="text-white font-bold tracking-wider leading-none text-lg">TRADERCITY</h1>
+function DashboardHeader() {
+  return (
+    <header className="mb-8 flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <TraderCityLogo className="h-10 w-10" showGlow />
+        <div className="min-w-0">
+          <h1 className="truncate text-[15px] font-bold tracking-[0.22em] text-white">
+            TRADERCITY
+          </h1>
+          <p className="mt-0.5 truncate text-[10px] leading-snug text-white/65">
+            Multiple Perspectives.{" "}
+            <span className="font-medium text-tc-cyan">Better</span> Decisions.
+          </p>
+        </div>
       </div>
-    </div>
-    <div className="flex items-center gap-4">
-      <button className="hidden md:flex items-center gap-2 border border-purple-500/50 text-purple-400 hover:bg-purple-500/10 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-        <MessageSquare className="w-4 h-4" /> Open Discord <ArrowRight className="w-4 h-4 ml-1" />
-      </button>
-      <div className="relative cursor-pointer hover:bg-[#1a1423] p-2 rounded-full transition-colors">
-        <Bell className="w-5 h-5 text-purple-400" />
-        <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-          {mockUser.notifications}
+      <div className="flex items-center gap-4">
+        <button
+          type="button"
+          className="hidden items-center gap-2 rounded-lg border border-purple-500/50 px-4 py-2 text-sm font-medium text-purple-400 transition-colors hover:bg-purple-500/10 md:flex"
+        >
+          <MessageSquare className="h-4 w-4" /> Open Discord{" "}
+          <ArrowRight className="ml-1 h-4 w-4" />
+        </button>
+        <div className="relative cursor-pointer rounded-full p-2 transition-colors hover:bg-[#1a1423]">
+          <Bell className="h-5 w-5 text-purple-400" />
+          <span className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+            {mockUser.notifications}
+          </span>
+        </div>
+        <div className="flex cursor-pointer items-center gap-3 rounded-full border border-[#2d1b4e] bg-[#110a1a] p-1 pr-4 transition-colors hover:bg-[#1a0f2e]">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700 font-bold text-white">
+            {mockUser.avatar}
+          </div>
+          <span className="text-sm font-medium text-white">{mockUser.name}</span>
+          <ChevronDown className="h-4 w-4 text-gray-400" />
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function FreeHeroSection() {
+  return (
+    <section className="mb-6 grid grid-cols-1 items-start gap-5 xl:grid-cols-2">
+      {/* Welcome hero — premium two-column card */}
+      <div
+        className={freeCardSurface(
+          "purple",
+          "relative overflow-hidden rounded-3xl border-purple-500/20 px-7 py-6 md:px-8 md:py-7"
+        )}
+      >
+        {/* Soft purple ambient light */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-24 top-0 h-48 w-48 rounded-full bg-purple-600/[0.12] blur-[80px]"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-16 bottom-0 h-40 w-40 rounded-full bg-purple-500/[0.08] blur-[70px]"
+        />
+        {/* Low-opacity grid on card surface */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.035]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(155,93,229,0.9) 1px, transparent 1px), linear-gradient(90deg, rgba(155,93,229,0.9) 1px, transparent 1px)",
+            backgroundSize: "32px 32px",
+          }}
+        />
+
+        <div className="relative z-10 grid grid-cols-1 items-center gap-6 md:grid-cols-[1.65fr_1fr] md:gap-6">
+          {/* Left — copy */}
+          <div className="min-w-0 text-left">
+            <p className="mb-1.5 text-sm font-medium text-purple-400">
+              Welcome back,
+            </p>
+            <h2 className="mb-3 text-4xl font-bold tracking-tight text-white md:text-5xl">
+              {mockUser.name}.
+            </h2>
+            <div>
+              <p className="text-2xl font-bold leading-tight text-white md:text-[1.85rem]">
+                You&apos;re exploring
+              </p>
+              <p className="mt-0.5 bg-gradient-to-r from-[#C084FC] via-[#A78BFA] to-[#9B5DE5] bg-clip-text text-2xl font-bold leading-tight text-transparent md:text-[2rem]">
+                the Free Community.
+              </p>
+            </div>
+          </div>
+
+          {/* Right — illustration panel */}
+          <div className="flex justify-center md:justify-end">
+            <div
+              className="relative flex h-[140px] w-[140px] items-center justify-center overflow-hidden rounded-2xl border border-purple-500/30 md:h-[152px] md:w-[152px]"
+              style={{
+                background:
+                  "linear-gradient(165deg, #12101f 0%, #0c0a16 55%, #0a0812 100%)",
+                boxShadow: "0 0 32px rgba(155, 93, 229, 0.08)",
+              }}
+            >
+              {/* Panel grid */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 opacity-[0.12]"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(rgba(167,139,250,0.55) 1px, transparent 1px), linear-gradient(90deg, rgba(167,139,250,0.55) 1px, transparent 1px)",
+                  backgroundSize: "20px 20px",
+                }}
+              />
+              {/* Soft symbol glow */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute h-20 w-20 rounded-full bg-purple-500/25 blur-2xl"
+              />
+              <TraderCityLogo
+                className="relative z-10 h-14 w-14 drop-shadow-[0_0_16px_rgba(155,93,229,0.45)] md:h-16 md:w-16"
+                showGlow
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <div
+          className={freeCardSurface(
+            "purple",
+            "flex flex-col justify-center rounded-xl px-4 py-3.5"
+          )}
+        >
+          <div className="mb-1.5 flex items-center text-[10px] font-bold uppercase tracking-wider text-gray-400">
+            <Calendar className="mr-2 h-3.5 w-3.5 text-purple-400" /> Member Since
+          </div>
+          <div className="text-base font-medium text-white">
+            {mockHeroStatus.memberSince}
+          </div>
+          <div className="mt-0.5 text-xs text-gray-500">{mockHeroStatus.daysAgo}</div>
+        </div>
+
+        <div
+          className={freeCardSurface(
+            "purple",
+            "flex flex-col justify-center rounded-xl px-4 py-3.5"
+          )}
+        >
+          <div className="mb-1.5 flex items-center text-[10px] font-bold uppercase tracking-wider text-gray-400">
+            <User className="mr-2 h-3.5 w-3.5 text-purple-400" /> Membership
+          </div>
+          <div className="text-base font-medium text-white">
+            {mockHeroStatus.currentPlan}
+          </div>
+          <div className="mt-1.5 w-fit rounded border border-purple-500/20 bg-purple-900/30 px-2 py-0.5 text-[10px] font-bold uppercase text-purple-400">
+            Current Plan
+          </div>
+        </div>
+
+        <div
+          className={freeCardSurface(
+            "purple",
+            "relative flex flex-col justify-center overflow-hidden rounded-xl px-4 py-3.5"
+          )}
+        >
+          <div className="pointer-events-none absolute right-0 top-0 h-24 w-24 rounded-full bg-yellow-500/5 blur-[40px]" />
+          <div className="mb-1.5 flex items-center justify-between gap-2">
+            <div className="flex items-center text-[10px] font-bold uppercase tracking-wider text-gray-400">
+              <Gift className="mr-2 h-3.5 w-3.5 text-yellow-500" /> Welcome Credit
+            </div>
+            <div className="shrink-0 text-right">
+              <div className="text-[9px] font-bold uppercase text-gray-500">
+                Expires In
+              </div>
+              <div className="font-mono text-[10px] font-bold text-yellow-500">
+                {mockHeroStatus.creditExpiry}
+              </div>
+            </div>
+          </div>
+          <div className="mb-0.5 text-2xl font-bold text-yellow-500">
+            ${mockHeroStatus.welcomeCredit}
+          </div>
+          <div className="text-xs text-gray-500">Available To Use</div>
+        </div>
+
+        <div
+          className={freeCardSurface(
+            "purple",
+            "flex flex-col justify-center rounded-xl px-4 py-3.5"
+          )}
+        >
+          <div className="mb-1.5 flex items-center text-[10px] font-bold uppercase tracking-wider text-gray-400">
+            <MessageSquare className="mr-2 h-3.5 w-3.5 text-[#5865F2]" /> Discord
+            Access
+          </div>
+          <div className="mb-0.5 flex items-center text-base font-medium text-green-500">
+            {mockHeroStatus.discordStatus}{" "}
+            <CheckCircle2 className="ml-2 h-4 w-4" />
+          </div>
+          <div className="text-xs text-gray-500">
+            You can now join our Discord server.
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function AccessComparisonSection() {
+  return (
+    <section className="relative mb-8 mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2">
+      {/* VS Badge */}
+      <div className="absolute left-1/2 top-1/2 z-10 hidden h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-yellow-900/50 bg-[#1a1423] text-sm font-bold text-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.2)] lg:flex">
+        VS
+      </div>
+
+      {/* Free Card */}
+      <div
+        className={freeCardSurface("purple", "rounded-2xl p-6 md:p-8")}
+      >
+        <div className="mb-4 flex w-fit items-center rounded-full border border-purple-500/20 bg-purple-900/20 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-purple-400">
+          <Eye className="mr-2 h-3.5 w-3.5" /> Your Current Access
+        </div>
+        <h3 className="mb-1 text-2xl font-bold text-white">Free Community</h3>
+        <p className="mb-8 text-sm text-gray-400">Open Access. Real Value.</p>
+
+        <div className="space-y-6">
+          {mockComparison.free.map((item) => (
+            <div key={item.id} className="group flex items-center justify-between">
+              <div className="flex items-start gap-4">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-purple-500/10 bg-purple-900/20">
+                  <Users className="h-4 w-4 text-purple-400" />
+                </div>
+                <div>
+                  <div className="mb-0.5 text-sm font-medium text-white">
+                    {item.title}
+                  </div>
+                  <div className="text-xs text-gray-500">{item.desc}</div>
+                </div>
+              </div>
+              {item.type === "check" ? (
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded border border-purple-500/20 bg-purple-900/30">
+                  <Check className="h-3.5 w-3.5 text-purple-400" />
+                </div>
+              ) : (
+                <div className="shrink-0 text-right">
+                  <div className="text-sm font-bold text-purple-400">
+                    {item.value}{" "}
+                    <span className="font-normal text-gray-500">
+                      / {item.total}
+                    </span>
+                  </div>
+                  <div className="text-[10px] uppercase text-gray-500">
+                    {item.label}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* VIP Card */}
+      <div
+        className={freeCardSurface(
+          "accent",
+          "relative overflow-hidden rounded-2xl p-6 md:p-8"
+        )}
+      >
+        <div className="pointer-events-none absolute right-0 top-0 h-64 w-64 rounded-full bg-yellow-500/5 blur-[80px]" />
+        <div className="relative z-10 mb-4 flex w-fit items-center rounded-full border border-yellow-500/20 bg-yellow-900/20 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-yellow-500">
+          <Lock className="mr-2 h-3.5 w-3.5" /> Upgrade To Unlock
+        </div>
+        <h3 className="relative z-10 mb-1 text-2xl font-bold text-white">
+          VIP Community
+        </h3>
+        <p className="relative z-10 mb-8 text-sm text-gray-400">
+          Deeper Access. Higher Edge.
+        </p>
+
+        <div className="relative z-10 space-y-6">
+          {mockComparison.vip.map((item) => (
+            <div
+              key={item.id}
+              className="flex items-center justify-between opacity-80 transition-opacity hover:opacity-100"
+            >
+              <div className="flex items-start gap-4">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-yellow-500/20 bg-yellow-900/10">
+                  <Crown className="h-4 w-4 text-yellow-500" />
+                </div>
+                <div>
+                  <div className="mb-0.5 text-sm font-medium text-gray-200">
+                    {item.title}
+                  </div>
+                  <div className="text-xs text-gray-500">{item.desc}</div>
+                </div>
+              </div>
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded border border-yellow-500/20 bg-yellow-900/20">
+                <Lock className="h-3.5 w-3.5 text-yellow-500" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function JourneySection() {
+  return (
+    <section className="mb-10 border-t border-purple-900/20 pt-8">
+      <div className="flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-center">
+        <div className="max-w-xs">
+          <div className="mb-2 text-[10px] font-bold uppercase tracking-widest text-purple-400">
+            Your Journey To VIP
+          </div>
+          <h3 className="mb-3 text-3xl font-bold leading-tight text-white">
+            Every step brings you closer.
+          </h3>
+          <p className="text-sm text-gray-400">
+            Complete 5 more referrals or upgrade anytime using your credit.
+          </p>
+        </div>
+
+        <div className="relative flex w-full flex-1 items-center justify-between">
+          {/* Connecting Line */}
+          <div className="absolute left-10 right-10 top-6 z-0 hidden h-px bg-[#1f1633] md:block" />
+
+          <div className="relative z-10 flex flex-col items-center bg-[#050308] px-2">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border-2 border-purple-500 bg-purple-900/20 text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.3)]">
+              <Eye className="h-5 w-5" />
+            </div>
+            <div className="mb-1 text-xs font-bold uppercase tracking-wider text-white">
+              1. Observe
+            </div>
+            <div className="w-24 text-center text-[10px] text-gray-500">
+              You&apos;re here
+              <br />
+              Exploring the ecosystem
+            </div>
+          </div>
+
+          <div className="relative z-10 flex flex-col items-center bg-[#050308] px-2">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-700 bg-[#111] text-gray-500">
+              <BookOpen className="h-5 w-5" />
+            </div>
+            <div className="mb-1 text-xs font-bold uppercase tracking-wider text-gray-400">
+              2. Learn
+            </div>
+            <div className="w-24 text-center text-[10px] text-gray-600">
+              Gain knowledge
+              <br />
+              from elite traders
+            </div>
+          </div>
+
+          <div className="relative z-10 flex flex-col items-center bg-[#050308] px-2">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-700 bg-[#111] text-gray-500">
+              <Users className="h-5 w-5" />
+            </div>
+            <div className="mb-1 text-xs font-bold uppercase tracking-wider text-gray-400">
+              3. Participate
+            </div>
+            <div className="w-24 text-center text-[10px] text-gray-600">
+              Join discussions
+              <br />
+              and engage
+            </div>
+          </div>
+
+          <div className="relative z-10 flex flex-col items-center bg-[#050308] px-2">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border-2 border-yellow-900 bg-yellow-900/10 text-yellow-600">
+              <Crown className="h-5 w-5" />
+            </div>
+            <div className="mb-1 text-xs font-bold uppercase tracking-wider text-yellow-600">
+              4. Upgrade
+            </div>
+            <div className="w-24 text-center text-[10px] text-gray-600">
+              Unlock full access
+              <br />
+              and grow faster
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ReferralCentre() {
+  return (
+    <section
+      className={freeCardSurface(
+        "purple",
+        "relative mb-10 overflow-hidden rounded-2xl p-6 md:p-8"
+      )}
+    >
+      <div className="pointer-events-none absolute left-1/2 top-0 h-[400px] w-[800px] -translate-x-1/2 rounded-full bg-purple-600/5 blur-[120px]" />
+
+      <div className="relative z-10 mb-6 flex items-center text-sm font-bold uppercase tracking-widest text-purple-400">
+        <Users className="mr-2 h-5 w-5" /> Referral Centre
+        <span className="ml-3 hidden text-xs font-normal normal-case tracking-normal text-gray-400 md:inline">
+          Refer 5 VIP members and unlock your next month free.
         </span>
       </div>
-      <div className="flex items-center gap-3 bg-[#110a1a] border border-[#2d1b4e] rounded-full p-1 pr-4 cursor-pointer hover:bg-[#1a0f2e] transition-colors">
-        <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center text-white font-bold">
-          {mockUser.avatar}
-        </div>
-        <span className="text-white text-sm font-medium">{mockUser.name}</span>
-        <ChevronDown className="w-4 h-4 text-gray-400" />
-      </div>
-    </div>
-  </header>
-);
 
-const FreeHeroSection = () => (
-  <section className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
-    <div className="relative bg-[#0c0814] border border-purple-900/40 rounded-2xl p-8 overflow-hidden flex flex-col justify-between min-h-[280px]">
-      <div className="relative z-10">
-        <div className="text-purple-400 text-sm mb-1">Welcome back,</div>
-        <h2 className="text-4xl md:text-5xl font-bold text-white mb-2">{mockUser.name}.</h2>
-        <h3 className="text-2xl md:text-3xl font-bold text-white mb-6">
-          You're exploring <br/>
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-fuchsia-400">the Free Community.</span>
-        </h3>
-        <p className="text-gray-400 text-sm max-w-sm leading-relaxed">
-          You've unlocked the door. Explore, learn and connect. Upgrade when you're ready for deeper insights and full access.
-        </p>
-      </div>
-      {/* Decorative Right Graphic */}
-      <div className="absolute right-0 top-0 bottom-0 w-1/3 pointer-events-none hidden md:flex items-center justify-center">
-        <div className="relative w-32 h-48 border border-purple-500/30 rounded-xl flex items-center justify-center shadow-[0_0_50px_rgba(168,85,247,0.15)] bg-gradient-to-b from-purple-900/10 to-transparent">
-          <Target className="w-12 h-12 text-purple-400/50" />
-        </div>
-      </div>
-    </div>
-
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div className="bg-[#0c0814] border border-purple-900/20 rounded-xl p-5 flex flex-col justify-center">
-        <div className="flex items-center text-gray-400 text-[10px] uppercase font-bold tracking-wider mb-2">
-          <Calendar className="w-3.5 h-3.5 mr-2 text-purple-400" /> Member Since
-        </div>
-        <div className="text-white font-medium text-lg">{mockHeroStatus.memberSince}</div>
-        <div className="text-gray-500 text-xs mt-1">{mockHeroStatus.daysAgo}</div>
-      </div>
-      
-      <div className="bg-[#0c0814] border border-purple-900/20 rounded-xl p-5 flex flex-col justify-center">
-        <div className="flex items-center text-gray-400 text-[10px] uppercase font-bold tracking-wider mb-2">
-          <User className="w-3.5 h-3.5 mr-2 text-purple-400" /> Membership
-        </div>
-        <div className="text-white font-medium text-lg">{mockHeroStatus.currentPlan}</div>
-        <div className="bg-purple-900/30 text-purple-400 text-[10px] px-2 py-0.5 rounded border border-purple-500/20 w-fit mt-2 uppercase font-bold">Current Plan</div>
-      </div>
-
-      <div className="bg-[#0c0814] border border-purple-900/20 rounded-xl p-5 flex flex-col justify-center relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/5 blur-[50px] rounded-full pointer-events-none" />
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center text-gray-400 text-[10px] uppercase font-bold tracking-wider">
-            <Gift className="w-3.5 h-3.5 mr-2 text-yellow-500" /> Welcome Credit
+      <div className="relative z-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className={freeInsetSurface("rounded-xl p-5")}>
+          <div className="mb-3 text-[10px] font-bold uppercase tracking-wider text-purple-400">
+            Your Referral Link
           </div>
-          <div className="text-right">
-            <div className="text-[9px] text-gray-500 uppercase font-bold">Expires In</div>
-            <div className="text-yellow-500 text-[10px] font-mono font-bold">{mockHeroStatus.creditExpiry}</div>
-          </div>
-        </div>
-        <div className="text-yellow-500 font-bold text-3xl mb-1">${mockHeroStatus.welcomeCredit}</div>
-        <div className="text-gray-500 text-xs">Available To Use</div>
-      </div>
-
-      <div className="bg-[#0c0814] border border-purple-900/20 rounded-xl p-5 flex flex-col justify-center">
-        <div className="flex items-center text-gray-400 text-[10px] uppercase font-bold tracking-wider mb-2">
-          <MessageSquare className="w-3.5 h-3.5 mr-2 text-[#5865F2]" /> Discord Access
-        </div>
-        <div className="flex items-center text-green-500 font-medium text-lg mb-1">
-          {mockHeroStatus.discordStatus} <CheckCircle2 className="w-5 h-5 ml-2" />
-        </div>
-        <div className="text-gray-500 text-xs">You can now join our Discord server.</div>
-      </div>
-    </div>
-  </section>
-);
-
-const AccessComparisonSection = () => (
-  <section className="relative grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 mt-10">
-    {/* VS Badge */}
-    <div className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-[#1a1423] border border-yellow-900/50 rounded-full items-center justify-center text-yellow-500 font-bold text-sm z-10 shadow-[0_0_15px_rgba(234,179,8,0.2)]">
-      VS
-    </div>
-
-    {/* Free Card */}
-    <div className="bg-[#0c0814] border border-purple-900/30 rounded-2xl p-6 md:p-8">
-      <div className="flex items-center text-purple-400 text-[10px] font-bold tracking-widest mb-4 uppercase bg-purple-900/20 w-fit px-3 py-1 rounded-full border border-purple-500/20">
-        <Eye className="w-3.5 h-3.5 mr-2" /> Your Current Access
-      </div>
-      <h3 className="text-white font-bold text-2xl mb-1">Free Community</h3>
-      <p className="text-gray-400 text-sm mb-8">Open Access. Real Value.</p>
-
-      <div className="space-y-6">
-        {mockComparison.free.map(item => (
-          <div key={item.id} className="flex items-center justify-between group">
-            <div className="flex items-start gap-4">
-              <div className="w-8 h-8 rounded-lg bg-purple-900/20 flex items-center justify-center border border-purple-500/10 shrink-0">
-                <Users className="w-4 h-4 text-purple-400" />
-              </div>
-              <div>
-                <div className="text-white font-medium text-sm mb-0.5">{item.title}</div>
-                <div className="text-gray-500 text-xs">{item.desc}</div>
-              </div>
-            </div>
-            {item.type === 'check' ? (
-              <div className="w-6 h-6 rounded bg-purple-900/30 flex items-center justify-center shrink-0 border border-purple-500/20">
-                <Check className="w-3.5 h-3.5 text-purple-400" />
-              </div>
-            ) : (
-              <div className="text-right shrink-0">
-                <div className="text-purple-400 font-bold text-sm">{item.value} <span className="text-gray-500 font-normal">/ {item.total}</span></div>
-                <div className="text-gray-500 text-[10px] uppercase">{item.label}</div>
-              </div>
+          <div
+            className={freeWellSurface(
+              "mb-4 flex items-center rounded-lg p-1.5"
             )}
-          </div>
-        ))}
-      </div>
-    </div>
-
-    {/* VIP Card */}
-    <div className="bg-[#0c0814] border border-yellow-900/40 rounded-2xl p-6 md:p-8 relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-500/5 blur-[80px] rounded-full pointer-events-none" />
-      <div className="flex items-center text-yellow-500 text-[10px] font-bold tracking-widest mb-4 uppercase bg-yellow-900/20 w-fit px-3 py-1 rounded-full border border-yellow-500/20 relative z-10">
-        <Lock className="w-3.5 h-3.5 mr-2" /> Upgrade To Unlock
-      </div>
-      <h3 className="text-white font-bold text-2xl mb-1 relative z-10">VIP Community</h3>
-      <p className="text-gray-400 text-sm mb-8 relative z-10">Deeper Access. Higher Edge.</p>
-
-      <div className="space-y-6 relative z-10">
-        {mockComparison.vip.map(item => (
-          <div key={item.id} className="flex items-center justify-between opacity-80 hover:opacity-100 transition-opacity">
-            <div className="flex items-start gap-4">
-              <div className="w-8 h-8 rounded-lg bg-yellow-900/10 flex items-center justify-center border border-yellow-500/20 shrink-0">
-                <Crown className="w-4 h-4 text-yellow-500" />
-              </div>
-              <div>
-                <div className="text-gray-200 font-medium text-sm mb-0.5">{item.title}</div>
-                <div className="text-gray-500 text-xs">{item.desc}</div>
-              </div>
+          >
+            <div className="mx-2 text-gray-500">
+              <Lock className="h-4 w-4" />
             </div>
-            <div className="w-6 h-6 rounded bg-yellow-900/20 flex items-center justify-center shrink-0 border border-yellow-500/20">
-              <Lock className="w-3.5 h-3.5 text-yellow-500" />
-            </div>
+            <input
+              type="text"
+              readOnly
+              value={mockReferral.link}
+              className="flex-1 bg-transparent text-sm text-gray-300 outline-none"
+            />
+            <button
+              type="button"
+              className="rounded p-2 text-gray-400 transition-colors hover:bg-purple-900/30"
+            >
+              <Copy className="h-4 w-4" />
+            </button>
           </div>
-        ))}
-      </div>
-    </div>
-  </section>
-);
-
-const JourneySection = () => (
-  <section className="mb-10 pt-8 border-t border-purple-900/20">
-    <div className="flex flex-col lg:flex-row gap-10 items-start lg:items-center justify-between">
-      <div className="max-w-xs">
-        <div className="text-purple-400 text-[10px] font-bold tracking-widest uppercase mb-2">Your Journey To VIP</div>
-        <h3 className="text-white font-bold text-3xl mb-3 leading-tight">Every step brings you closer.</h3>
-        <p className="text-gray-400 text-sm">Complete 5 more referrals or upgrade anytime using your credit.</p>
-      </div>
-
-      <div className="flex-1 w-full flex items-center justify-between relative">
-        {/* Connecting Line */}
-        <div className="absolute left-10 right-10 top-6 h-px bg-[#1f1633] z-0 hidden md:block" />
-        
-        <div className="flex flex-col items-center relative z-10 bg-[#050505] px-2">
-          <div className="w-12 h-12 rounded-full border-2 border-purple-500 bg-purple-900/20 flex items-center justify-center text-purple-400 mb-4 shadow-[0_0_15px_rgba(168,85,247,0.3)]">
-            <Eye className="w-5 h-5" />
+          <div className="mb-6 flex gap-3">
+            <button
+              type="button"
+              className="flex-1 rounded-lg border border-purple-900/50 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-purple-900/20"
+            >
+              Edit Link
+            </button>
+            <button
+              type="button"
+              className="flex-1 rounded-lg bg-purple-600 py-2 text-sm font-medium text-white shadow-[0_0_15px_rgba(147,51,234,0.3)] transition-colors hover:bg-purple-500"
+            >
+              Share Link
+            </button>
           </div>
-          <div className="text-white text-xs font-bold uppercase tracking-wider mb-1">1. Observe</div>
-          <div className="text-gray-500 text-[10px] text-center w-24">You're here<br/>Exploring the ecosystem</div>
-        </div>
-
-        <div className="flex flex-col items-center relative z-10 bg-[#050505] px-2">
-          <div className="w-12 h-12 rounded-full border-2 border-gray-700 bg-[#111] flex items-center justify-center text-gray-500 mb-4">
-            <BookOpen className="w-5 h-5" />
+          <div className="mb-3 text-[10px] font-bold uppercase tracking-wider text-purple-400">
+            Referral Rules
           </div>
-          <div className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">2. Learn</div>
-          <div className="text-gray-600 text-[10px] text-center w-24">Gain knowledge<br/>from elite traders</div>
-        </div>
-
-        <div className="flex flex-col items-center relative z-10 bg-[#050505] px-2">
-          <div className="w-12 h-12 rounded-full border-2 border-gray-700 bg-[#111] flex items-center justify-center text-gray-500 mb-4">
-            <Users className="w-5 h-5" />
-          </div>
-          <div className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">3. Participate</div>
-          <div className="text-gray-600 text-[10px] text-center w-24">Join discussions<br/>and engage</div>
-        </div>
-
-        <div className="flex flex-col items-center relative z-10 bg-[#050505] px-2">
-          <div className="w-12 h-12 rounded-full border-2 border-yellow-900 bg-yellow-900/10 flex items-center justify-center text-yellow-600 mb-4">
-            <Crown className="w-5 h-5" />
-          </div>
-          <div className="text-yellow-600 text-xs font-bold uppercase tracking-wider mb-1">4. Upgrade</div>
-          <div className="text-gray-600 text-[10px] text-center w-24">Unlock full access<br/>and grow faster</div>
-        </div>
-      </div>
-    </div>
-  </section>
-);
-
-const ReferralCentre = () => (
-  <section className="mb-10 bg-[#080512] border border-purple-900/40 rounded-2xl p-6 md:p-8 relative overflow-hidden">
-    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-purple-600/5 blur-[120px] rounded-full pointer-events-none" />
-
-    <div className="flex items-center text-purple-400 text-sm font-bold tracking-widest mb-6 uppercase relative z-10">
-      <Users className="w-5 h-5 mr-2" /> Referral Centre
-      <span className="text-gray-400 text-xs font-normal ml-3 normal-case tracking-normal hidden md:inline">Refer 5 VIP members and unlock your next month free.</span>
-    </div>
-
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
-      <div className="border border-purple-900/30 rounded-xl p-5 bg-[#0c0814]/80 backdrop-blur-sm">
-        <div className="text-[10px] text-purple-400 font-bold mb-3 uppercase tracking-wider">Your Referral Link</div>
-        <div className="flex items-center bg-[#050308] border border-purple-900/50 rounded-lg p-1.5 mb-4">
-          <div className="text-gray-500 mx-2"><Lock className="w-4 h-4"/></div>
-          <input type="text" readOnly value={mockReferral.link} className="bg-transparent flex-1 text-sm text-gray-300 outline-none" />
-          <button className="p-2 hover:bg-purple-900/30 rounded text-gray-400 transition-colors"><Copy className="w-4 h-4"/></button>
-        </div>
-        <div className="flex gap-3 mb-6">
-          <button className="flex-1 border border-purple-900/50 text-gray-300 hover:bg-purple-900/20 py-2 rounded-lg text-sm font-medium transition-colors">Edit Link</button>
-          <button className="flex-1 bg-purple-600 hover:bg-purple-500 text-white py-2 rounded-lg text-sm font-medium transition-colors shadow-[0_0_15px_rgba(147,51,234,0.3)]">Share Link</button>
-        </div>
-        <div className="text-[10px] text-purple-400 font-bold mb-3 uppercase tracking-wider">Referral Rules</div>
-        <ul className="space-y-2 text-[12px] text-gray-400">
-          {mockReferral.rules.map((rule, idx) => (
-            <li key={idx} className="flex items-start">
-              <Check className="w-3.5 h-3.5 text-green-500 mr-2 shrink-0 mt-0.5" /> {rule}
+          <ul className="space-y-2 text-[12px] text-gray-400">
+            {mockReferral.rules.map((rule, idx) => (
+              <li key={idx} className="flex items-start">
+                <Check className="mr-2 mt-0.5 h-3.5 w-3.5 shrink-0 text-green-500" />{" "}
+                {rule}
+              </li>
+            ))}
+            <li className="mt-4 flex items-start border-t border-purple-900/30 pt-4 text-[11px] text-purple-400/80">
+              <div className="mr-2 mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-purple-400/80 font-bold">
+                i
+              </div>
+              Only completed VIP purchases count toward referral progress.
             </li>
-          ))}
-          <li className="flex items-start text-[11px] text-purple-400/80 mt-4 pt-4 border-t border-purple-900/30">
-            <div className="w-4 h-4 rounded-full border border-purple-400/80 flex items-center justify-center mr-2 shrink-0 mt-0.5 font-bold">i</div>
-            Only completed VIP purchases count toward referral progress.
-          </li>
-        </ul>
-      </div>
-
-      <div className="border border-purple-900/30 rounded-xl p-5 bg-[#0c0814]/80 backdrop-blur-sm flex flex-col items-center justify-center text-center">
-        <div className="text-[10px] text-purple-400 font-bold mb-2 uppercase tracking-wider">Referral Progress</div>
-        <div className="text-gray-300 text-sm mb-6">Refer 5 VIP Members</div>
-        <div className="text-6xl font-bold text-purple-500 mb-8 tracking-tighter drop-shadow-[0_0_15px_rgba(147,51,234,0.2)]">
-          {mockReferral.current}<span className="text-3xl text-purple-900">/{mockReferral.target}</span>
+          </ul>
         </div>
-        <div className="flex justify-center gap-3 w-full mb-6">
-          {[1, 2, 3, 4, 5].map(i => (
-            <div key={i} className="flex flex-col items-center gap-2">
-              <div className="w-10 h-10 rounded-full border border-purple-900/40 bg-[#050308] flex items-center justify-center text-gray-600 shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]">
-                <User className="w-4 h-4" />
+
+        <div
+          className={freeInsetSurface(
+            "flex flex-col items-center justify-center rounded-xl p-5 text-center"
+          )}
+        >
+          <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-purple-400">
+            Referral Progress
+          </div>
+          <div className="mb-6 text-sm text-gray-300">Refer 5 VIP Members</div>
+          <div className="mb-8 text-6xl font-bold tracking-tighter text-purple-500 drop-shadow-[0_0_15px_rgba(147,51,234,0.2)]">
+            {mockReferral.current}
+            <span className="text-3xl text-purple-900">/{mockReferral.target}</span>
+          </div>
+          <div className="mb-6 flex w-full justify-center gap-3">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="flex flex-col items-center gap-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-purple-900/40 bg-[#0f0a18] text-gray-600 shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]">
+                  <User className="h-4 w-4" />
+                </div>
+                <span className="text-[10px] text-gray-500">Pending</span>
               </div>
-              <span className="text-[10px] text-gray-500">Pending</span>
+            ))}
+          </div>
+          <div className="text-xs text-gray-500">
+            {mockReferral.current} Completed
+          </div>
+        </div>
+
+        <div
+          className={freeInsetSurface(
+            "relative flex flex-col items-center justify-center overflow-hidden rounded-xl p-5 text-center"
+          )}
+        >
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(147,51,234,0.1)_0%,transparent_60%)]" />
+          <div className="z-10 mb-6 text-[10px] font-bold uppercase tracking-wider text-purple-400">
+            Reward Unlock
+          </div>
+          <div className="relative z-10 mb-6">
+            <div className="flex h-28 w-28 items-center justify-center rounded-2xl border border-purple-400/30 bg-gradient-to-br from-purple-400 via-purple-600 to-purple-900 shadow-[0_0_40px_rgba(147,51,234,0.3)]">
+              <Gift className="h-14 w-14 text-white drop-shadow-md" strokeWidth={1.5} />
+            </div>
+          </div>
+          <h3 className="z-10 mb-3 text-lg font-bold text-white">
+            Unlock Next Month Free
+          </h3>
+          <p className="z-10 px-4 text-sm leading-relaxed text-gray-400">
+            Bring 5 friends via your referral link. Once all referral conditions
+            are met, your next month is free.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function UpgradeCTASection() {
+  return (
+    <section
+      className={freeCardSurface(
+        "accent",
+        "relative mb-10 flex flex-col gap-8 overflow-hidden rounded-2xl p-6 md:p-8 lg:flex-row"
+      )}
+    >
+      <div className="pointer-events-none absolute right-0 top-0 h-full w-[500px] bg-gradient-to-l from-yellow-900/10 to-transparent" />
+
+      <div className="relative z-10 flex-1">
+        <div className="mb-8 flex items-start gap-6">
+          <div className="hidden h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-400 to-yellow-600 text-black shadow-[0_0_30px_rgba(234,179,8,0.2)] md:flex">
+            <Crown className="h-8 w-8" />
+          </div>
+          <div>
+            <h2 className="mb-2 text-2xl font-bold leading-tight text-gray-300 md:text-3xl">
+              Most communities give you information.
+              <br />
+              <span className="text-white">TraderCity gives you context.</span>
+            </h2>
+          </div>
+        </div>
+
+        <div className="mb-4 text-[10px] font-bold uppercase tracking-widest text-yellow-500">
+          Unlock Everything In VIP
+        </div>
+        <div className="grid grid-cols-1 gap-x-6 gap-y-3 md:grid-cols-2">
+          {[
+            "Full Discord Access",
+            "Complete Education Framework",
+            "Weekly BTC Microstructure Report",
+            "All Premium Market Perspectives",
+            "Weekly Quant Research Report",
+            "VIP Events & Workshops",
+            "Full Report Library (400+)",
+            "30 Days Full Access",
+          ].map((feature, i) => (
+            <div key={i} className="flex items-center text-sm text-gray-300">
+              <CheckCircle2 className="mr-3 h-4 w-4 shrink-0 text-green-500" />{" "}
+              {feature}
             </div>
           ))}
         </div>
-        <div className="text-xs text-gray-500">{mockReferral.current} Completed</div>
       </div>
 
-      <div className="border border-purple-900/30 rounded-xl p-5 bg-[#0c0814]/80 backdrop-blur-sm flex flex-col items-center justify-center text-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(147,51,234,0.1)_0%,transparent_60%)] pointer-events-none" />
-        <div className="text-[10px] text-purple-400 font-bold mb-6 uppercase tracking-wider z-10">Reward Unlock</div>
-        <div className="relative mb-6 z-10">
-          <div className="w-28 h-28 bg-gradient-to-br from-purple-400 via-purple-600 to-purple-900 rounded-2xl flex items-center justify-center shadow-[0_0_40px_rgba(147,51,234,0.3)] border border-purple-400/30">
-            <Gift className="w-14 h-14 text-white drop-shadow-md" strokeWidth={1.5} />
-          </div>
-        </div>
-        <h3 className="text-white font-bold text-lg mb-3 z-10">Unlock Next Month Free</h3>
-        <p className="text-gray-400 text-sm z-10 px-4 leading-relaxed">
-          Bring 5 friends via your referral link. Once all referral conditions are met, your next month is free.
-        </p>
-      </div>
-    </div>
-  </section>
-);
-
-const UpgradeCTASection = () => (
-  <section className="mb-10 bg-[#0c0814] border border-yellow-900/30 rounded-2xl p-6 md:p-8 flex flex-col lg:flex-row gap-8 relative overflow-hidden">
-    <div className="absolute top-0 right-0 w-[500px] h-full bg-gradient-to-l from-yellow-900/10 to-transparent pointer-events-none" />
-    
-    <div className="flex-1 relative z-10">
-      <div className="flex items-start gap-6 mb-8">
-        <div className="hidden md:flex w-16 h-16 rounded-xl bg-gradient-to-br from-yellow-400 to-yellow-600 items-center justify-center shrink-0 shadow-[0_0_30px_rgba(234,179,8,0.2)] text-black">
-          <Crown className="w-8 h-8" />
-        </div>
+      <div
+        className={freeCardSurface(
+          "accent",
+          "relative z-10 flex w-full flex-col justify-between rounded-xl p-6 lg:w-[350px]"
+        )}
+      >
         <div>
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-300 leading-tight mb-2">
-            Most communities give you information.<br/>
-            <span className="text-white">TraderCity gives you context.</span>
-          </h2>
-        </div>
-      </div>
-
-      <div className="text-yellow-500 text-[10px] font-bold tracking-widest uppercase mb-4">Unlock Everything In VIP</div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-6">
-        {[
-          "Full Discord Access", "Complete Education Framework",
-          "Weekly BTC Microstructure Report", "All Premium Market Perspectives",
-          "Weekly Quant Research Report", "VIP Events & Workshops",
-          "Full Report Library (400+)", "30 Days Full Access"
-        ].map((feature, i) => (
-          <div key={i} className="flex items-center text-gray-300 text-sm">
-            <CheckCircle2 className="w-4 h-4 text-green-500 mr-3 shrink-0" /> {feature}
-          </div>
-        ))}
-      </div>
-    </div>
-
-    <div className="w-full lg:w-[350px] bg-[#050308] border border-yellow-900/40 rounded-xl p-6 relative z-10 flex flex-col justify-between">
-      <div>
-        <div className="flex justify-between items-center mb-3">
-          <div className="text-gray-400 text-xs uppercase tracking-wider">Regular Price</div>
-          <div className="text-gray-400 text-sm strikethrough line-through">$60</div>
-        </div>
-        <div className="flex justify-between items-center mb-6 pb-6 border-b border-purple-900/30">
-          <div className="text-purple-400 text-xs uppercase tracking-wider font-bold">Your Credit</div>
-          <div className="text-green-400 text-sm font-bold">-$10</div>
-        </div>
-        <div className="flex justify-between items-end mb-6">
-          <div className="text-gray-300 text-sm font-bold uppercase tracking-wider">Today You Pay</div>
-          <div className="text-yellow-500 text-4xl font-bold leading-none">$50</div>
-        </div>
-      </div>
-      
-      <div>
-        <button className="w-full bg-gradient-to-r from-yellow-600 to-yellow-400 hover:from-yellow-500 hover:to-yellow-300 text-black py-3.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(234,179,8,0.2)] flex items-center justify-center gap-2 mb-3">
-          <Lock className="w-4 h-4" /> Upgrade to VIP Now
-        </button>
-        <div className="flex items-center justify-center text-gray-500 text-[10px] mb-4">
-          <Clock className="w-3 h-3 mr-1.5" /> Offer expires in: 1d 23h 44m 43s
-        </div>
-        <button className="w-full border border-purple-800/50 bg-purple-900/20 hover:bg-purple-900/40 text-purple-400 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 text-sm">
-          Invite Friends <Share2 className="w-4 h-4" />
-        </button>
-      </div>
-    </div>
-  </section>
-);
-
-const PricingPlansSection = () => (
-  <section className="mb-10 text-center">
-    <div className="text-purple-400 text-[10px] font-bold tracking-widest uppercase mb-2">Pricing Plans</div>
-    <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
-      Choose the plan that fits your <span className="text-purple-400">journey</span>
-    </h2>
-    <p className="text-gray-400 text-sm mb-6">All plans include full access to our VIP community and premium content.</p>
-
-    <div className="flex items-center justify-center gap-2 text-gray-400 text-xs bg-[#0c0814] border border-purple-900/30 w-fit mx-auto px-4 py-2 rounded-full mb-10">
-      <ShieldCheck className="w-4 h-4 text-purple-400" />
-      {/* <span className="font-bold text-gray-300 mr-1">30-Day Money Back Guarantee</span> */}
-      Not satisfied? Get a full refund within 30 days.
-    </div>
-
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto text-left">
-      {/* Quarterly Plan */}
-      <div className="bg-[#0c0814] border-2 border-yellow-500/80 rounded-2xl p-8 relative flex flex-col hover:-translate-y-1 transition-transform duration-300 shadow-[0_0_30px_rgba(234,179,8,0.05)]">
-        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-yellow-500 text-black text-[10px] font-bold tracking-widest uppercase px-4 py-1.5 rounded-full flex items-center gap-1.5 shadow-md">
-          <Star className="w-3 h-3 fill-black" /> Most Popular
-        </div>
-        
-        <div className="flex items-start gap-4 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-yellow-900/20 border border-yellow-500/30 flex items-center justify-center shrink-0">
-            <Calendar className="w-6 h-6 text-yellow-500" />
-          </div>
-          <div>
-            <h3 className="text-gray-300 font-bold uppercase tracking-wider text-sm mb-1">Quarterly</h3>
-            <div className="flex items-end gap-1 mb-1">
-              <span className="text-4xl font-bold text-white leading-none">$150</span>
-              <span className="text-gray-500 text-sm mb-1">/ 3 months</span>
+          <div className="mb-3 flex items-center justify-between">
+            <div className="text-xs uppercase tracking-wider text-gray-400">
+              {MONTHLY_WELCOME_UPGRADE_CTA.standardPriceLabel}
             </div>
-            <div className="flex items-center gap-2">
-              <span className="bg-yellow-500/20 text-yellow-500 text-[10px] font-bold px-2 py-0.5 rounded border border-yellow-500/20">Save $30</span>
-              <span className="text-gray-600 text-xs line-through">$180</span>
+            <div className="text-sm font-medium text-gray-300">
+              {MONTHLY_WELCOME_UPGRADE_CTA.standardPriceDisplay}
             </div>
           </div>
-        </div>
-
-        <div className="space-y-3 mb-8 flex-grow">
-          <div className="flex items-center text-gray-300 text-sm">
-            <CheckCircle2 className="w-4 h-4 text-green-500 mr-3 shrink-0" /> Full Discord Access
-          </div>
-          <div className="flex items-center text-gray-300 text-sm">
-            <CheckCircle2 className="w-4 h-4 text-green-500 mr-3 shrink-0" /> Complete Education Framework
-          </div>
-        </div>
-
-        <button className="w-full bg-yellow-500 hover:bg-yellow-400 text-black py-3.5 rounded-xl font-bold transition-all text-sm mb-3">
-          Choose Quarterly Plan
-        </button>
-        <div className="text-center text-gray-500 text-[10px]">Billed every 3 months.</div>
-      </div>
-
-      {/* Yearly Plan */}
-      <div className="bg-[#0c0814] border border-purple-600/50 rounded-2xl p-8 flex flex-col hover:-translate-y-1 transition-transform duration-300">
-        <div className="flex items-start gap-4 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-purple-900/20 border border-purple-500/30 flex items-center justify-center shrink-0">
-            <Calendar className="w-6 h-6 text-purple-400" />
-          </div>
-          <div>
-            <h3 className="text-gray-300 font-bold uppercase tracking-wider text-sm mb-1">Yearly</h3>
-            <div className="flex items-end gap-1 mb-1">
-              <span className="text-4xl font-bold text-white leading-none">$500</span>
-              <span className="text-gray-500 text-sm mb-1">/ year</span>
+          <div className="mb-6 flex items-center justify-between border-b border-purple-900/30 pb-6">
+            <div className="text-xs font-bold uppercase tracking-wider text-purple-400">
+              {MONTHLY_WELCOME_UPGRADE_CTA.adjustmentLabel}
             </div>
-            <div className="flex items-center gap-2">
-              <span className="bg-purple-900/50 text-purple-400 text-[10px] font-bold px-2 py-0.5 rounded border border-purple-500/30">Save $220</span>
-              <span className="text-gray-600 text-xs line-through">$720</span>
+            <div className="text-sm font-bold text-green-400">
+              {MONTHLY_WELCOME_UPGRADE_CTA.adjustmentAmountDisplay}
             </div>
           </div>
+          <div className="mb-6 flex items-end justify-between">
+            <div className="text-sm font-bold uppercase tracking-wider text-gray-300">
+              {MONTHLY_WELCOME_UPGRADE_CTA.amountPayableLabel}
+            </div>
+            <div className="text-4xl font-bold leading-none text-yellow-500">
+              {MONTHLY_WELCOME_UPGRADE_CTA.finalPayableDisplay}
+            </div>
+          </div>
+          <p className="mb-4 text-[11px] leading-relaxed text-gray-500">
+            {MONTHLY_WELCOME_UPGRADE_CTA.footnote}
+          </p>
         </div>
 
-        <div className="space-y-3 mb-8 flex-grow">
-          <div className="flex items-center text-gray-300 text-sm">
-            <CheckCircle2 className="w-4 h-4 text-green-500 mr-3 shrink-0" /> Full Discord Access
+        <div>
+          <button
+            type="button"
+            className="mb-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-yellow-600 to-yellow-400 py-3.5 font-bold text-black shadow-[0_0_20px_rgba(234,179,8,0.2)] transition-all hover:from-yellow-500 hover:to-yellow-300"
+          >
+            <Lock className="h-4 w-4" /> Upgrade to VIP Now
+          </button>
+          <div className="mb-4 flex items-center justify-center text-[10px] text-gray-500">
+            <Clock className="mr-1.5 h-3 w-3" /> {MONTHLY_WELCOME_UPGRADE_CTA.chip}
           </div>
-          <div className="flex items-center text-gray-300 text-sm">
-            <CheckCircle2 className="w-4 h-4 text-green-500 mr-3 shrink-0" /> All Premium Reports
-          </div>
+          <button
+            type="button"
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-purple-800/50 bg-purple-900/20 py-3 text-sm font-medium text-purple-400 transition-all hover:bg-purple-900/40"
+          >
+            Invite Friends <Share2 className="h-4 w-4" />
+          </button>
         </div>
-
-        <button className="w-full border border-purple-600/80 bg-purple-900/20 hover:bg-purple-900/40 text-purple-300 py-3.5 rounded-xl font-bold transition-all text-sm mb-3">
-          Choose Yearly Plan
-        </button>
-        <div className="text-center text-gray-500 text-[10px]">Billed once per year.</div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+}
 
-export default function FreeDashboardPage() {
+function PricingPlansSection() {
+  const monthly = MEMBERSHIP_PLANS.monthly;
+  const quarterly = MEMBERSHIP_PLANS.quarterly;
+  const yearly = MEMBERSHIP_PLANS.yearly;
+
+  const quarterlyCompareUsd = monthly.priceUsd * 3;
+  const yearlyCompareUsd = monthly.priceUsd * 12;
+  const quarterlySaveUsd = quarterlyCompareUsd - quarterly.priceUsd;
+  const yearlySaveUsd = yearlyCompareUsd - yearly.priceUsd;
+
+  return (
+    <section className="mb-10 text-center">
+      <div className="mb-2 text-[10px] font-bold uppercase tracking-widest text-purple-400">
+        Pricing Plans
+      </div>
+      <h2 className="mb-2 text-2xl font-bold text-white md:text-3xl">
+        Choose the plan that fits your{" "}
+        <span className="text-purple-400">journey</span>
+      </h2>
+      <p className="mb-6 text-sm text-gray-400">
+        All plans include full access to our VIP community and premium content.
+      </p>
+
+      <div
+        className={freeCardSurface(
+          "purple",
+          "mx-auto mb-10 flex w-fit items-center justify-center gap-2 rounded-full px-4 py-2 text-xs text-gray-400"
+        )}
+      >
+        <ShieldCheck className="h-4 w-4 text-purple-400" />
+        Not satisfied? Get a full refund within 30 days.
+      </div>
+
+      <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 text-left md:grid-cols-2">
+        {/* Quarterly Plan */}
+        <div
+          className={freeCardSurface(
+            "accent",
+            "relative flex flex-col rounded-2xl border-2 border-yellow-500/80 p-8 shadow-[0_0_30px_rgba(234,179,8,0.05)] transition-transform duration-300 hover:-translate-y-1"
+          )}
+        >
+          <div className="absolute -top-3.5 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-yellow-500 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-black shadow-md">
+            <Star className="h-3 w-3 fill-black" /> Most Popular
+          </div>
+
+          <div className="mb-6 flex items-start gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-yellow-500/30 bg-yellow-900/20">
+              <Calendar className="h-6 w-6 text-yellow-500" />
+            </div>
+            <div>
+              <h3 className="mb-1 text-sm font-bold uppercase tracking-wider text-gray-300">
+                {quarterly.label}
+              </h3>
+              <div className="mb-1 flex items-end gap-1">
+                <span className="text-4xl font-bold leading-none text-white">
+                  {quarterly.priceDisplay}
+                </span>
+                <span className="mb-1 text-sm text-gray-500">
+                  {quarterly.periodLabel}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="rounded border border-yellow-500/20 bg-yellow-500/20 px-2 py-0.5 text-[10px] font-bold text-yellow-500">
+                  Save ${quarterlySaveUsd}
+                </span>
+                <span className="text-xs text-gray-600 line-through">
+                  ${quarterlyCompareUsd}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-8 flex-grow space-y-3">
+            <div className="flex items-center text-sm text-gray-300">
+              <CheckCircle2 className="mr-3 h-4 w-4 shrink-0 text-green-500" />{" "}
+              Full Discord Access
+            </div>
+            <div className="flex items-center text-sm text-gray-300">
+              <CheckCircle2 className="mr-3 h-4 w-4 shrink-0 text-green-500" />{" "}
+              Complete Education Framework
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="mb-3 w-full rounded-xl bg-yellow-500 py-3.5 text-sm font-bold text-black transition-all hover:bg-yellow-400"
+          >
+            Choose {quarterly.label} Plan
+          </button>
+          <div className="text-center text-[10px] text-gray-500">
+            Billed every 3 months.
+          </div>
+        </div>
+
+        {/* Yearly Plan */}
+        <div
+          className={freeCardSurface(
+            "purple",
+            "flex flex-col rounded-2xl border-purple-600/50 p-8 transition-transform duration-300 hover:-translate-y-1"
+          )}
+        >
+          <div className="mb-6 flex items-start gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-900/20">
+              <Calendar className="h-6 w-6 text-purple-400" />
+            </div>
+            <div>
+              <h3 className="mb-1 text-sm font-bold uppercase tracking-wider text-gray-300">
+                {yearly.label}
+              </h3>
+              <div className="mb-1 flex items-end gap-1">
+                <span className="text-4xl font-bold leading-none text-white">
+                  {yearly.priceDisplay}
+                </span>
+                <span className="mb-1 text-sm text-gray-500">
+                  {yearly.periodLabel}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="rounded border border-purple-500/30 bg-purple-900/50 px-2 py-0.5 text-[10px] font-bold text-purple-400">
+                  Save ${yearlySaveUsd}
+                </span>
+                <span className="text-xs text-gray-600 line-through">
+                  ${yearlyCompareUsd}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-8 flex-grow space-y-3">
+            <div className="flex items-center text-sm text-gray-300">
+              <CheckCircle2 className="mr-3 h-4 w-4 shrink-0 text-green-500" />{" "}
+              Full Discord Access
+            </div>
+            <div className="flex items-center text-sm text-gray-300">
+              <CheckCircle2 className="mr-3 h-4 w-4 shrink-0 text-green-500" /> All
+              Premium Reports
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="mb-3 w-full rounded-xl border border-purple-600/80 bg-purple-900/20 py-3.5 text-sm font-bold text-purple-300 transition-all hover:bg-purple-900/40"
+          >
+            Choose {yearly.label} Plan
+          </button>
+          <div className="text-center text-[10px] text-gray-500">
+            Billed once per year.
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default function FreeDashboardContent() {
   return (
     <div className="min-h-screen bg-[#050308] font-sans selection:bg-purple-500/30">
-      <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-6 md:py-10">
+      <div className="mx-auto max-w-[1200px] px-4 py-6 md:px-8 md:py-10">
         <DashboardHeader />
         <main>
           <FreeHeroSection />

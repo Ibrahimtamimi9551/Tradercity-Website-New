@@ -5,7 +5,7 @@
 **Document Version:** 2.1  
 **Status:** Living Specification
 
-> Read [`07_Vision_Before_Implementation.md`](07_Vision_Before_Implementation.md) for authoritative philosophy and scope. This chapter defines module relationships. Full workflow narrative: [`05_Operations_Center_Vision_Report.md`](05_Operations_Center_Vision_Report.md).
+> Read [`07_Vision_Before_Implementation.md`](07_Vision_Before_Implementation.md) for authoritative philosophy and scope. This chapter defines module relationships. Full workflow narrative: [`05_Operations_Center_Vision_Report.md`](05_Operations_Center_Vision_Report.md). Subscription pricing + future payment verification stack: [`08_Subscription_Pricing_and_Payment_Verification_Architecture.md`](08_Subscription_Pricing_and_Payment_Verification_Architecture.md).
 
 ---
 
@@ -398,8 +398,8 @@ New modules should:
 - Business logic
 - Database operations
 - Real Discord integration
-- Payment verification logic
+- Payment verification logic (algorithms, chain access — backend-owned)
 
-These will be connected in later development phases.
-
-Design hooks and types for NestJS integration with clear TODO comments.
+Design frontend hooks and shared types that describe required capabilities.  
+Leave NestJS / schema / chain design to the backend developer.  
+Subscription stack: catalog + pricing (live) and verification capability types in `src/lib/membership/verification/`. See [`08_Subscription_Pricing_and_Payment_Verification_Architecture.md`](08_Subscription_Pricing_and_Payment_Verification_Architecture.md) (includes **Frontend Architecture Ownership**).

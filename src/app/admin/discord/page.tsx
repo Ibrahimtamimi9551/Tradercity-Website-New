@@ -1,11 +1,9 @@
-﻿import { ModulePlaceholder } from "@/components/admin/layout/ModulePlaceholder";
+﻿import { DiscordPage } from "@/components/members/sections/discord";
 
-export default function DiscordPage() {
-  return (
-    <ModulePlaceholder
-      title="Discord"
-      subtitle="Synchronization between TraderCity membership and Discord roles."
-      phase="Phase 5"
-    />
-  );
+/**
+ * Phase 5 — Discord Synchronization Center.
+ * TraderCity is the source of truth; Discord mirrors membership state.
+ */
+export default function DiscordRoutePage() {
+  return <DiscordPage />;
 }
