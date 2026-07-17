@@ -2,13 +2,19 @@
 
 This documentation provides permanent context for AI coding assistants.
 
-## Start Here — Project Governance v1.0
+## Start Here — Project Governance
 
-Official engineering handbook (workflow, Git, release, testing, AI rules, history):
+Official engineering handbook (product, roadmap, ownership, Git, release, testing, AI):
 
 **[`00_Project_Governance/`](./00_Project_Governance/)**
 
-Every AI agent should read this folder before making changes.
+Especially:
+- [`ENGINEERING_PLATFORM_V2.md`](./00_Project_Governance/ENGINEERING_PLATFORM_V2.md) — five-layer platform migration
+- [`PROJECT_ROADMAP.md`](./00_Project_Governance/PROJECT_ROADMAP.md) — master delivery map
+- [`MODULE_OWNERSHIP.md`](./00_Project_Governance/MODULE_OWNERSHIP.md) — source ownership
+
+Every AI agent should read this folder before making changes.  
+**Do not start new product features until Engineering Platform v2.0 is complete.**
 
 ## Purpose
 - Preserve TraderCity architecture

@@ -14,15 +14,23 @@ Official engineering handbook — mandatory before implementation:
 
 Start with:
 - `README.md`
+- `ENGINEERING_PLATFORM_V2.md` (until Platform v2.0 is complete)
+- `PROJECT_ROADMAP.md`
+- `MODULE_OWNERSHIP.md`
 - `AI_DEVELOPMENT_GUIDELINES.md`
 - `PROJECT_ARCHITECTURE.md`
-- `DEVELOPMENT_WORKFLOW.md`
-- `GIT_BRANCHING_STRATEGY.md`
+
+Before coding, state:
+1. Roadmap item
+2. Owning domain
+3. Allowed path prefixes
 
 Standing rules:
 - Product Architecture ≠ Git Structure
-- New features use `feature/*`; investigations use `experiment/*`; production emergencies use `hotfix/*`
+- Source ownership mirrors Product Architecture
+- New features use `feature/*` from the roadmap; investigations use `experiment/*`; hotfixes use `hotfix/*`
 - Do not modify unrelated modules, invent APIs, or bypass testing/release docs
+- Do not start new product features until Engineering Platform v2.0 is complete (unless explicitly overridden)
 
 ## Allowed
 - Refactor components

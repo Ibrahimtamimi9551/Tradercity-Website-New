@@ -5,25 +5,31 @@ alwaysApply: true
 
 # Project Governance (Mandatory)
 
-TraderCity is in the Engineering Phase. Before implementing features or refactors, read:
+Before implementing features or refactors, read:
 
 1. `docs/00_Project_Governance/README.md`
-2. `docs/00_Project_Governance/AI_DEVELOPMENT_GUIDELINES.md`
-3. `docs/00_Project_Governance/PROJECT_ARCHITECTURE.md`
-4. Domain docs under `docs/AI/Agents/<Domain>/` when relevant
+2. `docs/00_Project_Governance/ENGINEERING_PLATFORM_V2.md` (until complete)
+3. `docs/00_Project_Governance/PROJECT_ROADMAP.md`
+4. `docs/00_Project_Governance/MODULE_OWNERSHIP.md`
+5. `docs/00_Project_Governance/AI_DEVELOPMENT_GUIDELINES.md`
+6. Domain docs under `docs/AI/Agents/<Domain>/` when relevant
+
+Before coding, state: roadmap item → owning domain → allowed paths.
+
+## Five layers
+
+Product · Repository (Git) · Source ownership · Documentation · AI
 
 ## Standing rules
 
 - Product Architecture ≠ Git Structure
-- Git manages changes; it does not represent the product
-- New work: `feature/*` from `develop` (or agreed integration baseline until `develop` exists)
-- Investigations: `experiment/*` (temporary)
-- Production emergencies: `hotfix/*`
-- Never modify unrelated modules
-- Never refactor without approval
-- Never invent APIs or change backend contracts unless explicitly tasked
-- Reuse existing design system and folder structure
+- Source ownership mirrors Product Architecture
+- New work: `feature/*` from roadmap via `develop`
+- Investigations: `experiment/*` · Emergencies: `hotfix/*`
+- Never modify unrelated modules or refactor without approval
+- Never invent APIs or change backend contracts unless tasked
 - Preserve Marketing ↔ Admin isolation
 - Do not bypass `TESTING_CHECKLIST.md` for UI merges
-- Governance/docs tasks must not change application functionality
-- Do not rename/delete long-lived branches unless explicitly tasked
+- Do not start new product features until Engineering Platform v2.0 is complete
+- Do not use Foundation branches (`prototype-redesign`, `homepage-cursor-experiment`, `mobile-investigation`) for new work
+- Do not rename/delete Foundation branches unless explicitly tasked

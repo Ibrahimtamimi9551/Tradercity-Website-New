@@ -20,12 +20,16 @@ This document is non-negotiable.
 
 Before implementing features or refactors, read:
 
-1. `docs/00_Project_Governance/PROJECT_ARCHITECTURE.md`
-2. `docs/00_Project_Governance/DEVELOPMENT_WORKFLOW.md`
-3. `docs/00_Project_Governance/GIT_BRANCHING_STRATEGY.md`
-4. This file (`AI_DEVELOPMENT_GUIDELINES.md`)
-5. Domain-specific docs under `docs/AI/Agents/<Domain>/` when the task touches that domain
-6. Root `AGENTS.md` and `PROJECT_CONTEXT.md`
+1. `docs/00_Project_Governance/README.md`
+2. `docs/00_Project_Governance/ENGINEERING_PLATFORM_V2.md` (until Platform v2.0 is marked complete)
+3. `docs/00_Project_Governance/PROJECT_ROADMAP.md` — identify the roadmap item
+4. `docs/00_Project_Governance/MODULE_OWNERSHIP.md` — identify owning domain + allowed paths
+5. `docs/00_Project_Governance/PROJECT_ARCHITECTURE.md`
+6. `docs/00_Project_Governance/DEVELOPMENT_WORKFLOW.md`
+7. `docs/00_Project_Governance/GIT_BRANCHING_STRATEGY.md`
+8. This file (`AI_DEVELOPMENT_GUIDELINES.md`)
+9. Domain-specific docs under `docs/AI/Agents/<Domain>/` when the task touches that domain
+10. Root `AGENTS.md` and `PROJECT_CONTEXT.md`
 
 If the task involves release, deployment, or merge readiness, also read:
 
@@ -34,6 +38,8 @@ If the task involves release, deployment, or merge readiness, also read:
 - `TESTING_CHECKLIST.md`
 
 Do **not** bypass documented workflows.
+
+**Until Engineering Platform v2.0 is complete:** do not start new product features; only platform-migration work (or explicit user overrides).
 
 ---
 
@@ -120,15 +126,26 @@ Until repository reorganization creates `develop`, use the agreed integration ba
 ## Required Working Pattern
 
 ```text
-1. Read governance + domain docs
-2. Restate goal and constraints
-3. Identify domain(s) and file boundaries
+1. Read governance + roadmap + ownership + domain docs
+2. State roadmap item + owning domain + allowed paths
+3. Restate goal and constraints
 4. Explain plan and assumptions
-5. Implement minimal change
+5. Implement minimal change inside ownership boundaries
 6. Verify locally (lint/build + UI checks)
 7. Prepare Preview validation for UI work
 8. Report what changed, what was tested, what remains
+9. Update PROJECT_ROADMAP.md when a roadmap item completes
 ```
+
+## Five Layers (Know Without Asking)
+
+| Layer | Meaning |
+|-------|---------|
+| Product | Domains + roadmap |
+| Repository | `master` / `develop` / `feature/*` / `experiment/*` / `hotfix/*` |
+| Source | Ownership mirrors product (`MODULE_OWNERSHIP.md`) |
+| Documentation | Governance + module specs + development logs |
+| AI | These rules + Cursor rules + `AGENTS.md` |
 
 ---
 

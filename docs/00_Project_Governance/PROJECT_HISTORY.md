@@ -159,8 +159,10 @@ Create Next App
   → prototype-redesign homepage prototyping + architecture cleanup
   → homepage-cursor-experiment homepage refinement + Admin Phases 0–3
   → mobile-investigation deployment/mobile comparison (temporary)
-  → Governance v1.0 documentation (this folder)
-  → (next task) repository reorganization to master/develop/feature/experiment/hotfix
+  → Governance v1.0 documentation (transition commit on homepage-cursor-experiment)
+  → Engineering Platform v2.0 plan (five layers — not Git-only)
+  → (next) execute Engineering Platform v2.0
+  → Engineering Phase daily life: develop → feature/* → develop → master
 ```
 
 ---

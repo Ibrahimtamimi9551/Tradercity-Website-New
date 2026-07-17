@@ -1,21 +1,23 @@
-# TraderCity — Repository Migration Plan
+# TraderCity — Repository Migration Plan (Layer 2)
 
-**Document Version:** 1.0 (plan)  
-**Migration Version when executed:** 2.0  
-**Status:** Planned — do not execute until Governance v1.0 is committed  
-**Scope:** Align Git with Engineering Governance v1.0 without erasing Foundation Phase history
+**Document Version:** 1.1 (plan)  
+**Parent plan:** [`ENGINEERING_PLATFORM_V2.md`](./ENGINEERING_PLATFORM_V2.md)  
+**Status:** Planned — execute as **Layer 2** of Engineering Platform v2.0  
+**Scope:** Align Git with Engineering Governance without erasing Foundation Phase history
 
 ---
 
 ## Purpose
 
 Governance v1.0 defined the standard.  
-Repository Migration v2.0 makes Git conform to that standard.
+**Engineering Platform v2.0** makes the full ecosystem conform (Product, Git, Source, Docs, AI).
 
-This document preserves the story of the project and provides a checkboxed execution plan.
+This document is the **Layer 2 (Repository / Git)** checklist only.
 
-> **Never define a process and change the repository in the same step.**  
-> Governance documentation lands first. Migration follows.
+Do not treat “fixing Git” as the whole migration. Complete all five layers in `ENGINEERING_PLATFORM_V2.md`.
+
+> **Never define a process and change the platform in the same step.**  
+> Governance documentation lands first. Platform migration follows.
 
 ---
 
