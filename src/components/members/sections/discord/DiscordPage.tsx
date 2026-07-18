@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { RefreshCw } from "lucide-react";
 import {
   AdminDirectoryPanel,
@@ -28,6 +28,7 @@ import { DiscordWidgets } from "./DiscordWidgets";
 function DiscordPageContent() {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const deepLinkHandled = useRef(false);
 
   const {
@@ -66,17 +67,26 @@ function DiscordPageContent() {
     if (hasActiveFilters) setShowAdvanced(true);
   }, [hasActiveFilters, setShowAdvanced]);
 
+  // Mobile deep-link only: explicit `?member=` / `?memberId=` → detail page.
+  // Never navigate from inferred/default panel selection on initial list load.
   useEffect(() => {
     if (deepLinkHandled.current) return;
     if (pathname !== listPathname) return;
-    if (!selectedId || isAdminDesktop()) return;
+    if (isAdminDesktop()) return;
+
+    const deepLinkMember =
+      searchParams.get("member") ?? searchParams.get("memberId");
+    if (!deepLinkMember) return;
+
     deepLinkHandled.current = true;
     const href = getListHref({ includeMember: false });
     const query = href.includes("?") ? href.slice(href.indexOf("?") + 1) : "";
     router.replace(
-      query ? `${listPathname}/${selectedId}?${query}` : `${listPathname}/${selectedId}`
+      query
+        ? `${listPathname}/${deepLinkMember}?${query}`
+        : `${listPathname}/${deepLinkMember}`
     );
-  }, [getListHref, listPathname, pathname, router, selectedId]);
+  }, [getListHref, listPathname, pathname, router, searchParams]);
 
   const onSearchChange = useCallback(
     (search: string) => {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Gift, RefreshCw } from "lucide-react";
 import {
   AdminDirectoryPanel,
@@ -27,6 +27,7 @@ import { useReferralsDirectoryContext } from "./ReferralsDirectoryProvider";
 function ReferralsPageContent() {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const deepLinkHandled = useRef(false);
 
   const {
@@ -66,20 +67,26 @@ function ReferralsPageContent() {
     if (hasActiveFilters) setShowAdvanced(true);
   }, [hasActiveFilters, setShowAdvanced]);
 
-  // Mobile deep-link: `/admin/referrals?member=` → full-page detail (once).
+  // Mobile deep-link only: explicit `?member=` / `?memberId=` → detail page.
+  // Never navigate from inferred/default panel selection on initial list load.
   useEffect(() => {
     if (deepLinkHandled.current) return;
     if (pathname !== listPathname) return;
-    if (!selectedId || isAdminDesktop()) return;
+    if (isAdminDesktop()) return;
+
+    const deepLinkMember =
+      searchParams.get("member") ?? searchParams.get("memberId");
+    if (!deepLinkMember) return;
+
     deepLinkHandled.current = true;
     const href = getListHref({ includeMember: false });
     const query = href.includes("?") ? href.slice(href.indexOf("?") + 1) : "";
     router.replace(
       query
-        ? `${listPathname}/${selectedId}?${query}`
-        : `${listPathname}/${selectedId}`
+        ? `${listPathname}/${deepLinkMember}?${query}`
+        : `${listPathname}/${deepLinkMember}`
     );
-  }, [getListHref, listPathname, pathname, router, selectedId]);
+  }, [getListHref, listPathname, pathname, router, searchParams]);
 
   const onSearchChange = useCallback(
     (search: string) => {
