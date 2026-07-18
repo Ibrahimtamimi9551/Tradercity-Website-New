@@ -4,18 +4,20 @@ import React from 'react';
 
 export default function VerificationSection() {
   /*
-    TODO: Future Backend Integration States
+    TODO: Future Backend Integration States (capabilities — backend owns implementation)
     - paymentSubmitted
-    - verificationStatus
+    - verificationStatus → PaymentVerificationOutcome (src/lib/membership/verification/)
     - membershipStatus
     - discordStatus
     - supportVisible
     - transactionHash
+    - expectedPayableUsd from Payment Quote (never assume plan list price; never live-recalculate)
+    - Compare quote.expectedAmountUsd vs payment received (verification capability)
   */
   
-  // Future state control: PENDING | PROCESSING | VERIFIED | FAILED
-  // Currently only rendering the 'PENDING' state as instructed.
-  // const verificationStatus = "PENDING"; 
+  // Product outcomes: pending | verifying | successful | underpaid | overpaid |
+  //   expired | failed | cancelled | refund_required
+  // UI currently renders PENDING only. Backend will drive outcome. 
 
   return (
     <div className="bg-[#10141D] border border-white/5 rounded-3xl p-6 md:p-10 shadow-2xl relative w-full mb-6 overflow-hidden">
