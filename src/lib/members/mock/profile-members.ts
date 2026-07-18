@@ -1,10 +1,12 @@
 import { MOCK_DIRECTORY_MEMBERS } from "@/lib/members/mock/directory-members";
+import { MEMBERSHIP_PLANS } from "@/lib/membership/plans";
 import type { DirectoryMember } from "@/types/members/directory";
 import type { MemberProfile } from "@/types/members/profile";
 
 /**
  * Mock Control Center aggregates — UI-only until NestJS GET /admin/members/:id.
  * Identity/status seeded from directory rows; Overview fields match Phase 3 specs.
+ * Plan amounts use official membership pricing (src/lib/membership/plans.ts).
  */
 
 const TX_SAMPLES = [
@@ -60,26 +62,35 @@ function formatHeaderMembership(member: DirectoryMember): MemberProfile["header"
 }
 
 function subscriptionFields(member: DirectoryMember, index: number): MemberProfile["subscription"] {
+  // Cycle official paid plans so admin UIs show Monthly $60 / Quarterly $150 / Yearly $500
+  const paidPlans = [
+    MEMBERSHIP_PLANS.monthly,
+    MEMBERSHIP_PLANS.quarterly,
+    MEMBERSHIP_PLANS.yearly,
+  ] as const;
+  const plan = paidPlans[index % paidPlans.length];
+  const vipPlanLabel = `VIP ${plan.label}`;
+
   if (member.subscription === "active") {
     return {
-      plan: "VIP Monthly",
+      plan: vipPlanLabel,
       statusLabel: "Successful",
       statusTone: "success",
       paymentDate: member.joinedAt,
       expiryDate: "2026-07-08T10:22:00",
-      daysRemaining: 30 - (index % 12),
+      daysRemaining: plan.durationDays - (index % 12),
       renewalCount: 1,
       activatedVia: "Auto Verification",
       transactionHash: TX_SAMPLES[index % TX_SAMPLES.length],
-      explorerUrl: "https://tronscan.org/",
-      paymentMethod: "Crypto USDT - TRC20",
-      amountPaid: "$60.00",
+      explorerUrl: "https://bscscan.com/",
+      paymentMethod: "Crypto USDT - BEP20",
+      amountPaid: plan.amountPaidDisplay,
     };
   }
 
   if (member.subscription === "pending_verification") {
     return {
-      plan: "VIP Monthly",
+      plan: vipPlanLabel,
       statusLabel: "Pending Verification",
       statusTone: "warning",
       paymentDate: member.joinedAt,
@@ -88,15 +99,15 @@ function subscriptionFields(member: DirectoryMember, index: number): MemberProfi
       renewalCount: 0,
       activatedVia: null,
       transactionHash: TX_SAMPLES[index % TX_SAMPLES.length],
-      explorerUrl: "https://tronscan.org/",
-      paymentMethod: "Crypto USDT - TRC20",
-      amountPaid: "$60.00",
+      explorerUrl: "https://bscscan.com/",
+      paymentMethod: "Crypto USDT - BEP20",
+      amountPaid: plan.amountPaidDisplay,
     };
   }
 
   if (member.subscription === "verification_required") {
     return {
-      plan: "VIP Monthly",
+      plan: vipPlanLabel,
       statusLabel: "Verification Required",
       statusTone: "danger",
       paymentDate: member.joinedAt,
@@ -105,9 +116,9 @@ function subscriptionFields(member: DirectoryMember, index: number): MemberProfi
       renewalCount: 0,
       activatedVia: null,
       transactionHash: TX_SAMPLES[index % TX_SAMPLES.length],
-      explorerUrl: "https://tronscan.org/",
-      paymentMethod: "Crypto USDT - TRC20",
-      amountPaid: "$60.00",
+      explorerUrl: "https://bscscan.com/",
+      paymentMethod: "Crypto USDT - BEP20",
+      amountPaid: plan.amountPaidDisplay,
     };
   }
 
@@ -133,7 +144,7 @@ function membershipFields(
 ): MemberProfile["membership"] {
   if (member.membership === "vip") {
     return {
-      currentPlan: sub.plan === "Free" ? "VIP Monthly" : sub.plan,
+      currentPlan: sub.plan === "Free" ? `VIP ${MEMBERSHIP_PLANS.monthly.label}` : sub.plan,
       statusLabel: member.subscription === "active" ? "Active" : "VIP (payment pending)",
       statusTone: member.subscription === "active" ? "success" : "warning",
       planStartedOn: member.joinedAt,
@@ -399,7 +410,7 @@ function buildProfile(member: DirectoryMember, index: number): MemberProfile {
 const M001_OVERRIDE: Partial<MemberProfile> = {
   email: "ibrahim@example.com",
   membership: {
-    currentPlan: "VIP Monthly",
+    currentPlan: `VIP ${MEMBERSHIP_PLANS.monthly.label}`,
     statusLabel: "Active",
     statusTone: "success",
     planStartedOn: "2026-06-08T10:22:00",
@@ -410,7 +421,7 @@ const M001_OVERRIDE: Partial<MemberProfile> = {
     totalDuration: "1 Month",
   },
   subscription: {
-    plan: "VIP Monthly",
+    plan: `VIP ${MEMBERSHIP_PLANS.monthly.label}`,
     statusLabel: "Successful",
     statusTone: "success",
     paymentDate: "2026-06-08T10:22:00",
@@ -419,9 +430,9 @@ const M001_OVERRIDE: Partial<MemberProfile> = {
     renewalCount: 1,
     activatedVia: "Auto Verification",
     transactionHash: "0x8f2a9c1d4e7b...a3f1",
-    explorerUrl: "https://tronscan.org/",
-    paymentMethod: "Crypto USDT - TRC20",
-    amountPaid: "$60.00",
+    explorerUrl: "https://bscscan.com/",
+    paymentMethod: "Crypto USDT - BEP20",
+    amountPaid: MEMBERSHIP_PLANS.monthly.amountPaidDisplay,
   },
   discord: {
     role: "VIP",

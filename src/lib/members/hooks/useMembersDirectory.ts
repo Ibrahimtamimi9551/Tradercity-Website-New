@@ -1,14 +1,14 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   MOCK_DIRECTORY_MEMBERS,
   MOCK_DIRECTORY_STATS,
 } from "@/lib/members/mock/directory-members";
 import type {
+  AccountStatus,
   DirectoryFilters,
-  DirectoryMember,
   DiscordStatus,
   MembershipTier,
   ReferralStatus,
@@ -66,7 +66,41 @@ function parseHealth(value: string | null): DirectoryFilters["health"] {
   return "all";
 }
 
-function matchesFilters(member: DirectoryMember, filters: DirectoryFilters): boolean {
+function parseFiltersFromParams(searchParams: URLSearchParams): DirectoryFilters {
+  let health = parseHealth(searchParams.get("health"));
+
+  // Ops queue / legacy deep-links until Subscriptions owns expiry filtering.
+  const expiring =
+    searchParams.get("expiring") ?? searchParams.get("expiry");
+  if (expiring === "today" && health === "all") {
+    health = "needs_attention";
+  }
+
+  return {
+    search: searchParams.get("q") ?? "",
+    membership: parseMembership(searchParams.get("membership")),
+    subscription: parseSubscription(
+      searchParams.get("subscription") ?? searchParams.get("status")
+    ),
+    discord: parseDiscord(searchParams.get("discord") ?? searchParams.get("sync")),
+    referral: parseReferral(searchParams.get("referral")),
+    health,
+  };
+}
+
+function parsePage(searchParams: URLSearchParams): number {
+  return Math.max(1, Number(searchParams.get("page") ?? "1") || 1);
+}
+
+function parsePageSize(searchParams: URLSearchParams): number {
+  const size = Number(searchParams.get("pageSize"));
+  return [10, 25, 50].includes(size) ? size : 10;
+}
+
+function matchesFilters(
+  member: (typeof MOCK_DIRECTORY_MEMBERS)[number],
+  filters: DirectoryFilters
+): boolean {
   const query = filters.search.trim().toLowerCase();
   if (query) {
     const haystack = `${member.username} ${member.email}`.toLowerCase();
@@ -74,7 +108,9 @@ function matchesFilters(member: DirectoryMember, filters: DirectoryFilters): boo
   }
 
   if (filters.membership !== "all" && member.membership !== filters.membership) return false;
-  if (filters.subscription !== "all" && member.subscription !== filters.subscription) return false;
+  if (filters.subscription !== "all" && member.subscription !== filters.subscription) {
+    return false;
+  }
   if (filters.discord !== "all" && member.discord !== filters.discord) return false;
 
   if (filters.referral === "eligible" && !member.referralEligible) return false;
@@ -98,71 +134,141 @@ function filtersToParams(filters: DirectoryFilters, page: number, pageSize: numb
   return params;
 }
 
+function serializeFilters(filters: DirectoryFilters, page: number, pageSize: number) {
+  return filtersToParams(filters, page, pageSize).toString();
+}
+
 /**
  * Members directory filters + pagination.
+ *
+ * Table filters share the same URL contract as DirectoryWidgets deep-links:
+ *   /admin/members?membership=vip
+ *   /admin/members?health=action_required
+ *
+ * Local state updates immediately; navigation uses router.push (same path as
+ * WidgetCard <Link>) so useSearchParams stays in sync on all viewports.
+ *
  * TODO(NestJS): replace mock list with authenticated members API.
  */
 export function useMembersDirectory() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const searchKey = searchParams.toString();
 
-  const filters: DirectoryFilters = useMemo(
-    () => ({
-      search: searchParams.get("q") ?? "",
-      membership: parseMembership(searchParams.get("membership")),
-      subscription: parseSubscription(searchParams.get("subscription") ?? searchParams.get("status")),
-      discord: parseDiscord(searchParams.get("discord") ?? searchParams.get("sync")),
-      referral: parseReferral(searchParams.get("referral")),
-      health: parseHealth(searchParams.get("health")),
-    }),
-    [searchParams]
+  const [filters, setFiltersState] = useState<DirectoryFilters>(() =>
+    parseFiltersFromParams(new URLSearchParams(searchKey))
+  );
+  const [page, setPageState] = useState(() => parsePage(new URLSearchParams(searchKey)));
+  const [pageSize, setPageSizeState] = useState(() =>
+    parsePageSize(new URLSearchParams(searchKey))
+  );
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [accountOverrides, setAccountOverrides] = useState<Record<string, AccountStatus>>(
+    {}
   );
 
-  const page = Math.max(1, Number(searchParams.get("page") ?? "1") || 1);
-  const pageSize = [10, 25, 50].includes(Number(searchParams.get("pageSize")))
-    ? Number(searchParams.get("pageSize"))
-    : 10;
+  /** Prevents back/forward effect from fighting our own URL writes. */
+  const lastWrittenKeyRef = useRef(serializeFilters(filters, page, pageSize));
+  const filtersRef = useRef(filters);
+  const pageSizeRef = useRef(pageSize);
+  filtersRef.current = filters;
+  pageSizeRef.current = pageSize;
 
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  // Browser back/forward + widget Link navigations → adopt URL into local state.
+  // Widget cards use <Link href="?membership=vip"> — same URL contract as filters below.
+  useEffect(() => {
+    if (searchKey === lastWrittenKeyRef.current) return;
 
-  const syncUrl = useCallback(
+    const params = new URLSearchParams(searchKey);
+    setFiltersState(parseFiltersFromParams(params));
+    setPageState(parsePage(params));
+    setPageSizeState(parsePageSize(params));
+    lastWrittenKeyRef.current = searchKey;
+  }, [searchKey]);
+
+  const writeUrl = useCallback(
     (nextFilters: DirectoryFilters, nextPage: number, nextPageSize: number) => {
-      const params = filtersToParams(nextFilters, nextPage, nextPageSize);
-      const query = params.toString();
-      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+      const query = serializeFilters(nextFilters, nextPage, nextPageSize);
+      lastWrittenKeyRef.current = query;
+      const href = query ? `${pathname}?${query}` : pathname;
+      // Same navigation path as directory WidgetCard <Link>s — router.push
+      // reliably updates useSearchParams; history.replaceState does not.
+      router.push(href, { scroll: false });
     },
     [pathname, router]
   );
 
   const setFilters = useCallback(
     (patch: Partial<DirectoryFilters>) => {
-      syncUrl({ ...filters, ...patch }, 1, pageSize);
+      const next = { ...filtersRef.current, ...patch };
+      setFiltersState(next);
+      setPageState(1);
+      writeUrl(next, 1, pageSizeRef.current);
     },
-    [filters, pageSize, syncUrl]
+    [writeUrl]
   );
 
   const resetFilters = useCallback(() => {
-    syncUrl(DEFAULT_FILTERS, 1, pageSize);
-  }, [pageSize, syncUrl]);
+    setFiltersState(DEFAULT_FILTERS);
+    setPageState(1);
+    writeUrl(DEFAULT_FILTERS, 1, pageSizeRef.current);
+  }, [writeUrl]);
 
   const setPage = useCallback(
     (nextPage: number) => {
-      syncUrl(filters, nextPage, pageSize);
+      setPageState(nextPage);
+      writeUrl(filtersRef.current, nextPage, pageSizeRef.current);
     },
-    [filters, pageSize, syncUrl]
+    [writeUrl]
   );
 
   const setPageSize = useCallback(
     (nextSize: number) => {
-      syncUrl(filters, 1, nextSize);
+      setPageSizeState(nextSize);
+      setPageState(1);
+      writeUrl(filtersRef.current, 1, nextSize);
     },
-    [filters, syncUrl]
+    [writeUrl]
+  );
+
+  const membersWithOverrides = useMemo(
+    () =>
+      MOCK_DIRECTORY_MEMBERS.map((member) => {
+        const override = accountOverrides[member.id];
+        return override ? { ...member, accountStatus: override } : member;
+      }),
+    [accountOverrides]
   );
 
   const filtered = useMemo(
-    () => MOCK_DIRECTORY_MEMBERS.filter((member) => matchesFilters(member, filters)),
-    [filters]
+    () => membersWithOverrides.filter((member) => matchesFilters(member, filters)),
+    [filters, membersWithOverrides]
+  );
+
+  const setAccountStatus = useCallback((memberId: string, status: AccountStatus) => {
+    setAccountOverrides((prev) => ({ ...prev, [memberId]: status }));
+  }, []);
+
+  const setMembership = useCallback(
+    (membership: MembershipTier | "all") => setFilters({ membership }),
+    [setFilters]
+  );
+  const setSubscription = useCallback(
+    (subscription: SubscriptionStatus | "all") => setFilters({ subscription }),
+    [setFilters]
+  );
+  const setDiscord = useCallback(
+    (discord: DiscordStatus | "all") => setFilters({ discord }),
+    [setFilters]
+  );
+  const setReferral = useCallback(
+    (referral: ReferralStatus | "all") => setFilters({ referral }),
+    [setFilters]
+  );
+  const setHealth = useCallback(
+    (health: SystemHealthState | "all") => setFilters({ health }),
+    [setFilters]
   );
 
   const total = filtered.length;
@@ -192,11 +298,11 @@ export function useMembersDirectory() {
     pageSize,
     setPage,
     setPageSize,
-    /** Expose setter helpers for typed selects */
-    setMembership: (membership: MembershipTier | "all") => setFilters({ membership }),
-    setSubscription: (subscription: SubscriptionStatus | "all") => setFilters({ subscription }),
-    setDiscord: (discord: DiscordStatus | "all") => setFilters({ discord }),
-    setReferral: (referral: ReferralStatus | "all") => setFilters({ referral }),
-    setHealth: (health: SystemHealthState | "all") => setFilters({ health }),
+    setMembership,
+    setSubscription,
+    setDiscord,
+    setReferral,
+    setHealth,
+    setAccountStatus,
   };
 }
