@@ -188,18 +188,33 @@ Preview + real-device re-validation after Discord + dashboards (highest UI risk)
 
 ---
 
-## 5. Final Verdict (pre-execution)
-
-```text
-Engineering Baseline Requires Controlled Recovery
-```
-
-After controlled recovery completes and validation passes:
+## 5. Final Verdict
 
 ```text
 Engineering Baseline Complete
 ```
 
+### Recovery execution (2026-07-18)
+
+| Item | Commit | Result |
+|------|--------|--------|
+| R1 Membership libs | `6451218` | ✅ |
+| R2 Discord module | `30f48e1` | ✅ |
+| R3 Pricing | `f77889a` | ✅ (A eyebrow fix retained) |
+| R4 Payment | `7578c59` | ✅ (A page overflow + network/copy fixes retained) |
+| R5 Free Dashboard | `5fc63e1` | ✅ (A journey grid + touch targets retained) |
+| R6 VIP Dashboard | `f80d3a8` | ✅ (A touch targets retained) |
+| R7 Directory data | `f1292be` | ✅ |
+
+**Tip:** `homepage-cursor-experiment` @ `f1292be`  
+**Final build:** Pass  
+**Preview:** https://tradercitycrypto-4snjw29ce-ibrahimtamimi9551s-projects.vercel.app  
+**Inspect:** https://vercel.com/ibrahimtamimi9551s-projects/tradercitycrypto/7QdXghPnpjKA2XSPm5acEczPaQuZ  
+**UI matrix (Preview):** 55/55 OK, `overflowX = 0` (desktop / tablet / mobile / 320 / landscape)  
+**Excluded as planned:** Admin shell/theme from B, MembersMobileList, investigation archive  
+
+Next: Repository Migration v2.0 (not started). Optional operator gate: real-device spot-check on Preview.
+
 ---
 
-*Audit only until recovery commits begin. No Repository Migration until Complete.*
+*Controlled recovery complete. No Repository Migration until Migration v2.0 begins.*
