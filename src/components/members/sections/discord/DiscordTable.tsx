@@ -211,7 +211,7 @@ export function DiscordTable({
       onRowClick={onRowSelect}
       emptyTitle={emptyTitle}
       compactMobile
-      className="hidden md:block"
+      className="border-white/10 bg-white/[0.015] max-sm:rounded-lg"
     />
   );
 }

@@ -20,7 +20,6 @@ import type { DiscordMember } from "@/types/members/discord";
 import { useDiscordDirectoryContext } from "./DiscordDirectoryProvider";
 import { DiscordDetails } from "./DiscordDetails";
 import { DiscordFiltersBar } from "./DiscordFiltersBar";
-import { DiscordMobileList } from "./DiscordMobileList";
 import type { DiscordRowActionHandlers } from "./DiscordRowActions";
 import { DiscordTable } from "./DiscordTable";
 import { DiscordWidgets } from "./DiscordWidgets";
@@ -185,12 +184,6 @@ function DiscordPageContent() {
               selectedId={selectedId}
               onRowSelect={onSelectMember}
               actionHandlers={actionHandlers}
-              emptyTitle={emptyTitle}
-            />
-            <DiscordMobileList
-              rows={rows}
-              selectedId={selectedId}
-              onSelect={onSelectMember}
               emptyTitle={emptyTitle}
             />
             <div className="px-1.5 sm:px-0">

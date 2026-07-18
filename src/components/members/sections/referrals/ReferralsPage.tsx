@@ -18,7 +18,6 @@ import { cn } from "@/lib/admin/cn";
 import type { ReferralMember } from "@/types/members/referral";
 import { ReferralDetails } from "./ReferralDetails";
 import { ReferralFiltersBar } from "./ReferralFiltersBar";
-import { ReferralMobileList } from "./ReferralMobileList";
 import type { ReferralRowActionHandlers } from "./ReferralRowActions";
 import { ReferralTable } from "./ReferralTable";
 import { ReferralWidgets } from "./ReferralWidgets";
@@ -185,12 +184,6 @@ function ReferralsPageContent() {
               actionHandlers={actionHandlers}
               sort={sort}
               onSortChange={setSort}
-              emptyTitle={emptyTitle}
-            />
-            <ReferralMobileList
-              rows={rows}
-              selectedId={selectedId}
-              onSelect={onSelectMember}
               emptyTitle={emptyTitle}
             />
             <div className="px-1.5 sm:px-0">

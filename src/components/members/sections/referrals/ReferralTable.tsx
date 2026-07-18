@@ -214,7 +214,7 @@ export function ReferralTable({
       sortKey={sort.key}
       sortDirection={sort.direction}
       onSortChange={(key) => onSortChange(key as ReferralSortKey)}
-      className="hidden md:block"
+      className="border-white/10 bg-white/[0.015] max-sm:rounded-lg"
     />
   );
 }
