@@ -1,11 +1,9 @@
-﻿import { ModulePlaceholder } from "@/components/admin/layout/ModulePlaceholder";
+﻿import { ReferralsPage } from "@/components/members/sections/referrals";
 
-export default function ReferralsPage() {
-  return (
-    <ModulePlaceholder
-      title="Referrals"
-      subtitle="Referral validation, credits, and redemption requests."
-      phase="Phase 6"
-    />
-  );
+/**
+ * Phase 6 Part 1 — Referral Operations Dashboard.
+ * Table for scanning; full-height panel for complete member context.
+ */
+export default function ReferralsRoutePage() {
+  return <ReferralsPage />;
 }

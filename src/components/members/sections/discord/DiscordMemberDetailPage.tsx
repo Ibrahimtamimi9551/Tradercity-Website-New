@@ -1,10 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { EmptyState } from "@/components/admin/ui";
-import type { DiscordDetailTab } from "@/types/members/discord";
 import { useDiscordDirectoryContext } from "./DiscordDirectoryProvider";
 import { DiscordDetails } from "./DiscordDetails";
 
@@ -13,15 +11,9 @@ type DiscordMemberDetailPageProps = {
 };
 
 function DiscordMemberDetailContent({ discordId }: DiscordMemberDetailPageProps) {
-  const [detailTab, setDetailTab] = useState<DiscordDetailTab>("overview");
-  const {
-    findMemberById,
-    getListHref,
-    onManualSync,
-    onSendInvite,
-  } = useDiscordDirectoryContext();
+  const { findMemberById, getListHref, onManualSync, onSendInvite } =
+    useDiscordDirectoryContext();
 
-  // Route param is the source of selection on detail; hook syncs selectedId from path.
   const member = findMemberById(discordId);
   const listHref = getListHref({ includeMember: false });
 
@@ -50,11 +42,10 @@ function DiscordMemberDetailContent({ discordId }: DiscordMemberDetailPageProps)
       <BackLink href={listHref} />
       <DiscordDetails
         member={member}
-        activeTab={detailTab}
-        onTabChange={setDetailTab}
         onSyncNow={onManualSync}
         onSendInvite={onSendInvite}
         fullPage
+        className="min-h-[70vh]"
       />
     </div>
   );

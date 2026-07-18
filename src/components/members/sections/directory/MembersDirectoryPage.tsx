@@ -1,19 +1,25 @@
 "use client";
 
-import { Suspense } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Users } from "lucide-react";
+import {
+  AdminDirectoryPanel,
+  AdminMasterDetail,
+} from "@/components/admin/directory";
 import { LoadingState, PageTitle, Pagination } from "@/components/admin/ui";
-import { cn } from "@/lib/admin/cn";
-import { modulePanelSurface } from "@/lib/admin/module-surfaces";
+import { isAdminDesktop } from "@/lib/admin/directory/breakpoints";
 import { useMembersDirectory } from "@/lib/members/hooks/useMembersDirectory";
 import type { DirectoryMember } from "@/types/members/directory";
 import { DirectoryFiltersBar } from "./DirectoryFiltersBar";
 import { DirectoryWidgets } from "./DirectoryWidgets";
+import { MemberDirectoryDetails } from "./MemberDirectoryDetails";
 import { MembersTable } from "./MembersTable";
 
 function MembersDirectoryContent() {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const {
     stats,
     filters,
@@ -35,11 +41,46 @@ function MembersDirectoryContent() {
     setHealth,
   } = useMembersDirectory();
 
-  const navigateToMember = (member: DirectoryMember) => {
-    router.push(`/admin/members/${member.id}`);
-  };
+  const memberFromUrl = searchParams.get("member") ?? searchParams.get("memberId");
+  const [selectedId, setSelectedId] = useState<string | null>(memberFromUrl);
 
-  return (
+  useEffect(() => {
+    setSelectedId(memberFromUrl);
+  }, [memberFromUrl]);
+
+  const selectedMember = useMemo(() => {
+    if (selectedId) {
+      const match = rows.find((m) => m.id === selectedId);
+      if (match) return match;
+    }
+    return rows[0] ?? null;
+  }, [rows, selectedId]);
+
+  const writeMemberParam = useCallback(
+    (id: string | null) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (id) params.set("member", id);
+      else params.delete("member");
+      params.delete("memberId");
+      const query = params.toString();
+      router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    },
+    [pathname, router, searchParams]
+  );
+
+  const onSelectMember = useCallback(
+    (member: DirectoryMember) => {
+      if (!isAdminDesktop()) {
+        router.push(`/admin/members/${member.id}`);
+        return;
+      }
+      setSelectedId(member.id);
+      writeMemberParam(member.id);
+    },
+    [router, writeMemberParam]
+  );
+
+  const listStack = (
     <div className="space-y-4 sm:space-y-6">
       <PageTitle
         title="Members"
@@ -63,14 +104,12 @@ function MembersDirectoryContent() {
         onReset={resetFilters}
       />
 
-      {/* Mobile: pull table edge-to-edge within shell padding for max column visibility */}
-      <div
-        className={cn(
-          modulePanelSurface("purple", "space-y-3 sm:space-y-4"),
-          "!p-1.5 sm:!p-5 max-sm:-mx-2"
-        )}
-      >
-        <MembersTable rows={rows} onRowNavigate={navigateToMember} />
+      <AdminDirectoryPanel tone="purple">
+        <MembersTable
+          rows={rows}
+          selectedId={selectedMember?.id ?? null}
+          onRowSelect={onSelectMember}
+        />
         <div className="px-1.5 sm:px-0">
           <Pagination
             page={page}
@@ -82,8 +121,21 @@ function MembersDirectoryContent() {
             className="max-sm:gap-2 max-sm:text-xs"
           />
         </div>
-      </div>
+      </AdminDirectoryPanel>
     </div>
+  );
+
+  return (
+    <AdminMasterDetail
+      layout="page"
+      list={listStack}
+      detail={
+        <MemberDirectoryDetails
+          member={selectedMember}
+          className="h-full"
+        />
+      }
+    />
   );
 }
 
