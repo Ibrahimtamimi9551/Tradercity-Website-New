@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/admin/cn";
+import { adminContentPaddingClass } from "@/lib/admin/layout-gutter";
 import { AdminBackground } from "./AdminBackground";
 import { AdminHeader } from "./AdminHeader";
 import { AdminMobileNav } from "./AdminMobileNav";
@@ -43,8 +44,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <AdminHeader onOpenMobileNav={() => setMobileOpen(true)} sidebarCollapsed={collapsed} />
       <main
         className={cn(
-          "min-h-[calc(100vh-4rem)] px-4 pb-24 pt-6 lg:px-8 lg:pb-8",
-          collapsed ? "lg:pl-[72px]" : "lg:pl-64"
+          "min-h-[calc(100vh-4rem)] pb-24 pt-6 lg:pb-8",
+          adminContentPaddingClass(collapsed)
         )}
       >
         {children}

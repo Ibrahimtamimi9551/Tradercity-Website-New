@@ -18,6 +18,7 @@ import { cn } from "@/lib/admin/cn";
 import type { ReferralMember } from "@/types/members/referral";
 import { ReferralDetails } from "./ReferralDetails";
 import { ReferralFiltersBar } from "./ReferralFiltersBar";
+import { ReferralModuleNav } from "./ReferralModuleNav";
 import type { ReferralRowActionHandlers } from "./ReferralRowActions";
 import { ReferralTable } from "./ReferralTable";
 import { ReferralWidgets } from "./ReferralWidgets";
@@ -113,7 +114,7 @@ function ReferralsPageContent() {
   const listStack = (
     <div className="space-y-4 sm:space-y-6">
       <PageTitle
-        title="Referrals"
+        title="Referral Operations"
         subtitle="Track, manage and monitor referral activity, wallet credits and member progress."
         icon={Gift}
         actions={
@@ -137,6 +138,8 @@ function ReferralsPageContent() {
           </div>
         }
       />
+
+      <ReferralModuleNav />
 
       {uiError ? <ErrorState title={uiError} onRetry={clearError} /> : null}
 

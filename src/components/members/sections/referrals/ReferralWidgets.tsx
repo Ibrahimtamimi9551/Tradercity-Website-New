@@ -73,13 +73,13 @@ export function ReferralWidgets({ stats }: ReferralWidgetsProps) {
       <WidgetCard
         label="Total Referral Revenue"
         value={formatUsd(stats.totalReferralRevenue)}
-        hint="Summary only — Part 2 for analytics"
+        hint="Open Intelligence for full analytics"
         icon={TrendingUp}
         accent="rose"
         priority="informational"
         compactMobile
-        href="/admin/referrals"
-        linkText="View all"
+        href="/admin/referrals/intelligence"
+        linkText="Open Intelligence"
         trend={{
           value: stats.revenueTrend,
           label: "vs last month",

@@ -2,6 +2,7 @@
 
 import { Bell, Menu, Search } from "lucide-react";
 import { cn } from "@/lib/admin/cn";
+import { adminContentPaddingClass } from "@/lib/admin/layout-gutter";
 
 type AdminHeaderProps = {
   onOpenMobileNav: () => void;
@@ -13,10 +14,10 @@ export function AdminHeader({ onOpenMobileNav, sidebarCollapsed }: AdminHeaderPr
     <header
       className={cn(
         "sticky top-0 z-30 border-b border-white/10 bg-[#070b18]/80 backdrop-blur-xl",
-        sidebarCollapsed ? "lg:pl-[72px]" : "lg:pl-64"
+        adminContentPaddingClass(sidebarCollapsed)
       )}
     >
-      <div className="flex h-16 items-center gap-3 px-4 lg:px-6">
+      <div className="flex h-16 items-center gap-3">
         <button
           type="button"
           onClick={onOpenMobileNav}

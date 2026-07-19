@@ -196,6 +196,9 @@ function serializeState(
 
 export const REFERRALS_LIST_PATH = "/admin/referrals";
 
+/** Non-member subroutes under /admin/referrals (not Operations detail pages). */
+const REFERRAL_MODULE_SUBROUTES = new Set(["intelligence"]);
+
 export type UseReferralsDirectoryOptions = {
   listPathname?: string;
 };
@@ -209,6 +212,7 @@ export type UseReferralsDirectoryOptions = {
  *   /admin/referrals?credit=has_credit
  *   /admin/referrals?member=<id>
  *   /admin/referrals?sort=availableCredit&dir=desc
+ *   /admin/referrals/intelligence  (Part 2 — ignored by this hook)
  *
  * TODO(NestJS): replace mock list with authenticated referrals API.
  */
@@ -218,14 +222,21 @@ export function useReferralsDirectory(options?: UseReferralsDirectoryOptions) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const searchKey = searchParams.toString();
+  const segment = pathname.startsWith(`${listPathname}/`)
+    ? pathname.slice(listPathname.length + 1).split("/")[0] || null
+    : null;
+  const isModuleSubroute = Boolean(
+    segment && REFERRAL_MODULE_SUBROUTES.has(segment)
+  );
   const isDetailRoute =
-    pathname.startsWith(`${listPathname}/`) && pathname !== listPathname;
+    pathname.startsWith(`${listPathname}/`) &&
+    pathname !== listPathname &&
+    !isModuleSubroute;
 
   const routeMemberId = useMemo(() => {
     if (!isDetailRoute) return null;
-    const rest = pathname.slice(listPathname.length + 1);
-    return rest.split("/")[0] || null;
-  }, [isDetailRoute, listPathname, pathname]);
+    return segment;
+  }, [isDetailRoute, segment]);
 
   const [filters, setFiltersState] = useState<ReferralFilters>(() =>
     parseFiltersFromParams(new URLSearchParams(searchKey))
