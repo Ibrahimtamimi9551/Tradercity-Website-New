@@ -370,9 +370,21 @@ export function useDiscordDirectory(options?: UseDiscordDirectoryOptions) {
   }, []);
 
   const selectedMember = useMemo(() => {
-    if (!selectedId) return pageRows[0] ?? filtered[0] ?? null;
-    return findMemberById(selectedId);
-  }, [selectedId, pageRows, filtered, findMemberById]);
+    if (selectedId) return findMemberById(selectedId);
+    // Desktop panel preview only — never treat as a navigation selection.
+    if (isDetailRoute) return null;
+    return pageRows[0] ?? filtered[0] ?? null;
+  }, [selectedId, pageRows, filtered, findMemberById, isDetailRoute]);
+
+  // List route without ?member= must clear selection (provider stays mounted across
+  // list ↔ detail; otherwise Back would re-trigger mobile deep-link navigation).
+  useEffect(() => {
+    if (isDetailRoute) return;
+    const fromQuery = parseSelectedId(new URLSearchParams(searchKey));
+    if (!fromQuery && selectedIdRef.current) {
+      setSelectedIdState(null);
+    }
+  }, [isDetailRoute, searchKey]);
 
   const hasActiveFilters =
     filters.search.trim() !== "" ||
@@ -424,7 +436,7 @@ export function useDiscordDirectory(options?: UseDiscordDirectoryOptions) {
     pageSize,
     setPage,
     setPageSize,
-    selectedId: selectedMember?.id ?? selectedId,
+    selectedId,
     selectedMember,
     findMemberById,
     setSelectedId,

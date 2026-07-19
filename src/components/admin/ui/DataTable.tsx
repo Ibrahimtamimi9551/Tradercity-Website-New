@@ -1,4 +1,7 @@
-﻿import { cn } from "@/lib/admin/cn";
+﻿import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
+import { cn } from "@/lib/admin/cn";
+
+export type DataTableSortDirection = "asc" | "desc";
 
 export type DataTableColumn<T> = {
   key: string;
@@ -6,6 +9,8 @@ export type DataTableColumn<T> = {
   className?: string;
   /** When true, clicks in this cell do not trigger `onRowClick`. */
   stopRowClick?: boolean;
+  /** Enables header click sorting when `onSortChange` is provided. */
+  sortable?: boolean;
   render: (row: T) => React.ReactNode;
 };
 
@@ -20,6 +25,9 @@ type DataTableProps<T> = {
   className?: string;
   /** Tighter cell padding on mobile only — keeps desktop spacing unchanged */
   compactMobile?: boolean;
+  sortKey?: string | null;
+  sortDirection?: DataTableSortDirection | null;
+  onSortChange?: (key: string) => void;
 };
 
 export function DataTable<T>({
@@ -31,6 +39,9 @@ export function DataTable<T>({
   emptyTitle = "No records found",
   className,
   compactMobile = false,
+  sortKey = null,
+  sortDirection = null,
+  onSortChange,
 }: DataTableProps<T>) {
   const cellPad = compactMobile ? "px-2 py-2 sm:px-4 sm:py-3" : "px-4 py-3";
   const headerPad = compactMobile ? "px-2 py-2 sm:px-4 sm:py-3" : "px-4 py-3";
@@ -54,19 +65,52 @@ export function DataTable<T>({
         >
           <thead className="bg-white/[0.02]">
             <tr>
-              {columns.map((column) => (
-                <th
-                  key={column.key}
-                  scope="col"
-                  className={cn(
-                    headerPad,
-                    "text-left text-[10px] font-medium uppercase tracking-wider text-tc-muted sm:text-xs",
-                    column.className
-                  )}
-                >
-                  {column.header}
-                </th>
-              ))}
+              {columns.map((column) => {
+                const canSort = Boolean(column.sortable && onSortChange);
+                const isActive = sortKey === column.key;
+                return (
+                  <th
+                    key={column.key}
+                    scope="col"
+                    aria-sort={
+                      canSort && isActive
+                        ? sortDirection === "asc"
+                          ? "ascending"
+                          : "descending"
+                        : canSort
+                          ? "none"
+                          : undefined
+                    }
+                    className={cn(
+                      headerPad,
+                      "text-left text-[10px] font-medium uppercase tracking-wider text-tc-muted sm:text-xs",
+                      column.className
+                    )}
+                  >
+                    {canSort ? (
+                      <button
+                        type="button"
+                        onClick={() => onSortChange?.(column.key)}
+                        className={cn(
+                          "inline-flex items-center gap-1 transition-colors hover:text-white",
+                          isActive && "text-white"
+                        )}
+                      >
+                        {column.header}
+                        {isActive && sortDirection === "asc" ? (
+                          <ArrowUp className="h-3 w-3" aria-hidden />
+                        ) : isActive && sortDirection === "desc" ? (
+                          <ArrowDown className="h-3 w-3" aria-hidden />
+                        ) : (
+                          <ArrowUpDown className="h-3 w-3 opacity-50" aria-hidden />
+                        )}
+                      </button>
+                    ) : (
+                      column.header
+                    )}
+                  </th>
+                );
+              })}
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5 bg-transparent">

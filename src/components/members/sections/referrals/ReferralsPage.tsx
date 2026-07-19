@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { RefreshCw } from "lucide-react";
+import { Gift, RefreshCw } from "lucide-react";
 import {
   AdminDirectoryPanel,
   AdminMasterDetail,
@@ -13,18 +13,18 @@ import {
   PageTitle,
   Pagination,
 } from "@/components/admin/ui";
-import { DiscordIcon } from "@/components/admin/ui/icons/DiscordIcon";
 import { isAdminDesktop } from "@/lib/admin/directory/breakpoints";
 import { cn } from "@/lib/admin/cn";
-import type { DiscordMember } from "@/types/members/discord";
-import { useDiscordDirectoryContext } from "./DiscordDirectoryProvider";
-import { DiscordDetails } from "./DiscordDetails";
-import { DiscordFiltersBar } from "./DiscordFiltersBar";
-import type { DiscordRowActionHandlers } from "./DiscordRowActions";
-import { DiscordTable } from "./DiscordTable";
-import { DiscordWidgets } from "./DiscordWidgets";
+import type { ReferralMember } from "@/types/members/referral";
+import { ReferralDetails } from "./ReferralDetails";
+import { ReferralFiltersBar } from "./ReferralFiltersBar";
+import { ReferralModuleNav } from "./ReferralModuleNav";
+import type { ReferralRowActionHandlers } from "./ReferralRowActions";
+import { ReferralTable } from "./ReferralTable";
+import { ReferralWidgets } from "./ReferralWidgets";
+import { useReferralsDirectoryContext } from "./ReferralsDirectoryProvider";
 
-function DiscordPageContent() {
+function ReferralsPageContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -48,19 +48,20 @@ function DiscordPageContent() {
     selectedMember,
     selectMember,
     setFilters,
-    setRole,
-    setConnection,
-    setSync,
-    setMembership,
+    setMembershipPlan,
+    setProgress,
+    setCredit,
+    sort,
+    setSort,
     lastSyncLabel,
     isRefreshing,
     refresh,
     uiError,
     clearError,
     getListHref,
-    onManualSync,
-    onSendInvite,
-  } = useDiscordDirectoryContext();
+    onCopyReferralLink,
+    onCopyReferralCode,
+  } = useReferralsDirectoryContext();
 
   useEffect(() => {
     if (hasActiveFilters) setShowAdvanced(true);
@@ -95,28 +96,27 @@ function DiscordPageContent() {
   );
 
   const onSelectMember = useCallback(
-    (member: DiscordMember) => {
+    (member: ReferralMember) => {
       selectMember(member.id);
     },
     [selectMember]
   );
 
-  const actionHandlers: DiscordRowActionHandlers = {
-    onView: onSelectMember,
-    onManualSync,
-    onSendInvite,
+  const actionHandlers: ReferralRowActionHandlers = {
+    onCopyReferralLink,
+    onCopyReferralCode,
   };
 
   const emptyTitle = hasActiveFilters
     ? "No members match your search or filters"
-    : "No Discord members";
+    : "No referral members";
 
   const listStack = (
     <div className="space-y-4 sm:space-y-6">
       <PageTitle
-        title="Discord"
-        subtitle="Monitor and synchronize Discord server with TraderCity membership."
-        icon={DiscordIcon}
+        title="Referral Operations"
+        subtitle="Track, manage and monitor referral activity, wallet credits and member progress."
+        icon={Gift}
         actions={
           <div className="flex items-center gap-2">
             <span className="hidden text-xs text-tc-muted sm:inline">
@@ -127,7 +127,7 @@ function DiscordPageContent() {
               type="button"
               onClick={refresh}
               disabled={isRefreshing}
-              aria-label="Refresh Discord sync status"
+              aria-label="Refresh referral data"
               className="admin-ghost-btn inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 transition-colors hover:bg-white/5 disabled:opacity-50"
             >
               <RefreshCw
@@ -139,20 +139,21 @@ function DiscordPageContent() {
         }
       />
 
+      <ReferralModuleNav />
+
       {uiError ? <ErrorState title={uiError} onRetry={clearError} /> : null}
 
-      <DiscordWidgets stats={stats} />
+      <ReferralWidgets stats={stats} />
 
-      <DiscordFiltersBar
+      <ReferralFiltersBar
         filters={filters}
         hasActiveFilters={hasActiveFilters}
         showAdvanced={showAdvanced}
         onShowAdvancedChange={setShowAdvanced}
         onSearchChange={onSearchChange}
-        onRoleChange={setRole}
-        onConnectionChange={setConnection}
-        onSyncChange={setSync}
-        onMembershipChange={setMembership}
+        onMembershipPlanChange={setMembershipPlan}
+        onProgressChange={setProgress}
+        onCreditChange={setCredit}
         onReset={resetFilters}
       />
 
@@ -163,7 +164,7 @@ function DiscordPageContent() {
             description={
               hasActiveFilters
                 ? "Try clearing filters or adjusting your search."
-                : "Discord members will appear here once accounts are linked."
+                : "Referral members will appear here once referral tracking is active."
             }
             action={
               hasActiveFilters ? (
@@ -179,11 +180,13 @@ function DiscordPageContent() {
           />
         ) : (
           <>
-            <DiscordTable
+            <ReferralTable
               rows={rows}
               selectedId={selectedId}
               onRowSelect={onSelectMember}
               actionHandlers={actionHandlers}
+              sort={sort}
+              onSortChange={setSort}
               emptyTitle={emptyTitle}
             />
             <div className="px-1.5 sm:px-0">
@@ -193,7 +196,7 @@ function DiscordPageContent() {
                 total={total}
                 onPageChange={setPage}
                 onPageSizeChange={setPageSize}
-                itemLabel="members"
+                itemLabel="entries"
                 className="max-sm:gap-2 max-sm:text-xs"
               />
             </div>
@@ -207,18 +210,11 @@ function DiscordPageContent() {
     <AdminMasterDetail
       layout="page"
       list={listStack}
-      detail={
-        <DiscordDetails
-          member={selectedMember}
-          onSyncNow={onManualSync}
-          onSendInvite={onSendInvite}
-          className="h-full"
-        />
-      }
+      detail={<ReferralDetails member={selectedMember} className="h-full" />}
     />
   );
 }
 
-export function DiscordPage() {
-  return <DiscordPageContent />;
+export function ReferralsPage() {
+  return <ReferralsPageContent />;
 }

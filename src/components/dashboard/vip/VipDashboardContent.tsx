@@ -151,6 +151,11 @@ const mockReferral = {
   current: 2,
   target: 6,
   creditEarned: 20,
+  /** Member-facing only — never expose platform revenue / attribution. */
+  availableCredits: 20,
+  lifetimeCreditsEarned: 40,
+  leaderboardRank: 24,
+  nextMilestoneLabel: "Unlock next month free",
   rules: [
     "User registers on TraderCity",
     "User purchases any VIP plan",
@@ -663,12 +668,27 @@ function ReferralCentre() {
             })}
           </div>
 
-          <div className="grid w-full grid-cols-3 gap-2">
+          <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3">
             {[
-              { label: "Successful Referrals", value: String(mockReferral.current) },
               {
-                label: "Referral Credits",
-                value: `$${mockReferral.creditEarned.toFixed(2)}`,
+                label: "Available Credits",
+                value: `$${mockReferral.availableCredits.toFixed(0)}`,
+              },
+              {
+                label: "Lifetime Earned",
+                value: `$${mockReferral.lifetimeCreditsEarned.toFixed(0)}`,
+              },
+              {
+                label: "Successful Referrals",
+                value: String(mockReferral.current),
+              },
+              {
+                label: "Leaderboard Rank",
+                value: `#${mockReferral.leaderboardRank}`,
+              },
+              {
+                label: "Next Milestone",
+                value: `${mockReferral.current}/${mockReferral.target}`,
               },
               { label: "Referrals Remaining", value: String(remaining) },
             ].map((stat) => (
@@ -692,11 +712,24 @@ function ReferralCentre() {
             <Gift className="h-12 w-12 text-white" strokeWidth={1.4} />
           </div>
           <h4 className="relative z-10 mb-2 text-lg font-bold text-white">
-            Unlock Next Month Free
+            {mockReferral.nextMilestoneLabel}
           </h4>
           <p className="relative z-10 text-sm text-white/50">
             {mockReferral.current} / {mockReferral.target} Completed
           </p>
+          <div className="relative z-10 mt-4 w-full max-w-[200px]">
+            <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+              <div
+                className="h-full rounded-full bg-[#3B82F6]"
+                style={{
+                  width: `${(mockReferral.current / mockReferral.target) * 100}%`,
+                }}
+              />
+            </div>
+            <p className="mt-2 text-[11px] text-white/40">
+              Rank #{mockReferral.leaderboardRank} · keep referring to climb
+            </p>
+          </div>
         </div>
       </div>
     </section>

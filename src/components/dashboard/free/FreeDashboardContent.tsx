@@ -72,6 +72,10 @@ const mockReferral = {
   link: "tradercity.com/ref/Ibrahim",
   current: 0,
   target: 5,
+  availableCredits: 0,
+  lifetimeCreditsEarned: 0,
+  leaderboardRank: null as number | null,
+  nextMilestoneLabel: "Unlock next month free",
   rules: [
     "User registers on TraderCity",
     "User purchases any VIP plan",
@@ -571,8 +575,53 @@ function ReferralCentre() {
               </div>
             ))}
           </div>
-          <div className="text-xs text-gray-500">
-            {mockReferral.current} Completed
+          <div className="grid w-full grid-cols-2 gap-2 text-left">
+            {[
+              {
+                label: "Available Credits",
+                value: `$${mockReferral.availableCredits}`,
+              },
+              {
+                label: "Lifetime Earned",
+                value: `$${mockReferral.lifetimeCreditsEarned}`,
+              },
+              {
+                label: "Successful Referrals",
+                value: String(mockReferral.current),
+              },
+              {
+                label: "Leaderboard Rank",
+                value: mockReferral.leaderboardRank
+                  ? `#${mockReferral.leaderboardRank}`
+                  : "—",
+              },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                className="rounded-lg border border-purple-900/30 bg-black/20 px-2.5 py-2"
+              >
+                <p className="text-sm font-bold text-white">{stat.value}</p>
+                <p className="mt-0.5 text-[9px] leading-tight text-gray-500">
+                  {stat.label}
+                </p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 w-full">
+            <div className="mb-1.5 flex justify-between text-[10px] text-gray-500">
+              <span>Next milestone</span>
+              <span>
+                {mockReferral.current}/{mockReferral.target}
+              </span>
+            </div>
+            <div className="h-1.5 overflow-hidden rounded-full bg-purple-950">
+              <div
+                className="h-full rounded-full bg-purple-500"
+                style={{
+                  width: `${(mockReferral.current / mockReferral.target) * 100}%`,
+                }}
+              />
+            </div>
           </div>
         </div>
 
@@ -591,7 +640,7 @@ function ReferralCentre() {
             </div>
           </div>
           <h3 className="z-10 mb-3 text-lg font-bold text-white">
-            Unlock Next Month Free
+            {mockReferral.nextMilestoneLabel}
           </h3>
           <p className="z-10 px-4 text-sm leading-relaxed text-gray-400">
             Bring 5 friends via your referral link. Once all referral conditions

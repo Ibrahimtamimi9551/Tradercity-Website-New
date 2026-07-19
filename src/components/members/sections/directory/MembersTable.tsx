@@ -194,16 +194,22 @@ const columns: DataTableColumn<DirectoryMember>[] = [
 
 type MembersTableProps = {
   rows: DirectoryMember[];
-  onRowNavigate: (member: DirectoryMember) => void;
+  selectedId?: string | null;
+  onRowSelect: (member: DirectoryMember) => void;
 };
 
-export function MembersTable({ rows, onRowNavigate }: MembersTableProps) {
+export function MembersTable({
+  rows,
+  selectedId = null,
+  onRowSelect,
+}: MembersTableProps) {
   return (
     <DataTable
       columns={columns}
       data={rows}
       getRowKey={(row) => row.id}
-      onRowClick={onRowNavigate}
+      selectedKey={selectedId}
+      onRowClick={onRowSelect}
       emptyTitle="No members match the current filters"
       compactMobile
       className="border-white/10 bg-white/[0.015] max-sm:rounded-lg"
