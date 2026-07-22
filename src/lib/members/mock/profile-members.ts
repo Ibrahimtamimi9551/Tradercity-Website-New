@@ -1,7 +1,8 @@
 import { MOCK_DIRECTORY_MEMBERS } from "@/lib/members/mock/directory-members";
+import { MOCK_REFERRAL_MEMBERS } from "@/lib/members/mock/referral-members";
 import { MEMBERSHIP_PLANS } from "@/lib/membership/plans";
 import type { DirectoryMember } from "@/types/members/directory";
-import type { MemberProfile } from "@/types/members/profile";
+import type { MemberProfile, ProfileTimelineItem } from "@/types/members/profile";
 
 /**
  * Mock Control Center aggregates — UI-only until NestJS GET /admin/members/:id.
@@ -169,6 +170,70 @@ function membershipFields(
   };
 }
 
+function buildDiscordTimeline(
+  member: DirectoryMember,
+  role: string | null
+): ProfileTimelineItem[] {
+  if (member.discord === "disconnected") return [];
+
+  const base = member.joinedAt;
+  const events: ProfileTimelineItem[] = [
+    {
+      id: `${member.id}-dt-1`,
+      title: "Discord Connection Created",
+      timestamp: base,
+      status: "complete",
+    },
+    {
+      id: `${member.id}-dt-2`,
+      title: "Discord Account Linked",
+      timestamp: base,
+      status: "complete",
+    },
+    {
+      id: `${member.id}-dt-3`,
+      title: "Joined TraderCity Discord",
+      timestamp: base,
+      status: "complete",
+    },
+    {
+      id: `${member.id}-dt-4`,
+      title: "Initial Sync Completed",
+      timestamp: base,
+      status: "complete",
+    },
+  ];
+
+  if (role === "VIP") {
+    events.push({
+      id: `${member.id}-dt-5`,
+      title: "VIP Role Assigned",
+      timestamp: base,
+      status: "complete",
+    });
+  }
+
+  events.push({
+    id: `${member.id}-dt-6`,
+    title: "Last Successful Sync",
+    timestamp: base,
+    status: "complete",
+  });
+
+  if (member.discord === "action_required") {
+    events.push({
+      id: `${member.id}-dt-7`,
+      title: "Sync Failed",
+      description: "Manual repair required",
+      timestamp: base,
+      status: "error",
+      badge: "Failed",
+    });
+  }
+
+  return events;
+}
+
 function discordFields(member: DirectoryMember): MemberProfile["discord"] {
   const joined = member.discord !== "disconnected" ? member.joinedAt : null;
   const role =
@@ -177,30 +242,6 @@ function discordFields(member: DirectoryMember): MemberProfile["discord"] {
       : member.discord === "connected"
         ? "Free Member"
         : null;
-
-  const roleHistory =
-    member.discord === "disconnected"
-      ? []
-      : [
-          {
-            id: `${member.id}-rh-1`,
-            title: role === "VIP" ? "Role upgraded to VIP" : "Assigned Free Member role",
-            timestamp: member.joinedAt,
-            status: "complete" as const,
-          },
-          {
-            id: `${member.id}-rh-2`,
-            title: "Joined TraderCity Discord",
-            timestamp: member.joinedAt,
-            status: "complete" as const,
-          },
-          {
-            id: `${member.id}-rh-3`,
-            title: "Discord account linked",
-            timestamp: member.joinedAt,
-            status: "complete" as const,
-          },
-        ];
 
   return {
     role,
@@ -227,8 +268,75 @@ function discordFields(member: DirectoryMember): MemberProfile["discord"] {
         : member.discord === "connected"
           ? "Limited Access"
           : "No Access",
-    roleHistory,
+    timeline: buildDiscordTimeline(member, role),
   };
+}
+
+function buildReferralTimeline(member: DirectoryMember): ProfileTimelineItem[] {
+  const fromOps = MOCK_REFERRAL_MEMBERS.find((row) => row.memberId === member.id);
+  if (fromOps) {
+    return fromOps.timeline.map((item) => ({
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      timestamp: item.timestamp,
+      status: item.status ?? "complete",
+    }));
+  }
+
+  const events: ProfileTimelineItem[] = [
+    {
+      id: `${member.id}-rt-1`,
+      title: "Referral Link Created",
+      timestamp: member.joinedAt,
+      status: "complete",
+    },
+  ];
+
+  if (member.referralCurrent > 0) {
+    events.push(
+      {
+        id: `${member.id}-rt-2`,
+        title: "Referral Registered",
+        description: "Referee joined TraderCity",
+        timestamp: member.joinedAt,
+        status: "complete",
+      },
+      {
+        id: `${member.id}-rt-3`,
+        title: "Membership Activated",
+        timestamp: member.joinedAt,
+        status: "complete",
+      },
+      {
+        id: `${member.id}-rt-4`,
+        title: "Referral Credit Issued",
+        description: `+$${member.referralCurrent * 10}`,
+        timestamp: member.joinedAt,
+        status: "complete",
+      }
+    );
+  }
+
+  if (member.referralEligible) {
+    events.push({
+      id: `${member.id}-rt-5`,
+      title: "Credit Redeemed",
+      timestamp: member.joinedAt,
+      status: "complete",
+    });
+  } else if (member.referralCurrent > 0) {
+    events.push({
+      id: `${member.id}-rt-5`,
+      title: "Credit Pending",
+      description: "Awaiting redemption eligibility",
+      timestamp: member.joinedAt,
+      status: "pending",
+      badge: "Pending",
+    });
+  }
+
+  return events;
 }
 
 function referralFields(member: DirectoryMember): MemberProfile["referral"] {
@@ -241,6 +349,7 @@ function referralFields(member: DirectoryMember): MemberProfile["referral"] {
     creditPerReferral: 10,
     redemptionLabel: member.referralEligible ? "Eligible" : "In Progress",
     redemptionTone: member.referralEligible ? "vip" : "warning",
+    timeline: buildReferralTimeline(member),
   };
 }
 
@@ -442,23 +551,41 @@ const M001_OVERRIDE: Partial<MemberProfile> = {
     updatedAt: "2026-06-08T10:25:00",
     accountStatus: "Active",
     communityAccess: "Full Access",
-    roleHistory: [
+    timeline: [
       {
-        id: "rh-1",
-        title: "Role upgraded to VIP",
-        timestamp: "2026-06-08T10:25:00",
+        id: "dt-1",
+        title: "Discord Connection Created",
+        timestamp: "2026-06-08T10:21:00",
         status: "complete",
       },
       {
-        id: "rh-2",
+        id: "dt-2",
+        title: "Discord Account Linked",
+        timestamp: "2026-06-08T10:22:00",
+        status: "complete",
+      },
+      {
+        id: "dt-3",
         title: "Joined TraderCity Discord",
         timestamp: "2026-06-08T10:23:00",
         status: "complete",
       },
       {
-        id: "rh-3",
-        title: "Discord account linked",
-        timestamp: "2026-06-08T10:22:00",
+        id: "dt-4",
+        title: "Initial Sync Completed",
+        timestamp: "2026-06-08T10:24:00",
+        status: "complete",
+      },
+      {
+        id: "dt-5",
+        title: "VIP Role Assigned",
+        timestamp: "2026-06-08T10:25:00",
+        status: "complete",
+      },
+      {
+        id: "dt-6",
+        title: "Last Successful Sync",
+        timestamp: "2026-07-18T09:14:00",
         status: "complete",
       },
     ],
@@ -471,6 +598,43 @@ const M001_OVERRIDE: Partial<MemberProfile> = {
     creditPerReferral: 10,
     redemptionLabel: "Eligible",
     redemptionTone: "vip",
+    timeline: [
+      {
+        id: "rt-1",
+        title: "Referral Link Created",
+        description: "Link IBRAHIM10 activated",
+        timestamp: "2024-03-01T09:00:00",
+        status: "complete",
+      },
+      {
+        id: "rt-2",
+        title: "Referral Registered",
+        description: "Referee joined TraderCity",
+        timestamp: "2026-07-15T08:20:00",
+        status: "complete",
+      },
+      {
+        id: "rt-3",
+        title: "Membership Activated",
+        description: "VIP Monthly — $60",
+        timestamp: "2026-07-16T09:45:00",
+        status: "complete",
+      },
+      {
+        id: "rt-4",
+        title: "Referral Credit Issued",
+        description: "+$10 Referral Credit",
+        timestamp: "2026-07-16T10:00:00",
+        status: "complete",
+      },
+      {
+        id: "rt-5",
+        title: "Credit Redeemed",
+        description: "$60 applied to renewal",
+        timestamp: "2026-07-18T11:30:00",
+        status: "complete",
+      },
+    ],
   },
 };
 

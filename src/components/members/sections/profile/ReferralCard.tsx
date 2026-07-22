@@ -1,8 +1,10 @@
 import { Link2 } from "lucide-react";
 import { StatusBadge } from "@/components/admin/ui";
 import { cn } from "@/lib/admin/cn";
+import { formatProfileDateTime } from "@/lib/members/format-profile";
 import type { MemberProfile } from "@/types/members/profile";
 import { FieldRow, ManageLink, ReflectionCard } from "./ReflectionCard";
+import { ModuleTimelineSection } from "./ModuleTimelineSection";
 
 type ReferralCardProps = {
   profile: MemberProfile;
@@ -79,6 +81,20 @@ export function ReferralCard({ profile }: ReferralCardProps) {
           </FieldRow>
         </div>
       </div>
+
+      <ModuleTimelineSection
+        title="Referral Timeline"
+        tone="emerald"
+        viewAllHref={`/admin/referrals?member=${profile.id}`}
+        items={referral.timeline.map((item) => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          timestamp: formatProfileDateTime(item.timestamp),
+          status: item.status ?? "complete",
+          badge: item.badge,
+        }))}
+      />
     </ReflectionCard>
   );
 }

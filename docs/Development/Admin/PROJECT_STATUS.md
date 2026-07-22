@@ -1,23 +1,30 @@
 ﻿# Admin Dashboard — Project Status
 
-**Last Updated:** July 2026  
+**Last Updated:** July 23, 2026  
 **Foundation Spec:** [`docs/AI/Agents/Admin/00_Admin_Dashboard_Foundation.md`](../../AI/Agents/Admin/00_Admin_Dashboard_Foundation.md)  
 **Vision (authoritative):** [`docs/AI/Agents/Admin/07_Vision_Before_Implementation.md`](../../AI/Agents/Admin/07_Vision_Before_Implementation.md)  
-**Phase Roadmap:** [`docs/Development/Admin/Phase-Roadmap.md`](Phase-Roadmap.md)  
-**Phase 0 record:** [`Phase-00-Admin-Foundation.md`](Phase-00-Admin-Foundation.md)
+**Phase Roadmap:** [`Phase-Roadmap.md`](Phase-Roadmap.md)  
+**Phase 0 record:** [`Phase-00-Admin-Foundation.md`](Phase-00-Admin-Foundation.md)  
+**Frontend audit:** [`TraderCity_Frontend_Engineering_Audit.md`](../TraderCity_Frontend_Engineering_Audit.md)  
+**Platform vocabulary:** [`PLATFORM_TERMINOLOGY.md`](../../00_Project_Governance/PLATFORM_TERMINOLOGY.md)
 
 ## Current Phase
 
-**Phase 3 — User Profile (Control Center) (complete)**  
+**Phases 0–3 complete (UI on mocks).**  
+**Discord + Referrals Admin UI:** complete on mocks (ahead of formal Phase-05/06 delivery records).  
+**Subscriptions:** still a **placeholder** (Phase 4 — highest Admin UI gap).  
 **UI Design Language:** **Frozen / approved** — see [`02_Frontend_Design_System_and_UX_Rules.md`](../../AI/Agents/Admin/02_Frontend_Design_System_and_UX_Rules.md)  
-**Phase record:** [`Phase-03-User-Profile.md`](Phase-03-User-Profile.md)  
-**Next:** Phase 4 — Subscriptions — inherit Dashboard visual system (no redesign)
+**Next product UI:** Phase 4 — Subscriptions — inherit Dashboard visual system (no redesign).  
+**Analyst stream (freeze override, mock-only):** Section nav (Members · Analysts · Content) + Analyst Dashboard + Directory — see [`../Analyst/00_Overview/PROJECT_STATUS.md`](../Analyst/00_Overview/PROJECT_STATUS.md).  
+**Backend:** not wired (NestJS TODOs on hooks).
 
 ## Scope
 
-**Member Management = Phases 0–6** (current build target)
+**Member Platform Admin delivery = Phases 0–6** (current Member Domain build target; historical docs may still say “Member Management”).
 
-Phases 7–9 deferred to future Website Content Management / Analysts areas.
+Admin sidebar sections: **Members · Analysts · Content**. Member routes/hrefs are unchanged.
+
+Phases 7–9 deferred to Content Platform / Community / Platform Administration / deeper Analyst modules.
 
 ## Design Freeze
 
@@ -27,17 +34,17 @@ Do **not** redesign admin interfaces. Members, User Profile, Subscriptions, Disc
 
 **Homepage Freeze active** — no marketing file changes during admin implementation.
 
-## Member Management Implementation Roadmap
+## Member Platform Admin Implementation Roadmap
 
 | Phase | Scope | Status |
 |-------|-------|--------|
-| 0 | Admin Foundation (shell, sidebar, shared UI) | **Complete** |
-| 1 | Dashboard — Operations Center | **Complete** |
-| 2 | Members — directory + System Health | **Complete** |
-| 3 | User Profile — Control Center | **Complete** |
-| 4 | Subscriptions | Not started |
-| 5 | Discord | Not started |
-| 6 | Referrals | Not started |
+| 0 | Admin Foundation (shell, sidebar, shared UI) | **Complete** (mock) |
+| 1 | Dashboard — Operations Center | **Complete** (mock) |
+| 2 | Members — directory + System Health | **Complete** (mock) |
+| 3 | User Profile — Control Center | **Complete** (mock) |
+| 4 | Subscriptions | **Shell** — `ModulePlaceholder` only |
+| 5 | Discord | **UI complete** (mock); NestJS + Phase record pending |
+| 6 | Referrals (Ops + Intelligence) | **UI complete** (mock); NestJS + Phase record pending |
 | 7 | Reports, Community, Media | **Deferred** |
 | 8 | Settings | **Deferred** |
 | 9 | Notifications, Audit Logs | **Deferred** |
@@ -46,27 +53,46 @@ Do **not** redesign admin interfaces. Members, User Profile, Subscriptions, Disc
 
 | Route | Status |
 |-------|--------|
-| `/admin` | Dashboard (Phase 1) |
-| `/admin/members` | Directory (Phase 2) |
-| `/admin/members/[id]` | Control Center (Phase 3) |
-| `/admin/subscriptions` | Placeholder → Phase 4 |
-| `/admin/discord` | Placeholder → Phase 5 |
-| `/admin/referrals` | Placeholder → Phase 6 |
+| `/admin` | Dashboard (Phase 1) — complete UI, mock data |
+| `/admin/members` | Directory (Phase 2) — complete UI, mock data |
+| `/admin/members/[id]` | Control Center (Phase 3) — complete UI, mock data |
+| `/admin/subscriptions` | **Placeholder** → Phase 4 |
+| `/admin/discord` | Discord ops — complete UI, mock data |
+| `/admin/discord/[id]` | Discord detail — complete UI, mock data |
+| `/admin/referrals` | Referral ops — complete UI, mock data |
+| `/admin/referrals/[id]` | Referral detail — complete UI, mock data |
+| `/admin/referrals/intelligence` | Referral BI — complete UI, mock data |
+| `/admin/analysts` | Analyst Dashboard — complete UI, mock data |
+| `/admin/analysts/directory` | Analyst Directory — complete UI, mock data |
+| `/admin/analysts/applications` | Placeholder shell |
+| `/admin/analysts/verification` | Placeholder shell |
+| `/admin/analysts/partnerships` | Placeholder shell |
+| `/admin/analysts/referrals` | Placeholder shell |
+| `/admin/analysts/commissions` | Placeholder shell |
 
 ## Folder Structure
 
 ```text
 src/components/admin/layout/ + ui/     — shared shell (Phase 0)
-src/components/members/sections/       — domain sections from Phase 1
-src/types/admin/ + src/types/members/
-src/lib/admin/ + src/lib/members/
+src/components/members/sections/       — Member Domain (Admin UI)
+  dashboard/ directory/ profile/ discord/ referrals/
+src/components/analysts/sections/      — Analyst Domain (Admin UI)
+  dashboard/ directory/
+src/types/admin/ + src/types/members/ + src/types/analysts/
+src/lib/admin/ + src/lib/members/ + src/lib/analysts/   — mock data (TODO NestJS)
 ```
+
+**Note:** `src/components/members/**` is **Admin Member Domain UI**, not the member product dashboards (`src/components/dashboard/{free,vip}`).
 
 ## Next Step
 
 Begin **Phase 4: Subscriptions** — `src/components/members/sections/subscriptions/`
 
-Run `npm run dev` and open `/admin/members` → any username → Control Center.
+Analyst follow-ups: Control Center, Applications queue, Verification — see [`../Analyst/00_Overview/PROJECT_STATUS.md`](../Analyst/00_Overview/PROJECT_STATUS.md).
+
+Also recommended: write Phase-05 / Phase-06 delivery records to match Discord/Referrals UI reality.
+
+Run `npm run dev` and open `/admin/analysts` or `/admin/members` → any username → Control Center.
 
 **Dashboard UI Design Freeze active** — inherit `/admin` visual system for Phases 4–6+.  
 **Homepage Freeze active** — no marketing file changes during admin implementation.

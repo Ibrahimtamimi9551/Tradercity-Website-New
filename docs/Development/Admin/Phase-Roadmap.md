@@ -75,6 +75,8 @@ User Profile is a **route**, not a sidebar item (`/admin/members/[id]`).
 
 Mobile bottom nav: `Dashboard | Members | Subscriptions | More` — **More** = Discord + Referrals only.
 
+> **Update (Jul 2026):** Admin sidebar uses platform section nouns (**Members · Analysts · Content**). See [`PLATFORM_TERMINOLOGY.md`](../../00_Project_Governance/PLATFORM_TERMINOLOGY.md). Member hrefs above are unchanged. Analyst streams live under [`docs/Analyst/`](../../Analyst/00_Overview/ANALYST_DOCUMENTATION_INDEX.md) and do not replace Member Platform Admin Phases 0–6.
+
 ---
 
 ## How the sequence was designed

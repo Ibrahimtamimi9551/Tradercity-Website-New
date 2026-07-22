@@ -39,11 +39,14 @@ export type ProfileNote = {
   createdAt: string;
 };
 
-export type DiscordRoleHistoryItem = {
+/** Shared lifecycle event shape for module timelines on the User Profile. */
+export type ProfileTimelineItem = {
   id: string;
   title: string;
+  description?: string;
   timestamp: string;
   status?: "complete" | "current" | "pending" | "error";
+  badge?: string;
 };
 
 export type MemberProfile = {
@@ -100,7 +103,8 @@ export type MemberProfile = {
     updatedAt: string | null;
     accountStatus: string;
     communityAccess: string;
-    roleHistory: DiscordRoleHistoryItem[];
+    /** Discord lifecycle — single source of truth on the profile card. */
+    timeline: ProfileTimelineItem[];
   };
 
   referral: {
@@ -111,6 +115,8 @@ export type MemberProfile = {
     creditPerReferral: number;
     redemptionLabel: string;
     redemptionTone: StatusTone;
+    /** Referral lifecycle — single source of truth on the profile card. */
+    timeline: ProfileTimelineItem[];
   };
 
   notes: ProfileNote[];

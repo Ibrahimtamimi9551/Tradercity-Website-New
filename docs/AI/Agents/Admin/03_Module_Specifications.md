@@ -370,7 +370,7 @@ Pagination
 | Verification Required | Verification Required | Red |
 | Rejected | Admin rejected | Rose/Grey |
 
-**No Expired state** — expiration belongs to Membership lifecycle, not Subscriptions.
+**No Expired state** — expiration belongs to the **Membership domain** (backend SoT), not Subscriptions. Subscriptions may emit Membership updates after payment approval; they do not own expiry state. See [`CROSS_MODULE_DATA_SYNCHRONIZATION_ARCHITECTURE.md`](../../04_Product_Architecture/CROSS_MODULE_DATA_SYNCHRONIZATION_ARCHITECTURE.md).
 
 Each widget includes count, optional trend, and "View all" action.
 

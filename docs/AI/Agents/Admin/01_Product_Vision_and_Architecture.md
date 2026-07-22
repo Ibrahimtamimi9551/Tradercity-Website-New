@@ -274,10 +274,12 @@ Each card summarizes state from its owning module and links to that module for m
 
 | Card | Displays | Action Redirects To |
 |------|----------|---------------------|
-| Membership Activity | Plan, status, dates, renewal, duration | Subscriptions Module |
+| Membership Activity | Plan, status, dates, renewal, duration (Membership domain) | Subscriptions Module (payment-driven ops; Referral/Manual also write Membership) |
 | Subscription | Latest payment state, hash, method, amount | Subscriptions Module |
 | Discord | Role, sync status, access, role history | Discord Module |
 | Referral | Progress, credits, redemption status | Referral Module |
+
+Canonical data ownership: [`CROSS_MODULE_DATA_SYNCHRONIZATION_ARCHITECTURE.md`](../../04_Product_Architecture/CROSS_MODULE_DATA_SYNCHRONIZATION_ARCHITECTURE.md).
 
 ### Supporting Sections
 
@@ -300,17 +302,21 @@ Do not include analytics such as lesson views or report downloads.
 
 ## Module Ownership Matrix
 
-| Domain | Owner Module | Member Control Center Role |
-|--------|--------------|----------------------------|
-| Member identity | Members | Display identity header |
+| Domain | Owner | Member Control Center Role |
+|--------|-------|----------------------------|
+| Member identity | Members (Identity) | Display identity header |
 | Subscription payments | Subscriptions | Display subscription card |
-| Membership lifecycle | Subscriptions | Display membership activity card |
+| Membership lifecycle | **Membership domain** (backend; not an Admin page) | Display membership activity card (read-only) |
 | Discord sync | Discord | Display discord card |
 | Referral progress | Referrals | Display referral card |
 | Internal notes | Member Control Center | Own and display notes |
 | Activity timeline | Member Control Center | Aggregate operational events |
 
+**Membership writers:** Subscriptions (payment approved), Referral (redeem approved), Manual Activation, and future grant sources. Subscriptions owns **payments**, not Membership state.
+
 No module may duplicate another module's responsibility.
+
+Canonical contract: [`CROSS_MODULE_DATA_SYNCHRONIZATION_ARCHITECTURE.md`](../../04_Product_Architecture/CROSS_MODULE_DATA_SYNCHRONIZATION_ARCHITECTURE.md).
 
 ---
 

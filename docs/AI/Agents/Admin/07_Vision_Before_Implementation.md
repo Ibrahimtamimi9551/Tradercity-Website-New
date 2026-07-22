@@ -83,12 +83,14 @@ It aggregates information. It never owns information.
 
 Everything displayed here is reflected from another module.
 
-| Card | Reflects | Managed by |
-|------|----------|------------|
+| Card | Reflects | Managed by (operational write surface) |
+|------|----------|----------------------------------------|
 | Subscription | Payment status | Subscriptions Module |
 | Discord | Sync state | Discord Module |
 | Referral | Progress | Referrals Module |
-| Membership Activity | Lifecycle | Subscriptions Module |
+| Membership Activity | Lifecycle (Membership domain) | Subscriptions / Referral / Manual Activation write **Membership**; no Membership Admin page |
+
+Canonical data ownership: [`CROSS_MODULE_DATA_SYNCHRONIZATION_ARCHITECTURE.md`](../../04_Product_Architecture/CROSS_MODULE_DATA_SYNCHRONIZATION_ARCHITECTURE.md).
 
 ### Identity rules
 

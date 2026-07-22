@@ -164,14 +164,20 @@ members/sections/profile/
 ## Data Ownership (Never Break)
 
 ```text
-Members Module       → owns member listing / directory
-Subscription Module  → owns subscription logic
-Discord Module       → owns Discord logic
+Members Module       → owns member listing / directory (Identity)
+Subscription Module  → owns payment / verification logic
+Membership Domain    → owns VIP / access lifecycle (backend domain — NOT an Admin page)
+Discord Module       → owns Discord sync logic
 Referral Module      → owns referral logic
 Settings Module      → owns platform configuration (deferred — Phase 8)
-User Profile Module  → owns NOTHING (aggregates only)
+User Profile Module  → owns NOTHING for business domains (aggregates only;
+                       exception: Internal Notes + activity presentation)
 Dashboard            → owns NOTHING (monitors and routes only)
 ```
+
+Membership is written by Subscriptions, Referral, Manual Activation, and future grant sources — never edited via a dedicated Membership page.
+
+Canonical contract: [`CROSS_MODULE_DATA_SYNCHRONIZATION_ARCHITECTURE.md`](../../04_Product_Architecture/CROSS_MODULE_DATA_SYNCHRONIZATION_ARCHITECTURE.md).
 
 ---
 

@@ -92,7 +92,7 @@ Until Layer 3 physical moves complete, treat these paths as owned by the domain 
 |---------------|--------|
 | `src/app/admin/**` | admin |
 | `src/components/admin/**` | admin |
-| `src/components/members/**` | admin (Member Management domain sections) |
+| `src/components/members/**` | admin (Member Domain sections) |
 | `src/lib/admin/**` | admin |
 | `src/lib/members/**` | admin |
 | `src/types/admin/**` | admin |

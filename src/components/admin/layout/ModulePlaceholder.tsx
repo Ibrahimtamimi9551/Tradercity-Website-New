@@ -4,10 +4,13 @@ export function ModulePlaceholder({
   title,
   subtitle,
   phase,
+  domainSectionsPath = "src/components/members/sections/",
 }: {
   title: string;
   subtitle: string;
   phase: string;
+  /** Shown in the placeholder hint so Analyst shells point at the correct domain folder. */
+  domainSectionsPath?: string;
 }) {
   return (
     <div className="space-y-6">
@@ -16,7 +19,7 @@ export function ModulePlaceholder({
         <p className="text-sm font-medium text-white">{phase} implementation starts next.</p>
         <p className="mt-2 text-sm text-tc-muted">
           Shell and shared UI are ready. Domain sections will live under{" "}
-          <code className="rounded bg-white/5 px-1 py-0.5 text-xs">src/components/members/sections/</code>.
+          <code className="rounded bg-white/5 px-1 py-0.5 text-xs">{domainSectionsPath}</code>.
         </p>
       </div>
     </div>

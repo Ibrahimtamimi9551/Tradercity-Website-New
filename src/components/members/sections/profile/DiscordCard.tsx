@@ -1,9 +1,10 @@
 import { Crown } from "lucide-react";
-import { StatusBadge, Timeline } from "@/components/admin/ui";
+import { StatusBadge } from "@/components/admin/ui";
 import { DiscordIcon } from "@/components/admin/ui/icons/DiscordIcon";
 import { formatProfileDateTime } from "@/lib/members/format-profile";
 import type { MemberProfile } from "@/types/members/profile";
 import { FieldRow, ManageLink, ReflectionCard } from "./ReflectionCard";
+import { ModuleTimelineSection } from "./ModuleTimelineSection";
 
 type DiscordCardProps = {
   profile: MemberProfile;
@@ -11,7 +12,6 @@ type DiscordCardProps = {
 
 export function DiscordCard({ profile }: DiscordCardProps) {
   const { discord } = profile;
-  const historyPreview = discord.roleHistory.slice(0, 3);
 
   return (
     <ReflectionCard
@@ -63,24 +63,19 @@ export function DiscordCard({ profile }: DiscordCardProps) {
         <FieldRow label="Community Access">{discord.communityAccess}</FieldRow>
       </div>
 
-      {historyPreview.length > 0 ? (
-        <div className="mt-4 border-t border-white/10 pt-4">
-          <div className="mb-3 flex items-center justify-between gap-2">
-            <p className="text-xs font-medium uppercase tracking-wide text-tc-muted">
-              Role History
-            </p>
-            <span className="text-xs text-violet-300">View All</span>
-          </div>
-          <Timeline
-            items={historyPreview.map((item) => ({
-              id: item.id,
-              title: item.title,
-              timestamp: formatProfileDateTime(item.timestamp),
-              status: item.status ?? "complete",
-            }))}
-          />
-        </div>
-      ) : null}
+      <ModuleTimelineSection
+        title="Discord Timeline"
+        tone="navy"
+        viewAllHref={`/admin/discord?member=${profile.id}`}
+        items={discord.timeline.map((item) => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          timestamp: formatProfileDateTime(item.timestamp),
+          status: item.status ?? "complete",
+          badge: item.badge,
+        }))}
+      />
     </ReflectionCard>
   );
 }
