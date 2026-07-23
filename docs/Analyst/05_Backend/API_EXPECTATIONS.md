@@ -147,7 +147,7 @@ Stages: application · verification · partnership · agreement · onboarding ·
 
 ---
 
-## Discord (Analyst role — reserved)
+## Discord (Analyst role — Wave C UI shipped on mocks)
 
 Reuse shared Discord sync infrastructure. Analyst-specific contracts:
 
@@ -155,12 +155,18 @@ Reuse shared Discord sync infrastructure. Analyst-specific contracts:
 |--------|------|-------|
 | `GET` | `/admin/analysts/discord` | Directory-style Discord ops list |
 | `GET` | `/admin/analysts/:id/discord` | Control Center Discord tab |
+| `POST` | `/admin/analysts/:id/discord/invite` | Generate invite |
+| `POST` | `/admin/analysts/:id/discord/connect` | Connect / reconnect account |
 | `POST` | `/admin/analysts/:id/discord/sync` | Trigger sync |
 | `POST` | `/admin/analysts/:id/discord/assign-role` | Assign Analyst role (post-onboarding gate) |
 | `POST` | `/admin/analysts/:id/discord/remove-role` | Remove Analyst role |
+| `POST` | `/admin/analysts/:id/discord/disconnect` | Disconnect account |
 
-Trigger for assign (business rule): Application Approved → Agreement Accepted → Onboarding Complete → Assign Analyst Role.  
+Trigger for **record creation:** Application Approved → partnership activation.  
+Trigger for **assign role:** Onboarding Complete → Assign Analyst Role.  
 No payment / subscription validation.
+
+**Reserved (later):** publishing / private / education / moderator channel permissions · identity migration merge.
 
 ---
 

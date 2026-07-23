@@ -1,10 +1,12 @@
 # Analyst Discord Module Architecture
 
-**Version:** 1.0  
-**Status:** Planned  
+**Version:** 3.0  
+**Status:** Active — Stage 1 Wave C shipped (mock)  
 **Authority:** `docs/Analyst/03_Frontend/`  
-**Suggested route:** `/admin/analysts/discord`  
-**Nav placement:** Below Directory in Analysts section
+**Route:** `/admin/analysts/discord`  
+**Nav placement:** First-class Analysts sidebar domain (mirror Member Discord)  
+**Roadmap:** [`../06_Implementation/IMPLEMENTATION_ROADMAP.md`](../06_Implementation/IMPLEMENTATION_ROADMAP.md)  
+**Implementation report:** [`../06_Implementation/PHASE_05_WAVE_C_IMPLEMENTATION.md`](../06_Implementation/PHASE_05_WAVE_C_IMPLEMENTATION.md)
 
 ---
 
@@ -20,7 +22,7 @@ Do **not** create an entirely separate Discord architecture.
 
 ```text
 Member:  Membership Verified → Assign VIP Role
-Analyst: Application Approved → Agreement Accepted → Onboarding Complete → Assign Analyst Role
+Analyst: Application Approved → Agreement / Onboarding Complete → Assign Analyst Role
 ```
 
 No payment. No subscription validation. Same infrastructure.
@@ -29,92 +31,142 @@ No payment. No subscription validation. Same infrastructure.
 
 ## 2. Purpose
 
-Provide Admin operators a dedicated Analyst Discord surface that answers:
+Operational center for **Analyst Discord management**.
 
-> Is this partner correctly linked to Discord, holding the Analyst role, and healthy from a sync / activity perspective?
-
-Mirrors Member Discord module capabilities where applicable.
+> Is this partner correctly linked to Discord, holding the Analyst role, and healthy from a sync perspective?
 
 ---
 
-## 3. Suggested capabilities
+## 3. Domain IA
 
-| Capability | Notes |
-|------------|-------|
-| Discord Account | Linked account identity |
-| Discord Username | Display + external profile link |
-| Joined Server | Membership in TraderCity server |
-| Analyst Role | Assigned / missing / pending |
-| Role Sync | Sync affordances (reuse sync patterns) |
-| Role History | Role grant/revoke history |
-| Sync Logs | Operational logs |
-| Sync Status | synced / pending / failed |
-| Channel Permissions | Analyst channel access reflection |
-| Discord Activity | Engagement signals |
-| Last Seen | Presence freshness |
-| Last Message | Text channel activity |
-| Last Voice Activity | Voice freshness |
-
-Reuse existing Discord synchronization architecture wherever possible.  
-Cross-ref Member Discord specs under `docs/AI/Agents/Admin/` (shared shell patterns only — do not fork SoT).
-
----
-
-## 4. UX pattern
-
-Follow [`OPERATIONAL_UX_PATTERN.md`](./OPERATIONAL_UX_PATTERN.md):
+### Left navigation
 
 ```text
-Discord Table / Sync Queue
+Discord
+```
+
+### Internal views (shipped)
+
+```text
+Discord
+├── Discord Dashboard ✅
+├── Discord Directory ✅
+├── Discord Operations ✅
+└── Discord Intelligence (future — Stage 2)
+```
+
+---
+
+## 4. Capability detail (shipped)
+
+### Dashboard
+
+- Connected Analysts  
+- Pending Connections  
+- Pending Invitations  
+- Sync Errors  
+- Disconnected Analysts  
+- Role Assignment Issues  
+
+### Directory columns
+
+- Analyst · Discord Username · Connection Status · Assigned Role · Server Status · Last Sync  
+
+### Statuses (keep simple)
+
+`pending` · `invited` · `connected` · `verified` · `role_assigned` · `disconnected`
+
+### Operations
+
+- Generate Invite · Copy Invite · Connect Account · Reconnect  
+- Synchronize Roles · Assign Role · Remove Role · Disconnect Account  
+- View Audit History (panel)
+
+**Assign Role gate (production):** Onboarding Complete → Assign Analyst Role. Mock allows ops override until Wave D.
+
+---
+
+## 5. Information flow (Wave B → C)
+
+Approve runs **partnership activation**:
+
+```text
+Create Analyst Identity
+→ Directory record
+→ Control Center (lazy via Directory)
+→ Discord record
+→ Referral reserved (Wave E)
+→ Ready for Onboarding
+```
+
+Discord never requires re-entering application data.
+
+---
+
+## 6. UX pattern
+
+```text
+Discord Directory / Dashboard queues
         ↓
 Discord Inspector
         ↓
-Control Center → Discord tab  (or deep Discord detail)
+Discord Operations  ·or·  Control Center → Discord tab
 ```
 
----
-
-## 5. Relationship to Control Center
-
-- Analyst Discord **module** = operational queue across partners  
-- Control Center **Discord tab** = reflection + actions for one partner  
-- Role remove during Suspend is owned by Partnership Administration (may call shared Discord sync)
+Desktop: inspector. Mobile: `/admin/analysts/discord/[id]`.
 
 ---
 
-## 6. Source ownership (planned)
+## 7. Relationship to Control Center
+
+- Discord **module** = operational domain across partners  
+- Control Center **Discord tab** = reflection + deep-links (does not duplicate management)  
+- Suspend may remove Analyst role via shared Discord record (mock)
+
+---
+
+## 8. Source ownership (shipped)
 
 ```text
 src/app/admin/analysts/discord/page.tsx
+src/app/admin/analysts/discord/[id]/page.tsx
 src/components/analysts/sections/discord/
+src/components/analysts/sections/control-center/ControlCenterDiscordPanel.tsx
 src/lib/analysts/mock/discord.ts
+src/lib/analysts/mock/discord-mutations.ts
+src/lib/analysts/mock/partnership-activation.ts
+src/lib/analysts/hooks/useAnalystDiscord.ts
+src/lib/analysts/format-discord.ts
 src/types/analysts/discord.ts
 ```
 
-Shared Discord primitives may live under Admin/shared sync clients when backend exists — Analyst UI still owns presentation under `components/analysts/`.
+---
+
+## 9. Future (documentation only — do not implement in Wave C)
+
+| Item | Notes |
+|------|-------|
+| Publishing Channels | Later |
+| Private Analyst Channels | Later |
+| Education Channels | Later |
+| Report / Moderator Permissions | Later |
+| Advanced Synchronization | Later |
+| Identity migration / merge | Final Analyst Management phase — see ecosystem Future Edge Cases |
+| Discord Intelligence | Stage 2 |
+| NestJS / bot contracts | Shared Discord stack |
 
 ---
 
-## 7. Backend expectations (planning only)
-
-Reserve contracts for:
-
-- Analyst Discord link projection  
-- Analyst role assignment / removal  
-- Sync status + logs  
-- Activity timestamps (last seen / message / voice)
-
-See [`../05_Backend/API_EXPECTATIONS.md`](../05_Backend/API_EXPECTATIONS.md) · [`../05_Backend/INTEGRATION_POINTS.md`](../05_Backend/INTEGRATION_POINTS.md).
-
----
-
-## 8. Implementation status
+## 10. Implementation status
 
 | Capability | Status |
 |------------|--------|
-| Nav item + route | Not started |
-| Module UI | Planned |
+| Nav item + route | **Shipped** |
+| Dashboard / Directory / Operations | **Shipped (mock)** |
+| Control Center Discord tab | **Shipped (consumes domain)** |
+| Partnership activation on Approve | **Shipped (mock)** |
 | Shared sync reuse | Planned (no new Discord stack) |
+| Discord Intelligence | Stage 2 |
 | NestJS / bot contracts | Not started |
 
 ---
@@ -122,5 +174,6 @@ See [`../05_Backend/API_EXPECTATIONS.md`](../05_Backend/API_EXPECTATIONS.md) · 
 ## Related
 
 - Ecosystem: [`../02_Product_Architecture/ANALYST_ECOSYSTEM_ARCHITECTURE.md`](../02_Product_Architecture/ANALYST_ECOSYSTEM_ARCHITECTURE.md)  
-- Control Center Discord tab: [`CONTROL_CENTER_ARCHITECTURE.md`](./CONTROL_CENTER_ARCHITECTURE.md)  
-- Lifecycle trigger: [`../01_Product_Vision/ANALYST_USER_LIFECYCLE.md`](../01_Product_Vision/ANALYST_USER_LIFECYCLE.md)
+- Control Center: [`CONTROL_CENTER_ARCHITECTURE.md`](./CONTROL_CENTER_ARCHITECTURE.md)  
+- Lifecycle: [`../01_Product_Vision/ANALYST_USER_LIFECYCLE.md`](../01_Product_Vision/ANALYST_USER_LIFECYCLE.md)  
+- Wave C report: [`../06_Implementation/PHASE_05_WAVE_C_IMPLEMENTATION.md`](../06_Implementation/PHASE_05_WAVE_C_IMPLEMENTATION.md)

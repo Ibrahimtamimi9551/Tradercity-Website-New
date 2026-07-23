@@ -16,10 +16,12 @@ Shared platform concepts (governance, Auth, Membership SoT, Admin design freeze)
 |------|------|
 | Status & progress | [`PROJECT_STATUS.md`](./PROJECT_STATUS.md) |
 | Full catalog | [`ANALYST_DOCUMENTATION_INDEX.md`](./ANALYST_DOCUMENTATION_INDEX.md) |
-| Next implementation plan | [`../06_Implementation/PHASE_04.md`](../06_Implementation/PHASE_04.md) |
+| Canonical roadmap | [`../06_Implementation/IMPLEMENTATION_ROADMAP.md`](../06_Implementation/IMPLEMENTATION_ROADMAP.md) |
 | Operational UX rule | [`../03_Frontend/OPERATIONAL_UX_PATTERN.md`](../03_Frontend/OPERATIONAL_UX_PATTERN.md) |
 | Directory (shipped ops module) | [`../03_Frontend/DIRECTORY_ARCHITECTURE.md`](../03_Frontend/DIRECTORY_ARCHITECTURE.md) |
-| Control Center (next coding) | [`../03_Frontend/CONTROL_CENTER_ARCHITECTURE.md`](../03_Frontend/CONTROL_CENTER_ARCHITECTURE.md) |
+| Control Center (shipped) | [`../03_Frontend/CONTROL_CENTER_ARCHITECTURE.md`](../03_Frontend/CONTROL_CENTER_ARCHITECTURE.md) |
+| Next coding (Wave C Discord) | [`../03_Frontend/DISCORD_MODULE_ARCHITECTURE.md`](../03_Frontend/DISCORD_MODULE_ARCHITECTURE.md) |
+| Applications (shipped) | [`../03_Frontend/APPLICATIONS_MODULE_ARCHITECTURE.md`](../03_Frontend/APPLICATIONS_MODULE_ARCHITECTURE.md) |
 | Product “what / why” | [`../01_Product_Vision/`](../01_Product_Vision/) |
 | System design | [`../02_Product_Architecture/`](../02_Product_Architecture/) |
 | UI surfaces | [`../03_Frontend/`](../03_Frontend/) |
@@ -36,9 +38,10 @@ Shared platform concepts (governance, Auth, Membership SoT, Admin design freeze)
 Dashboard        → What needs attention?
 Directory        → Who are our analyst partners?
 Control Center   → What can I do for this partner?
-Operational modules → Specialized workflows
+Operational domains → Major capabilities with internal workspaces
 ```
 
+Stage 1 = Analyst Program (Applicant → Active Partner). Stage 2 = Intelligence.
 ---
 
 ## Isolation rule

@@ -83,5 +83,8 @@ Owned by Control Center Administration:
 
 ## UI status
 
-Verification + Partnerships routes are shells only.  
+Application → Verification → Evaluation lives in **Applications Review Queue** (Stage 1 Wave B).  
+Legacy Verification + Partnerships routes are transitional shells to fold.  
 Application structured evaluation UI not started.
+
+Canonical sequence: [`../06_Implementation/IMPLEMENTATION_ROADMAP.md`](../06_Implementation/IMPLEMENTATION_ROADMAP.md).

@@ -1,9 +1,9 @@
 # Analyst User Lifecycle
 
-**Version:** 1.1  
+**Version:** 1.2  
 **Status:** Active  
 **Authority:** `docs/Analyst/01_Product_Vision/`  
-**Last Updated:** July 23, 2026
+**Last Updated:** July 24, 2026
 
 Every backend entity, Admin queue, and UI should map to these stages.
 
@@ -16,14 +16,14 @@ Every backend entity, Admin queue, and UI should map to these stages.
 | Visitor | No analyst record | Marketing / community |
 | Interested | Considering partnership | Public `/analysts` (future) |
 | Application Submitted | Evaluation intake | Public `/analysts/apply` (future) |
-| Under Review | Admin structured evaluation | Admin Applications |
-| Verification | Confirm genuine identity/intent (not KYC; text channels) | Admin Verification |
-| Partnership Discussion | Mutual fit (not employment interview) | Admin Partnerships |
-| Approved | Record + role prepared; not active | Admin |
+| Under Review | Admin structured evaluation | Admin Applications (Dashboard / Review Queue) |
+| Verification | Confirm genuine identity/intent (not KYC; text channels) | Admin Applications → Review Queue |
+| Partnership Discussion | Mutual fit (not employment interview) | Admin Applications → Review Queue (interview notes) |
+| Approved | Partnership activation — Analyst identity · Directory · Discord · Referral reserved | Admin Applications + Discord · Directory · Control Center |
 | Partnership Agreement | Commission, standards, ethics, termination | Admin / future e-sign |
-| Onboarding | Education + wallet collection | Admin / partner flows |
-| Active Analyst | Publishing + commissions live · Discord Analyst role assigned | Dashboards · Discord |
-| Growing Analyst | Continuous performance; merit featuring | Admin + Homepage |
+| Onboarding | Education + wallet collection | Admin Onboarding / Control Center |
+| Active Analyst | Publishing + commissions live · Discord Analyst role assigned | Dashboards · Discord · Referrals |
+| Growing Analyst | Continuous performance; merit featuring | Admin + Homepage (**Stage 2**) |
 | Top Partner | Strategic future tier | Future |
 | Suspension | Warning → Review → Suspended → Reactivate **or** Closed | Control Center Administration |
 
@@ -90,7 +90,9 @@ Discord infrastructure is **shared** with Members. Business trigger differs:
 ```text
 Application Approved
         ↓
-Agreement Accepted
+Partnership activation (identity · Directory · Discord record · referral reserved)
+        ↓
+Agreement Accepted (when applicable)
         ↓
 Onboarding Complete
         ↓
@@ -100,6 +102,9 @@ Assign Analyst Role
 - No payment  
 - No subscription validation  
 - Role = **Analyst** (not VIP)  
+- Discord **record** is created at Approve; **role assignment** waits for onboarding gate  
+
+**Future edge case:** identity migration when applicant already has Discord / VIP / referral identity — design in final Analyst Management phase only.
 
 See [`../03_Frontend/DISCORD_MODULE_ARCHITECTURE.md`](../03_Frontend/DISCORD_MODULE_ARCHITECTURE.md).
 
@@ -112,7 +117,7 @@ See [`../03_Frontend/DISCORD_MODULE_ARCHITECTURE.md`](../03_Frontend/DISCORD_MOD
 | **Lifecycle Status** | Where the partner sits in the partnership pipeline |
 | **Activity Status** | Communication / engagement health (e.g. Active Today, Quiet, Critical) |
 
-These are independent. Activity Status later feeds automated alerts (deferred until operational modules mature).
+These are independent. Activity Status is **Stage 2** work (roadmap Wave G) and later feeds automated alerts — do not implement during Stage 1 Program waves.
 
 ---
 

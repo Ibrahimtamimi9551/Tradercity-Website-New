@@ -20,10 +20,10 @@ import { ControlCenterNotes } from "./ControlCenterNotes";
 import { ControlCenterOverview } from "./ControlCenterOverview";
 import {
   ControlCenterCommissionsPlaceholder,
-  ControlCenterDiscordPlaceholder,
   ControlCenterPerformancePlaceholder,
   ControlCenterTimelinePlaceholder,
 } from "./ControlCenterPlaceholders";
+import { ControlCenterDiscordPanel } from "./ControlCenterDiscordPanel";
 import { ControlCenterTabs } from "./ControlCenterTabs";
 import { SuspendPartnershipModal } from "./SuspendPartnershipModal";
 
@@ -110,7 +110,7 @@ export function AnalystControlCenterPageContent({
         ) : null}
         {activeTab === "performance" ? <ControlCenterPerformancePlaceholder /> : null}
         {activeTab === "discord" ? (
-          <ControlCenterDiscordPlaceholder profile={profile} />
+          <ControlCenterDiscordPanel profile={profile} />
         ) : null}
         {activeTab === "commissions" ? <ControlCenterCommissionsPlaceholder /> : null}
         {activeTab === "notes" ? (

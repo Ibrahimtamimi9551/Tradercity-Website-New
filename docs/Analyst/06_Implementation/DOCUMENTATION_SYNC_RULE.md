@@ -38,7 +38,7 @@ Example — if Directory / Control Center / Applications change, review:
 - [ ] Partnership / evaluation admin docs *(if impacted)*  
 - [ ] [`../05_Backend/API_EXPECTATIONS.md`](../05_Backend/API_EXPECTATIONS.md)  
 - [ ] [`../02_Product_Architecture/ANALYST_BACKEND_INTEGRATION.md`](../02_Product_Architecture/ANALYST_BACKEND_INTEGRATION.md)  
-- [ ] Current phase document under `06_Implementation/`  
+- [ ] Current phase / roadmap document under `06_Implementation/` (`IMPLEMENTATION_ROADMAP.md` when waves change)  
 - [ ] [`CHANGELOG.md`](./CHANGELOG.md)
 
 Update **only** documents affected by the implementation — but do not skip status + changelog.

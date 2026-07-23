@@ -41,8 +41,8 @@ export function AnalystDirectoryWidgets({ stats }: AnalystDirectoryWidgetsProps)
         accent="blue"
         priority="informational"
         compactMobile
-        href="/admin/analysts/applications"
-        linkText="View queue"
+          href="/admin/analysts/applications?view=queue"
+          linkText="View queue"
       />
       <WidgetCard
         label="Action Required"

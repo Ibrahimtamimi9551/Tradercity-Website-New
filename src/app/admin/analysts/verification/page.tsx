@@ -1,14 +1,9 @@
-import { ModulePlaceholder } from "@/components/admin/layout/ModulePlaceholder";
+import { redirect } from "next/navigation";
 
-const ANALYST_SECTIONS = "src/components/analysts/sections/";
-
-export default function AnalystVerificationPage() {
-  return (
-    <ModulePlaceholder
-      title="Verification"
-      subtitle="Confirm analyst authenticity and partnership intent."
-      phase="Verification Queue"
-      domainSectionsPath={ANALYST_SECTIONS}
-    />
-  );
+/**
+ * Wave B — Verification folds into Applications Review Queue.
+ * Legacy route retained as redirect so bookmarks and Dashboard links keep working.
+ */
+export default function AnalystVerificationRedirectPage() {
+  redirect("/admin/analysts/applications?view=queue");
 }

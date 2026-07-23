@@ -15,44 +15,50 @@ src/app/admin/analysts/
   page.tsx                          # Dashboard
   directory/page.tsx                # Directory
   [id]/page.tsx                    # Control Center (Wave A)
-  applications|verification|partnerships|referrals|commissions/page.tsx  # shells
+  applications/page.tsx             # Applications domain (Wave B)
+  applications/[id]/page.tsx       # Application mobile detail
+  discord/page.tsx                  # Discord domain (Wave C)
+  discord/[id]/page.tsx            # Discord mobile detail
+  verification|partnerships|referrals|commissions/page.tsx  # shells / redirects
 
 src/components/analysts/sections/
   dashboard/
-    AnalystDashboardPage.tsx
-    AnalystOperationalWidgets.tsx
-    AnalystOperationsQueueSection.tsx
-    AnalystRecentActivity.tsx
   directory/
-    AnalystsDirectoryPage.tsx
-    AnalystDirectoryWidgets.tsx
-    AnalystDirectoryFiltersBar.tsx
-    AnalystsTable.tsx
-    AnalystDirectoryDetails.tsx     # Quick Inspector
-    AnalystRowActions.tsx           # ⋮ menu (Wave A)
   control-center/
-    AnalystControlCenterView.tsx
-    AnalystControlCenterPage.tsx
-    ControlCenterHeader.tsx
-    ControlCenterTabs.tsx
-    ControlCenterOverview.tsx
-    ControlCenterAdministration.tsx
-    ControlCenterNotes.tsx
-    ControlCenterPlaceholders.tsx
-    SuspendPartnershipModal.tsx
+    … ControlCenterDiscordPanel.tsx   # Wave C — consumes Discord domain
+  applications/
+  discord/
+    DiscordDomainPage.tsx
+    DiscordDashboardView.tsx
+    DiscordDirectoryTable.tsx
+    DiscordDetails.tsx
+    DiscordOperationsView.tsx
+    DiscordDetailView.tsx
+    DiscordDomainNav.tsx
+    DiscordFiltersBar.tsx
 
 src/lib/analysts/
   mock/dashboard.ts
   mock/directory-analysts.ts
   mock/control-center.ts
+  mock/applications.ts
+  mock/application-mutations.ts
+  mock/discord.ts
+  mock/discord-mutations.ts
+  mock/partnership-activation.ts
   hooks/useAnalystsDirectory.ts
   hooks/useAnalystControlCenter.ts
+  hooks/useAnalystApplications.ts
+  hooks/useAnalystDiscord.ts
   format-control-center.ts
+  format-discord.ts
 
 src/types/analysts/
   dashboard.ts
   directory.ts
   control-center.ts
+  applications.ts
+  discord.ts
 ```
 
 ---
@@ -61,12 +67,8 @@ src/types/analysts/
 
 ```text
 src/app/admin/analysts/
-  discord/page.tsx
-  applications/[id]/page.tsx
-
-src/components/analysts/sections/
-  applications/
-  discord/
+  onboarding/   # Wave D (optional queue)
+  referrals/    # Wave E domain (replace placeholder)
 ```
 
 ---

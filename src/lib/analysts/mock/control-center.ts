@@ -1,4 +1,5 @@
 import { MOCK_DIRECTORY_ANALYSTS } from "@/lib/analysts/mock/directory-analysts";
+import { getMockAnalystDiscordByAnalystId, upsertMockAnalystDiscord } from "@/lib/analysts/mock/discord";
 import type {
   AnalystActivityStatus,
   AnalystControlCenter,
@@ -113,22 +114,38 @@ function enrich(id: string): AnalystControlCenter | undefined {
             : "Last Discord message · 3 days ago",
     },
     lifecycleStages: buildLifecycleStages(row.status),
-    discord: {
-      account: `${row.handle}`,
-      currentRole:
-        row.status === "active" || row.status === "growing"
-          ? "Analyst"
-          : row.status === "suspended"
-            ? "None (removed)"
-            : "Pending",
-      lastSync: "2026-07-22T19:40:00",
-      roleStatus:
-        row.status === "active" || row.status === "growing"
-          ? "Synced"
-          : row.status === "suspended"
-            ? "Role removed"
-            : "Not assigned",
-    },
+    discord: (() => {
+      const disc = getMockAnalystDiscordByAnalystId(id);
+      if (disc) {
+        return {
+          account: disc.discordUsername ?? disc.handle,
+          currentRole:
+            disc.assignedRole === "analyst"
+              ? "Analyst"
+              : disc.assignedRole === "pending"
+                ? "Pending"
+                : "None",
+          lastSync: disc.lastSyncAt ?? "—",
+          roleStatus: disc.status.replace(/_/g, " "),
+        };
+      }
+      return {
+        account: `${row.handle}`,
+        currentRole:
+          row.status === "active" || row.status === "growing"
+            ? "Analyst"
+            : row.status === "suspended"
+              ? "None (removed)"
+              : "Pending",
+        lastSync: "2026-07-22T19:40:00",
+        roleStatus:
+          row.status === "active" || row.status === "growing"
+            ? "Synced"
+            : row.status === "suspended"
+              ? "Role removed"
+              : "Not assigned",
+      };
+    })(),
     notes:
       row.id === "a-005"
         ? [
@@ -210,6 +227,27 @@ export function mockSuspendAnalyst(
       ...current.notes,
     ],
   };
+
+  const disc = getMockAnalystDiscordByAnalystId(id);
+  if (disc) {
+    upsertMockAnalystDiscord({
+      ...disc,
+      status: "disconnected",
+      assignedRole: "none",
+      lastSyncAt: new Date().toISOString(),
+      syncHealth: "pending",
+      auditHistory: [
+        {
+          id: `ev-suspend-${Date.now()}`,
+          title: "Analyst role removed (suspend)",
+          description: "Partnership suspended from Control Center.",
+          timestamp: new Date().toISOString(),
+          status: "complete",
+        },
+        ...disc.auditHistory,
+      ],
+    });
+  }
 
   CACHE.set(id, next);
   return next;

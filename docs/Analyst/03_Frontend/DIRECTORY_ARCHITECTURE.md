@@ -21,7 +21,7 @@ It answers:
 - What is their Activity Status (engagement freshness)?
 - Who needs attention (health)?
 - How large is their reach / what do they specialize in?
-- Where do I go next — Control Center, Discord, Applications, Verification?
+- Where do I go next — Control Center, Applications, Discord, Referrals?
 
 Without the Directory, Admin would only have a KPI dashboard and disconnected shells. The Directory is the **operational roster**.
 
@@ -54,7 +54,7 @@ It is an **operational workspace** used to:
 1. **Discover** analysts (search / filters / widgets)  
 2. **Monitor** partnership, health, and activity  
 3. **Inspect** a partner quickly (right-side Inspector)  
-4. **Navigate** into owning modules (Applications, Verification, Discord, Commissions)  
+4. **Navigate** into owning domains (Applications, Discord, Referrals)  
 5. **Launch** the Analyst Control Center (username → `/admin/analysts/[id]`) — **shipped**
 
 Row creation for new partners comes from the **Applications → Approval** pipeline, not from “Add row” on this table.
@@ -116,9 +116,9 @@ Shared primitives: `AdminMasterDetail`, `AdminDirectoryPanel`, `DataTable`, `Pag
 `healthy` · `needs_attention` · `action_required`  
 (Reuse Admin `SystemHealthState` — same language as Member Directory.)
 
-### Planned column — Activity Status *(not shipped)*
+### Planned column — Activity Status *(Stage 2 — not Stage 1)*
 
-Independent of Lifecycle Status.
+Independent of Lifecycle Status. Ships in **Stage 2 Wave G** per [`../06_Implementation/IMPLEMENTATION_ROADMAP.md`](../06_Implementation/IMPLEMENTATION_ROADMAP.md). Do not implement as the next coding wave.
 
 | Band | Example label |
 |------|---------------|
@@ -276,7 +276,7 @@ Operational Table / Queue → Quick Inspector → Full Detail / Control Center
 | Pagination + URL sync | Complete |
 | Inspector panel | Complete (summary) |
 | Widgets | Complete (mock) |
-| Activity Status column/filter | Planned (Wave B) |
+| Activity Status column/filter | Planned (**Stage 2 Wave G**) |
 | Action menu → Control Center | **Shipped** (other items placeholders) |
 | Identity → Control Center | **Shipped** |
 | NestJS API | Not started |

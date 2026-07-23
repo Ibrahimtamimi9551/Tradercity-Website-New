@@ -164,13 +164,40 @@ export const MOCK_DIRECTORY_ANALYSTS: DirectoryAnalyst[] = [
     partneredAt: "2026-02-18T15:25:00",
     systemHealth: "healthy",
   },
+  // Wave B approvals — partnership activation seeds (Wave C Discord consumes these).
+  {
+    id: "a-app-005",
+    displayName: "Sofia Almeida",
+    handle: "sofiamacro",
+    email: "sofia.almeida@example.com",
+    avatarTone: "rose",
+    status: "onboarding",
+    tier: "partner",
+    specialization: "Macro · Multi asset",
+    reachFollowers: 0,
+    partneredAt: "2026-07-02T15:00:00.000Z",
+    systemHealth: "healthy",
+  },
+  {
+    id: "a-app-007",
+    displayName: "Priya Nair",
+    handle: "priyaonchain",
+    email: "priya.nair@example.com",
+    avatarTone: "violet",
+    status: "onboarding",
+    tier: "partner",
+    specialization: "Crypto",
+    reachFollowers: 0,
+    partneredAt: "2026-05-20T09:00:00.000Z",
+    systemHealth: "healthy",
+  },
 ];
 
 export const MOCK_ANALYST_DIRECTORY_STATS: AnalystDirectoryStats = {
-  totalAnalysts: 12,
+  totalAnalysts: 14,
   activePartners: 7,
-  applicationsPending: 9,
+  applicationsPending: 5,
   actionRequired: 2,
-  newThisMonth: 4,
+  newThisMonth: 5,
   newThisMonthLabel: "Jul 2026",
 };

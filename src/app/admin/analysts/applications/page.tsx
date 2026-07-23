@@ -1,14 +1,9 @@
-import { ModulePlaceholder } from "@/components/admin/layout/ModulePlaceholder";
+import { ApplicationsDomainPage } from "@/components/analysts/sections/applications";
 
-const ANALYST_SECTIONS = "src/components/analysts/sections/";
-
+/**
+ * Stage 1 Wave B — Applications domain.
+ * Dashboard · Review Queue · Archive (mock-first).
+ */
 export default function AnalystApplicationsPage() {
-  return (
-    <ModulePlaceholder
-      title="Applications"
-      subtitle="Review analyst partnership applications and internal scorecards."
-      phase="Applications Queue"
-      domainSectionsPath={ANALYST_SECTIONS}
-    />
-  );
+  return <ApplicationsDomainPage />;
 }

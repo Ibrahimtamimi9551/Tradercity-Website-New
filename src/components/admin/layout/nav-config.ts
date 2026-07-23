@@ -6,7 +6,6 @@
   Gift,
   Mic2,
   ClipboardList,
-  BadgeCheck,
   Handshake,
   Coins,
   Home,
@@ -51,7 +50,7 @@ export const ANALYSTS_NAV: AdminNavItem[] = [
   },
   { label: "Directory", href: "/admin/analysts/directory", icon: Mic2 },
   { label: "Applications", href: "/admin/analysts/applications", icon: ClipboardList },
-  { label: "Verification", href: "/admin/analysts/verification", icon: BadgeCheck },
+  { label: "Discord", href: "/admin/analysts/discord", icon: MessageSquare },
   { label: "Partnerships", href: "/admin/analysts/partnerships", icon: Handshake },
   { label: "Commissions", href: "/admin/analysts/commissions", icon: Coins },
 ];

@@ -1,9 +1,9 @@
 # Operational UX Pattern (Analyst Platform)
 
-**Version:** 1.1  
+**Version:** 1.2  
 **Status:** Active — platform-wide interaction principle for Analyst Admin modules  
 **Authority:** `docs/Analyst/03_Frontend/`  
-**Last Updated:** July 23, 2026
+**Last Updated:** July 24, 2026
 
 ---
 
@@ -38,8 +38,11 @@ Collapsing all three into one page creates clutter. Skipping the Inspector force
 ```text
 Dashboard          → attention lists (may deep-link into Layer 1)
 Directory          → Layer 1 roster + Layer 2 Inspector → Layer 3 Control Center
-Operational modules → each owns Layer 1–3 for its workflow
+Operational domains → each owns Layer 1–3 for its capability
+                     (and may expose multiple internal workspaces)
 ```
+
+**Nav alignment:** Sidebar items are domains; internal views (Dashboard / Queue / Directory / Operations / Intelligence) stay inside the domain.
 
 ---
 
@@ -48,13 +51,15 @@ Operational modules → each owns Layer 1–3 for its workflow
 | Module | Layer 1 | Layer 2 | Layer 3 |
 |--------|---------|---------|---------|
 | Directory | Directory table | Directory Inspector | Analyst Control Center (**shipped**) |
-| Applications | Applications table | Application Viewer (wider) | Application Detail *(future)* |
-| Verification | Verification queue | Verification Viewer | Verification Detail |
-| Discord | Discord table / sync queue | Discord Inspector | Discord deep context / Control Center Discord tab |
-| Commissions | Commissions table | Commission Inspector | Commission Detail |
+| Applications | Application Dashboard / Review Queue | Application Viewer (wider: verify + evaluate + notes) | Application Detail *(future)* · Control Center after Approved |
+| Discord | Discord Directory / Dashboard queues | Discord Inspector | Discord Operations · Control Center Discord tab |
+| Referrals | Referral Directory / Dashboard | Referral Inspector | Control Center Referrals / Commissions |
+| Onboarding | Optional onboarding queue | Checklist summary | Control Center Onboarding |
 | Control Center | — | — | Per-analyst ops hub (tabs + Administration) |
 
-Dashboard queues are the “attention list”; they should deep-link into the owning module’s Layer 1 with filters applied.
+Dashboard queues are the “attention list”; they should deep-link into the owning domain’s Layer 1 with filters applied.
+
+**Note:** Verification is **not** a separate module row — it is part of Applications Review Queue.
 
 ---
 

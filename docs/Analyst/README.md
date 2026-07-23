@@ -12,7 +12,7 @@ Isolated documentation subsystem for the TraderCity **Analyst** platform.
 | `03_Frontend/` | Admin UI + future public surfaces |
 | `04_Admin/` | Ops workflows |
 | `05_Backend/` | API expectations · integration |
-| `06_Implementation/` | Phase records · changelog |
+| `06_Implementation/` | Roadmap · phase records · changelog |
 | `Assets/` | Diagrams / images |
 
 Do not author Analyst specs outside this directory.

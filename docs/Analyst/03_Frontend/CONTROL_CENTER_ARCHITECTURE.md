@@ -6,7 +6,7 @@
 **Route:** `/admin/analysts/[id]`  
 **Phase record:** [`../06_Implementation/PHASE_05_WAVE_A_IMPLEMENTATION.md`](../06_Implementation/PHASE_05_WAVE_A_IMPLEMENTATION.md)  
 **Terminology:** UI = Control Center · Product = Analyst Platform  
-**Last Updated:** July 23, 2026
+**Last Updated:** July 24, 2026
 
 ---
 
@@ -19,6 +19,10 @@ It answers:
 > What operational actions can I perform for this partner — and what is their full operational context?
 
 Unlike Member Profile (primarily reflection + navigation into owning modules), the Analyst Control Center also **executes partnership business operations** (Suspend mock flow today; Close / Reactivate / Pause later).
+
+**Boundary:** Control Center is for **active partnerships**. Candidates live in **Applications**. Approve creates a partnership handoff; it does not turn the Application Viewer into a Control Center.
+
+Future **Analyst Profile** (Member Profile–like aggregation) will be enriched by Discord, Referrals, etc.; Control Center remains the ops workspace. **Partner-facing Analyst Dashboard** is deferred until Stage 1 operational foundation is complete — do not design it during Analyst Management.
 
 ---
 
@@ -58,7 +62,7 @@ Overview · Timeline · Administration · Performance · Discord · Commissions 
 | Administration | **Implemented** — Suspend guided mock flow; other actions placeholders |
 | Notes | **Implemented** — add/list internal notes (mock) |
 | Timeline | Placeholder + TODO(NestJS) |
-| Discord | Placeholder mock reflection (account / role / sync / status) |
+| Discord | **Wave C** — consumes Discord domain (status · username · role · connection · last sync · deep-links) |
 | Performance | Placeholder reserved |
 | Commissions | Placeholder reserved |
 

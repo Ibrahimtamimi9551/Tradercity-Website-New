@@ -1,9 +1,9 @@
 # Analyst Product Vision
 
-**Version:** 1.1  
+**Version:** 1.2  
 **Status:** Active  
 **Authority:** `docs/Analyst/01_Product_Vision/`  
-**Last Updated:** July 23, 2026
+**Last Updated:** July 24, 2026
 
 ---
 
@@ -41,11 +41,15 @@ Control Center
         ↓
 Allows Admin to manage ONE analyst.
 
-Operational Modules
+Operational Domains
         ↓
-Manage specialized workflows
-(Application, Verification, Discord, Commission, etc.)
+Major capabilities with internal workspaces
+(Applications, Discord, Referrals, …)
 ```
+
+**Program first:** Build everything required for Applicant → Active Partner before operational intelligence, activity tracking, or BI.
+
+**Nav rule:** Left navigation represents major operational domains (like Member `Referrals`), not one sidebar item per screen.
 
 Every module follows the same interaction pattern:
 
@@ -53,7 +57,7 @@ Every module follows the same interaction pattern:
 Table / Queue → Quick Inspector → Detail / Control Center
 ```
 
-See [`../03_Frontend/OPERATIONAL_UX_PATTERN.md`](../03_Frontend/OPERATIONAL_UX_PATTERN.md).
+See [`../03_Frontend/OPERATIONAL_UX_PATTERN.md`](../03_Frontend/OPERATIONAL_UX_PATTERN.md) · [`../06_Implementation/IMPLEMENTATION_ROADMAP.md`](../06_Implementation/IMPLEMENTATION_ROADMAP.md).
 
 ---
 

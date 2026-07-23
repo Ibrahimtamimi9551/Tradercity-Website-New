@@ -4,7 +4,7 @@
 **Status:** Complete (mock-first frontend)  
 **Date:** July 23, 2026  
 **Authority:** `docs/Analyst/06_Implementation/`  
-**Plan reference:** [`PHASE_04.md`](./PHASE_04.md) Wave A
+**Plan reference:** [`PHASE_04.md`](./PHASE_04.md) Wave A · Current sequence: [`IMPLEMENTATION_ROADMAP.md`](./IMPLEMENTATION_ROADMAP.md)
 
 ---
 
@@ -23,7 +23,7 @@ Dashboard and Directory provide visibility. Wave A introduces **operations**.
 3. Business actions belong in **Administration**, not the Directory table.  
 4. Mock-first: `src/lib/analysts/mock` only — no fake API layer, no NestJS.  
 5. Future modules (Discord, Performance, Commissions, Timeline) plug into reserved tabs.  
-6. Activity Status appears on Control Center header/overview (Directory column remains Wave B).
+6. Activity Status on Control Center / Directory is **Stage 2 Wave G** (not the next coding wave).
 
 ---
 
@@ -154,12 +154,10 @@ npm run dev
 
 ---
 
-## Next recommended work (Wave B)
+## Next recommended work
 
-**Activity Status** on Directory:
+Follow [`IMPLEMENTATION_ROADMAP.md`](./IMPLEMENTATION_ROADMAP.md):
 
-- Column + badge bands  
-- Filter + URL param `activityStatus`  
-- Align Directory list fields with Control Center activity projection  
-
-Then Wave C — Applications module.
+1. **Stage 1 Wave B — Applications** (domain: Dashboard + Review Queue / Verification pipeline)  
+2. Wave C Discord → Wave D Onboarding → Wave E Referrals  
+3. **Do not** start Activity Status until Stage 2 (Wave G)

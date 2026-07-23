@@ -26,11 +26,11 @@ NestJS Analyst Admin APIs                       (future)
 1. **Directory list + filters + stats** (shipped URL contract — highest leverage)  
 2. Dashboard aggregates  
 3. **Control Center detail + partnership actions** (Wave A UI shipped on mocks — next NestJS priority after Directory)  
-4. Applications + category evaluations + decisions  
-5. Stage evaluations (Verification / Partnership / Agreement / Onboarding)  
-6. Discord Analyst role assign/sync (shared infra)  
-7. Commissions / payouts  
-8. Activity Status projection (Directory Wave B may ship UI before API)  
+4. Applications domain + category evaluations + verification pipeline (Stage 1 Wave B)  
+5. Discord Analyst role assign/sync (shared infra — Stage 1 Wave C)  
+6. Onboarding completion gates (Stage 1 Wave D)  
+7. Referrals / commissions commercial reflection (Stage 1 Wave E)  
+8. Activity Status projection (Stage 2 Wave G — may ship UI before API)  
 9. Automated Alerts — **last** (after prerequisite modules)
 
 Directory module contract: [`../03_Frontend/DIRECTORY_ARCHITECTURE.md`](../03_Frontend/DIRECTORY_ARCHITECTURE.md)  

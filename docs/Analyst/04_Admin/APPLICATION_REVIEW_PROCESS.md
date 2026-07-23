@@ -1,10 +1,10 @@
 # Application Review Process
 
-**Version:** 0.2  
-**Status:** Draft (product defined; Admin UI is shell only)  
+**Version:** 0.3  
+**Status:** Draft (product defined; Admin UI Wave B shipped mock)  
 **Authority:** `docs/Analyst/04_Admin/`  
 **Frontend layout:** [`../03_Frontend/APPLICATIONS_MODULE_ARCHITECTURE.md`](../03_Frontend/APPLICATIONS_MODULE_ARCHITECTURE.md)  
-**Last Updated:** July 23, 2026
+**Last Updated:** July 24, 2026
 
 ---
 
@@ -77,15 +77,17 @@ Full application render (links open in new tab):
 
 Identity · Experience · Education · Specialization · Research · Trading Style · Community Size · Portfolio · Images · Uploaded Files · Website · TradingView · Telegram · Twitter · Discord · YouTube
 
-UI layout: table + wider viewer (desktop); dedicated page (mobile).  
-[`../03_Frontend/APPLICATIONS_MODULE_ARCHITECTURE.md`](../03_Frontend/APPLICATIONS_MODULE_ARCHITECTURE.md)
+Viewer also hosts the full **Review Queue** pipeline. Evaluation uses an **Evaluation Workspace** (read-only application summary above the scorecard).
+
+Approve creates a mock partnership handoff (analyst identity + Discord prep) for Wave C — not a Control Center session for candidates.
 
 ---
 
 ## UI status
 
-Route `/admin/analysts/applications` exists as `ModulePlaceholder`.  
-Implementation not started.
+Route `/admin/analysts/applications` — **Wave B shipped (mock)**: Dashboard · Review Queue · Archive.  
+Verification is inside Review Queue (legacy `/admin/analysts/verification` redirects).  
+Report: [`../06_Implementation/PHASE_05_WAVE_B_IMPLEMENTATION.md`](../06_Implementation/PHASE_05_WAVE_B_IMPLEMENTATION.md)
 
 ---
 
