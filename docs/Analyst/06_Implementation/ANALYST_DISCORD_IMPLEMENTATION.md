@@ -1,4 +1,4 @@
-# Phase 05 / Wave C — Discord Domain Implementation Report
+﻿# Phase 05 / Wave C — Discord Domain Implementation Report
 
 **Version:** 1.0  
 **Status:** Complete (mock-first frontend)  
@@ -118,5 +118,5 @@ src/app/admin/analysts/discord/[id]/page.tsx
 
 ## Next recommended work
 
-**Stage 1 Wave D — Onboarding** (checklist · Discord assign-role gate).  
-Stop for review before Wave D.
+~~**Stage 1 Wave D — Onboarding**~~ → **Complete** ([`ANALYST_ONBOARDING_IMPLEMENTATION.md`](./ANALYST_ONBOARDING_IMPLEMENTATION.md)).  
+Next: **Wave E — Referrals** after Wave D review.

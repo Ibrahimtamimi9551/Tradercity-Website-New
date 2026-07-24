@@ -13,11 +13,13 @@ import {
   updateVerificationRecord,
 } from "@/lib/analysts/mock/application-mutations";
 import { getMockApplication } from "@/lib/analysts/mock/applications";
+import { buildSystemProvisioning } from "@/lib/analysts/mock/onboarding";
 import {
   APPLICATION_SCORE_THRESHOLD,
   type ApplicationViewerTabId,
 } from "@/types/analysts/applications";
 import { ApplicationViewer } from "./ApplicationViewer";
+import { SystemProvisioningPanel } from "./SystemProvisioningPanel";
 
 type ApplicationDetailViewProps = {
   applicationId: string;
@@ -27,11 +29,18 @@ function ApplicationDetailContent({ applicationId }: ApplicationDetailViewProps)
   const router = useRouter();
   const searchParams = useSearchParams();
   const [revision, setRevision] = useState(0);
+  const surface = searchParams.get("surface");
 
   const application = useMemo(() => {
     void revision;
     return getMockApplication(applicationId);
   }, [applicationId, revision]);
+
+  const provisioning = useMemo(() => {
+    void revision;
+    if (!application) return null;
+    return buildSystemProvisioning(application);
+  }, [application, revision]);
 
   const [viewerTab, setViewerTab] = useState<ApplicationViewerTabId>(() =>
     parseApplicationViewerTab(searchParams.get("tab"))
@@ -69,6 +78,25 @@ function ApplicationDetailContent({ applicationId }: ApplicationDetailViewProps)
           Back to Review Queue
         </Link>
         <p className="text-sm text-tc-muted">Application not found.</p>
+      </div>
+    );
+  }
+
+  if (surface === "onboarding") {
+    return (
+      <div className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-3xl flex-col gap-4">
+        <Link
+          href="/admin/analysts/applications?view=onboarding"
+          className="inline-flex w-fit items-center gap-1.5 text-sm text-violet-300 hover:text-violet-200"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden />
+          Back to Onboarding
+        </Link>
+        <SystemProvisioningPanel
+          provisioning={provisioning}
+          onRetry={() => setRevision((n) => n + 1)}
+          className="min-h-[70vh] flex-1"
+        />
       </div>
     );
   }

@@ -4,6 +4,7 @@ import type { AnalystDiscordRecord } from "@/types/analysts/discord";
 import { applicationHandle } from "@/types/analysts/applications";
 import { MOCK_DIRECTORY_ANALYSTS } from "@/lib/analysts/mock/directory-analysts";
 import { upsertMockAnalystDiscord } from "@/lib/analysts/mock/discord";
+import { provisionAnalystReferralIdentity } from "@/lib/analysts/mock/referrals";
 
 /**
  * Partnership activation — Applicant → Partner birth event.
@@ -17,8 +18,8 @@ import { upsertMockAnalystDiscord } from "@/lib/analysts/mock/discord";
  * → Create Directory Record
  * → Create Control Center (lazy via Directory)
  * → Create Discord Record
- * → Reserve Referral Record (flag only — Wave E)
- * → Ready For Onboarding
+ * → Provision Referral Identity (Disabled until Operationally Ready — Wave E)
+ * → System Provisioning (Applications → Onboarding)
  *
  * Identity migration (existing Discord / VIP / referral merge) is a FUTURE edge
  * case — do not implement here.
@@ -28,6 +29,7 @@ export type PartnershipActivationResult = {
   analystId: string;
   directoryCreated: boolean;
   discordRecordId: string;
+  referralRecordId: string;
   referralReserved: boolean;
   controlCenterPath: string;
   createdAt: string;
@@ -103,7 +105,7 @@ function ensureDiscordRecord(
       {
         id: `ev-${analystId}-discord-reserved`,
         title: "Discord record created",
-        description: "Ready for invite / connect. Referral record reserved (Wave E).",
+        description: "Ready for invite / connect. Referral identity provisioned (Disabled until Operationally Ready).",
         timestamp: createdAt,
         status: "current",
       },
@@ -114,7 +116,7 @@ function ensureDiscordRecord(
 
 /**
  * Activate partnership after Approve.
- * Safe to call when a handoff already exists — upserts Discord / Directory as needed.
+ * Safe to call when a handoff already exists — upserts Discord / Directory / Referral as needed.
  */
 export function activatePartnershipFromApplication(
   app: AnalystApplication,
@@ -123,11 +125,22 @@ export function activatePartnershipFromApplication(
 ): PartnershipActivationResult {
   const directoryCreated = ensureDirectoryRecord(app, analystId, createdAt);
   const discord = ensureDiscordRecord(app, analystId, createdAt);
+  const handle = applicationHandle(app).replace(/^@/, "") || analystId;
+  const referral = provisionAnalystReferralIdentity({
+    analystId,
+    displayName: app.analystName,
+    handle,
+    email: app.email,
+    avatarTone: app.avatarTone,
+    applicationId: app.id,
+    provisionedAt: createdAt,
+  });
 
   return {
     analystId,
     directoryCreated,
     discordRecordId: discord.id,
+    referralRecordId: referral.id,
     referralReserved: true,
     controlCenterPath: `/admin/analysts/${analystId}`,
     createdAt,

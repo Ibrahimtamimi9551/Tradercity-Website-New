@@ -159,6 +159,7 @@ export function applyDecisionRecord(
         controlCenterPath: activation.controlCenterPath,
         directoryCreated: activation.directoryCreated,
         discordRecordId: activation.discordRecordId,
+        referralRecordId: activation.referralRecordId,
         referralReserved: activation.referralReserved,
       },
     });

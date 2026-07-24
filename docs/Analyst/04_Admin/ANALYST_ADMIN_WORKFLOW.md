@@ -1,4 +1,4 @@
-# Analyst Admin Workflow
+﻿# Analyst Admin Workflow
 
 **Version:** 1.4  
 **Status:** Active  
@@ -39,17 +39,17 @@ Table / Queue → Quick Inspector → Detail / Control Center
 |--------|-------|--------|
 | Dashboard | `/admin/analysts` | Shipped (mock) |
 | Directory | `/admin/analysts/directory` | Shipped (mock) |
-| Applications | `/admin/analysts/applications` | **Shipped (mock)** — Wave B domain |
-| Discord | `/admin/analysts/discord` | Planned Wave C |
+| Applications | `/admin/analysts/applications` | **Shipped (mock)** — Waves B + D |
+| Discord | `/admin/analysts/discord` | **Shipped (mock)** — Wave C |
 | Referrals | `/admin/analysts/referrals` | Shell → Wave E (sidebar) |
-| Onboarding | Control Center + optional queue | Planned Wave D |
+| Onboarding | Applications → Onboarding | **Shipped (mock)** — Wave D System Provisioning |
 
 Control Center `/admin/analysts/[id]` — **Wave A shipped (mock)** (opened from Directory identity / ⋮ menu).
 
 ### Internal domain workspaces
 
 ```text
-Applications → Dashboard · Review Queue / Verification · Archive · Intelligence (Stage 2)
+Applications → Dashboard · Review Queue · Onboarding · Archive · Intelligence (Stage 2)
 Discord      → Dashboard · Directory · Operations · Intelligence (Stage 2)
 Referrals    → Dashboard · Directory · Intelligence
 ```
@@ -79,7 +79,7 @@ Activity Status column = **Stage 2** (not next coding).
 
 Per-analyst hub with tabs + **Administration** for partnership actions.  
 **Shipped (mock):** Overview · Administration (Suspend flow) · Notes · placeholder tabs.  
-[`../03_Frontend/CONTROL_CENTER_ARCHITECTURE.md`](../03_Frontend/CONTROL_CENTER_ARCHITECTURE.md) · [`PARTNERSHIP_ADMINISTRATION.md`](./PARTNERSHIP_ADMINISTRATION.md) · Wave A report: [`../06_Implementation/PHASE_05_WAVE_A_IMPLEMENTATION.md`](../06_Implementation/PHASE_05_WAVE_A_IMPLEMENTATION.md)
+[`../03_Frontend/CONTROL_CENTER_ARCHITECTURE.md`](../03_Frontend/CONTROL_CENTER_ARCHITECTURE.md) · [`PARTNERSHIP_ADMINISTRATION.md`](./PARTNERSHIP_ADMINISTRATION.md) · Control Center report: [`../06_Implementation/ANALYST_CONTROL_CENTER_IMPLEMENTATION.md`](../06_Implementation/ANALYST_CONTROL_CENTER_IMPLEMENTATION.md)
 
 ---
 

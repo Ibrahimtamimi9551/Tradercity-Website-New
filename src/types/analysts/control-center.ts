@@ -11,6 +11,7 @@ export type AnalystControlCenterTabId =
   | "administration"
   | "performance"
   | "discord"
+  | "referrals"
   | "commissions"
   | "notes";
 

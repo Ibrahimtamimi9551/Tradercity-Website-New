@@ -1,4 +1,4 @@
-# Analyst Product Vision
+﻿# Analyst Product Vision
 
 **Version:** 1.2  
 **Status:** Active  
@@ -102,7 +102,7 @@ Shared infrastructure (e.g. Discord) is reused; **business triggers and roles di
 - Business model: [`ANALYST_BUSINESS_MODEL.md`](./ANALYST_BUSINESS_MODEL.md)  
 - Lifecycle: [`ANALYST_USER_LIFECYCLE.md`](./ANALYST_USER_LIFECYCLE.md)  
 - Architecture: [`../02_Product_Architecture/ANALYST_ECOSYSTEM_ARCHITECTURE.md`](../02_Product_Architecture/ANALYST_ECOSYSTEM_ARCHITECTURE.md)  
-- Implementation plan: [`../06_Implementation/PHASE_04.md`](../06_Implementation/PHASE_04.md)
+- Implementation plan: [`../06_Implementation/ANALYST_ARCHITECTURE_REFINEMENT_IMPLEMENTATION.md`](../06_Implementation/ANALYST_ARCHITECTURE_REFINEMENT_IMPLEMENTATION.md)
 
 ## Shared platform (cross-ref only)
 

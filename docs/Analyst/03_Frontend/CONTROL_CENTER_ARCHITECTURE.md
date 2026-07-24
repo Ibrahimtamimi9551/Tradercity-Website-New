@@ -1,10 +1,10 @@
-# Analyst Control Center Architecture
+﻿# Analyst Control Center Architecture
 
 **Version:** 1.1  
 **Status:** Active — Wave A shipped (mock)  
 **Authority:** `docs/Analyst/03_Frontend/`  
 **Route:** `/admin/analysts/[id]`  
-**Phase record:** [`../06_Implementation/PHASE_05_WAVE_A_IMPLEMENTATION.md`](../06_Implementation/PHASE_05_WAVE_A_IMPLEMENTATION.md)  
+**Phase record:** [`../06_Implementation/ANALYST_CONTROL_CENTER_IMPLEMENTATION.md`](../06_Implementation/ANALYST_CONTROL_CENTER_IMPLEMENTATION.md)  
 **Terminology:** UI = Control Center · Product = Analyst Platform  
 **Last Updated:** July 24, 2026
 
@@ -53,18 +53,19 @@ Future **Analyst Profile** (Member Profile–like aggregation) will be enriched 
 ## 4. Tabs
 
 ```text
-Overview · Timeline · Administration · Performance · Discord · Commissions · Notes
+Overview · Timeline · Administration · Performance · Discord · Referrals · Commissions · Notes
 ```
 
 | Tab | Wave A maturity |
 |-----|-----------------|
-| Overview | **Implemented** — partnership summary, lifecycle, ops summary, quick stats |
+| Overview | **Implemented** — partnership + ops summary, module command cards (Discord · Referral · Performance · Timeline · Notes · Commission), compact lifecycle side rail, quick stats |
 | Administration | **Implemented** — Suspend guided mock flow; other actions placeholders |
 | Notes | **Implemented** — add/list internal notes (mock) |
 | Timeline | Placeholder + TODO(NestJS) |
 | Discord | **Wave C** — consumes Discord domain (status · username · role · connection · last sync · deep-links) |
 | Performance | Placeholder reserved |
-| Commissions | Placeholder reserved |
+| Commissions | **Implemented (Wave F)** — financial summary + deep-links to Commission domain |
+| Referrals | **Implemented (Wave E)** — summary + deep-links to Referrals domain |
 
 URL: `?tab=<id>` (default Overview omits param).
 
@@ -133,4 +134,4 @@ See [`../05_Backend/API_EXPECTATIONS.md`](../05_Backend/API_EXPECTATIONS.md).
 
 - Directory: [`DIRECTORY_ARCHITECTURE.md`](./DIRECTORY_ARCHITECTURE.md)  
 - Partnership admin: [`../04_Admin/PARTNERSHIP_ADMINISTRATION.md`](../04_Admin/PARTNERSHIP_ADMINISTRATION.md)  
-- Wave A report: [`../06_Implementation/PHASE_05_WAVE_A_IMPLEMENTATION.md`](../06_Implementation/PHASE_05_WAVE_A_IMPLEMENTATION.md)
+- Control Center report: [`../06_Implementation/ANALYST_CONTROL_CENTER_IMPLEMENTATION.md`](../06_Implementation/ANALYST_CONTROL_CENTER_IMPLEMENTATION.md)

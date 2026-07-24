@@ -1,6 +1,7 @@
 "use client";
 
 import { Mic2, BadgeCheck, ClipboardList, AlertTriangle, UserPlus } from "lucide-react";
+import { AdminStatGrid } from "@/components/admin/directory";
 import { WidgetCard } from "@/components/admin/ui";
 import type { AnalystDirectoryStats } from "@/types/analysts/directory";
 
@@ -10,7 +11,7 @@ type AnalystDirectoryWidgetsProps = {
 
 export function AnalystDirectoryWidgets({ stats }: AnalystDirectoryWidgetsProps) {
   return (
-    <div className="grid grid-cols-2 gap-2 sm:gap-4 xl:grid-cols-5">
+    <AdminStatGrid mobileCols={2} mdCols={3} xlCols={5}>
       <WidgetCard
         label="Total Analysts"
         value={stats.totalAnalysts.toLocaleString()}
@@ -41,8 +42,8 @@ export function AnalystDirectoryWidgets({ stats }: AnalystDirectoryWidgetsProps)
         accent="blue"
         priority="informational"
         compactMobile
-          href="/admin/analysts/applications?view=queue"
-          linkText="View queue"
+        href="/admin/analysts/applications?view=queue"
+        linkText="View queue"
       />
       <WidgetCard
         label="Action Required"
@@ -65,8 +66,8 @@ export function AnalystDirectoryWidgets({ stats }: AnalystDirectoryWidgetsProps)
         compactMobile
         href="/admin/analysts/directory"
         linkText="View all"
-        className="col-span-2 xl:col-span-1"
+        className="col-span-2 md:col-span-1 xl:col-span-1"
       />
-    </div>
+    </AdminStatGrid>
   );
 }

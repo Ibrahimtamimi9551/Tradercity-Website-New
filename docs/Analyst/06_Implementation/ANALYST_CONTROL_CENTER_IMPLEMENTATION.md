@@ -1,10 +1,10 @@
-# Phase 05 / Wave A — Analyst Control Center Implementation Report
+﻿# Phase 05 / Wave A — Analyst Control Center Implementation Report
 
 **Version:** 1.0  
 **Status:** Complete (mock-first frontend)  
 **Date:** July 23, 2026  
 **Authority:** `docs/Analyst/06_Implementation/`  
-**Plan reference:** [`PHASE_04.md`](./PHASE_04.md) Wave A · Current sequence: [`IMPLEMENTATION_ROADMAP.md`](./IMPLEMENTATION_ROADMAP.md)
+**Plan reference:** [`ANALYST_ARCHITECTURE_REFINEMENT_IMPLEMENTATION.md`](./ANALYST_ARCHITECTURE_REFINEMENT_IMPLEMENTATION.md) Wave A · Current sequence: [`IMPLEMENTATION_ROADMAP.md`](./IMPLEMENTATION_ROADMAP.md)
 
 ---
 
@@ -111,7 +111,7 @@ src/components/analysts/sections/control-center/
   SuspendPartnershipModal.tsx
   index.ts
 src/components/analysts/sections/directory/AnalystRowActions.tsx
-docs/Analyst/06_Implementation/PHASE_05_WAVE_A_IMPLEMENTATION.md
+docs/Analyst/06_Implementation/ANALYST_CONTROL_CENTER_IMPLEMENTATION.md
 ```
 
 ---
@@ -130,7 +130,7 @@ docs/Analyst/04_Admin/ANALYST_ADMIN_WORKFLOW.md
 docs/Analyst/05_Backend/API_EXPECTATIONS.md
 docs/Analyst/02_Product_Architecture/ANALYST_BACKEND_INTEGRATION.md
 docs/Analyst/02_Product_Architecture/ANALYST_ECOSYSTEM_ARCHITECTURE.md
-docs/Analyst/06_Implementation/PHASE_04.md
+docs/Analyst/06_Implementation/ANALYST_ARCHITECTURE_REFINEMENT_IMPLEMENTATION.md
 docs/Analyst/06_Implementation/CHANGELOG.md
 ```
 

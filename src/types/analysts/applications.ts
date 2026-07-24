@@ -8,7 +8,7 @@ export type ApplicationQueueStatus =
   | "approved"
   | "rejected";
 
-export type ApplicationDomainView = "dashboard" | "queue" | "archive";
+export type ApplicationDomainView = "dashboard" | "queue" | "onboarding" | "archive";
 
 export type ApplicationViewerTabId =
   | "application"
@@ -78,8 +78,8 @@ export type ApplicationContentSubmission = {
  * Mock handoff created on Approve — Applicant → Partner birth event.
  * Applications record how the analyst entered; operational domains own records after this.
  *
- * Create Analyst Identity → Directory → Control Center → Discord → Referral reserved
- * → Ready For Onboarding
+ * Create Analyst Identity → Directory → Control Center → Discord → Referral provisioned
+ * → System Provisioning (Applications → Onboarding) → Referral Activated when Ready
  */
 export type ApplicationPartnershipHandoff = {
   analystId: string;
@@ -89,7 +89,9 @@ export type ApplicationPartnershipHandoff = {
   controlCenterPath: string;
   directoryCreated: boolean;
   discordRecordId: string | null;
-  /** Wave E will materialize referral ops; reserved at activation. */
+  /** Wave E referral identity id (provisioned at Approve; activated when Ready). */
+  referralRecordId: string | null;
+  /** True once referral identity is provisioned. */
   referralReserved: boolean;
 };
 

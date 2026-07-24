@@ -1,4 +1,4 @@
-# Phase 03 — Analyst Directory
+﻿# Phase 03 — Analyst Directory
 
 **Status:** Complete (mock UI) · Documentation expanded July 23, 2026  
 **Module:** Analyst Directory  
@@ -44,7 +44,7 @@ Operators need a single roster to discover partners, monitor lifecycle/health, t
 | [`ANALYST_BACKEND_INTEGRATION.md`](../02_Product_Architecture/ANALYST_BACKEND_INTEGRATION.md) | Directory-first integration order |
 | [`ANALYST_DOMAIN_MODEL.md`](../02_Product_Architecture/ANALYST_DOMAIN_MODEL.md) | Directory fields note |
 | [`CHANGELOG.md`](./CHANGELOG.md) | This documentation expansion |
-| This file (`PHASE_03.md`) | Expanded to implementation report form |
+| This file (`ANALYST_DIRECTORY_IMPLEMENTATION.md`) | Expanded to implementation report form |
 
 ---
 

@@ -3,12 +3,24 @@
 import Link from "next/link";
 import { StatusBadge, SystemHealthBadge } from "@/components/admin/ui";
 import { cn } from "@/lib/admin/cn";
+import {
+  analystReferralPlanLabel,
+  analystReferralStatusPresentation,
+} from "@/lib/analysts/format-referrals";
+import {
+  analystCommissionStatusPresentation,
+  formatCommissionDateShort,
+  formatCommissionUsd,
+} from "@/lib/analysts/format-commissions";
+import { getMockAnalystCommissionByAnalystId } from "@/lib/analysts/mock/commissions";
+import { getMockAnalystReferralByAnalystId } from "@/lib/analysts/mock/referrals";
 import type {
   AnalystLifecycleStatus,
   AnalystTier,
   DirectoryAnalyst,
 } from "@/types/analysts/directory";
 import type { StatusTone } from "@/types/admin/common";
+import type { AnalystReferralMembershipPlan } from "@/types/analysts/referrals";
 
 const avatarToneStyles: Record<DirectoryAnalyst["avatarTone"], string> = {
   discord: "admin-on-accent bg-[#5865F2] text-white",
@@ -18,6 +30,13 @@ const avatarToneStyles: Record<DirectoryAnalyst["avatarTone"], string> = {
   rose: "bg-rose-500/30 text-rose-200",
   sky: "bg-sky-500/30 text-sky-200",
 };
+
+const PLAN_ORDER: AnalystReferralMembershipPlan[] = [
+  "monthly",
+  "quarterly",
+  "yearly",
+  "lifetime",
+];
 
 function statusBadge(status: AnalystLifecycleStatus): { label: string; tone: StatusTone } {
   const map: Record<AnalystLifecycleStatus, { label: string; tone: StatusTone }> = {
@@ -76,6 +95,8 @@ export function AnalystDirectoryDetails({
 
   const initials = analyst.handle.slice(0, 2).toUpperCase();
   const status = statusBadge(analyst.status);
+  const referral = getMockAnalystReferralByAnalystId(analyst.id);
+  const commission = getMockAnalystCommissionByAnalystId(analyst.id);
   const partnered = new Date(analyst.partneredAt).toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",
@@ -142,6 +163,131 @@ export function AnalystDirectoryDetails({
               </dd>
             </div>
           </dl>
+        </section>
+
+        <section className="space-y-2">
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-tc-muted">
+            Referral Summary
+          </h3>
+          {referral ? (
+            <>
+              <dl className="space-y-2 text-sm">
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-tc-muted">Total Referrals</dt>
+                  <dd className="tabular-nums text-white/90">
+                    {referral.totalReferrals}
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-tc-muted">Successful Referrals</dt>
+                  <dd className="tabular-nums text-white/90">
+                    {referral.successfulReferrals}
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-tc-muted">Referral Status</dt>
+                  <dd>
+                    <StatusBadge
+                      label={
+                        analystReferralStatusPresentation(referral.status).label
+                      }
+                      tone={
+                        analystReferralStatusPresentation(referral.status).tone
+                      }
+                    />
+                  </dd>
+                </div>
+              </dl>
+              <div className="grid grid-cols-2 gap-1.5 pt-1">
+                {PLAN_ORDER.map((plan) => (
+                  <div
+                    key={plan}
+                    className="rounded-md border border-white/10 bg-white/[0.02] px-2 py-1.5"
+                  >
+                    <p className="text-[10px] text-tc-muted">
+                      {analystReferralPlanLabel(plan).replace(" Plan", "")}
+                    </p>
+                    <p className="text-sm font-medium tabular-nums text-white">
+                      {referral.planBreakdown[plan]}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <Link
+                href={`/admin/analysts/referrals?view=directory&referral=${referral.id}`}
+                className="inline-flex text-xs font-medium text-violet-300 hover:text-violet-200"
+              >
+                Manage Referrals →
+              </Link>
+            </>
+          ) : (
+            <p className="text-xs text-tc-muted">
+              No referral identity yet — provisions after partnership activation.
+            </p>
+          )}
+        </section>
+
+        <section className="space-y-2">
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-tc-muted">
+            Commission Summary
+          </h3>
+          {commission ? (
+            <>
+              <dl className="space-y-2 text-sm">
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-tc-muted">Total Earned</dt>
+                  <dd className="tabular-nums text-white/90">
+                    {formatCommissionUsd(commission.summary.totalEarnedUsd)}
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-tc-muted">Amount Payable</dt>
+                  <dd className="tabular-nums text-amber-100/90">
+                    {formatCommissionUsd(commission.summary.totalPayableUsd)}
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-tc-muted">Outstanding Due</dt>
+                  <dd className="tabular-nums text-rose-200/90">
+                    {formatCommissionUsd(commission.summary.dueAmountUsd)}
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-tc-muted">Last Payment</dt>
+                  <dd className="text-white/90">
+                    {formatCommissionDateShort(commission.summary.lastPayoutAt)}
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-tc-muted">Commission Status</dt>
+                  <dd>
+                    <StatusBadge
+                      label={
+                        analystCommissionStatusPresentation(
+                          commission.commissionStatus
+                        ).label
+                      }
+                      tone={
+                        analystCommissionStatusPresentation(
+                          commission.commissionStatus
+                        ).tone
+                      }
+                    />
+                  </dd>
+                </div>
+              </dl>
+              <Link
+                href={`/admin/analysts/commissions?commission=${commission.id}`}
+                className="inline-flex text-xs font-medium text-amber-200 hover:text-amber-100"
+              >
+                Open Commission Dashboard →
+              </Link>
+            </>
+          ) : (
+            <p className="text-xs text-tc-muted">
+              No commission identity yet — Financial Ops after referral readiness.
+            </p>
+          )}
         </section>
 
         <div className="space-y-2 rounded-lg border border-dashed border-white/10 bg-white/[0.02] px-3 py-3">

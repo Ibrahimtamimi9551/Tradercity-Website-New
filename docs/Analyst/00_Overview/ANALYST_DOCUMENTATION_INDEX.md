@@ -1,9 +1,9 @@
-# Analyst Documentation Index
+﻿# Analyst Documentation Index
 
-**Version:** 1.2  
+**Version:** 1.4  
 **Status:** Active  
 **Authority:** Analyst documentation subsystem (`docs/Analyst/`)  
-**Last Updated:** July 24, 2026
+**Last Updated:** July 25, 2026
 
 This is the **single entry point** for all Analyst Platform documentation.
 
@@ -12,8 +12,8 @@ Agents and backend developers should load this index first, then only the Analys
 **Platform vocabulary:** [`docs/00_Project_Governance/PLATFORM_TERMINOLOGY.md`](../../00_Project_Governance/PLATFORM_TERMINOLOGY.md)  
 **Docs sync rule:** [`../06_Implementation/DOCUMENTATION_SYNC_RULE.md`](../06_Implementation/DOCUMENTATION_SYNC_RULE.md)  
 **Canonical roadmap:** [`../06_Implementation/IMPLEMENTATION_ROADMAP.md`](../06_Implementation/IMPLEMENTATION_ROADMAP.md)  
-**Phase 04 (historical plan):** [`../06_Implementation/PHASE_04.md`](../06_Implementation/PHASE_04.md)  
-**Wave B report:** [`../06_Implementation/PHASE_05_WAVE_B_IMPLEMENTATION.md`](../06_Implementation/PHASE_05_WAVE_B_IMPLEMENTATION.md)
+**Project status:** [`PROJECT_STATUS.md`](./PROJECT_STATUS.md)  
+**Implementation reports:** [`../06_Implementation/`](../06_Implementation/)
 
 ---
 
@@ -26,9 +26,11 @@ Agents and backend developers should load this index first, then only the Analys
 5. Read [`../03_Frontend/OPERATIONAL_UX_PATTERN.md`](../03_Frontend/OPERATIONAL_UX_PATTERN.md)  
 6. Control Center (shipped): [`../03_Frontend/CONTROL_CENTER_ARCHITECTURE.md`](../03_Frontend/CONTROL_CENTER_ARCHITECTURE.md)  
 7. Applications (shipped): [`../03_Frontend/APPLICATIONS_MODULE_ARCHITECTURE.md`](../03_Frontend/APPLICATIONS_MODULE_ARCHITECTURE.md)  
-8. Next coding: **Wave D Onboarding** — [`../03_Frontend/ONBOARDING_MODULE_ARCHITECTURE.md`](../03_Frontend/ONBOARDING_MODULE_ARCHITECTURE.md)  
-   (Wave C Discord complete — [`../06_Implementation/PHASE_05_WAVE_C_IMPLEMENTATION.md`](../06_Implementation/PHASE_05_WAVE_C_IMPLEMENTATION.md))  
-9. For API work: [`../05_Backend/API_EXPECTATIONS.md`](../05_Backend/API_EXPECTATIONS.md)
+8. Onboarding / System Provisioning (shipped): [`../03_Frontend/ONBOARDING_MODULE_ARCHITECTURE.md`](../03_Frontend/ONBOARDING_MODULE_ARCHITECTURE.md)  
+9. Referrals (shipped): [`../03_Frontend/REFERRALS_MODULE_ARCHITECTURE.md`](../03_Frontend/REFERRALS_MODULE_ARCHITECTURE.md)  
+10. Commission Financial Ops (shipped): [`../03_Frontend/COMMISSIONS_MODULE_ARCHITECTURE.md`](../03_Frontend/COMMISSIONS_MODULE_ARCHITECTURE.md)  
+11. Next: **Docs bridge** (Activity · Working Status · Dashboard contracts · Backend sync) — before partner Analyst Dashboard  
+12. For API work: [`../05_Backend/API_EXPECTATIONS.md`](../05_Backend/API_EXPECTATIONS.md)
 
 ---
 
@@ -66,11 +68,12 @@ Agents and backend developers should load this index first, then only the Analys
 | [OPERATIONAL_UX_PATTERN.md](../03_Frontend/OPERATIONAL_UX_PATTERN.md) | Active | Table → Inspector → Control Center (platform rule) |
 | [DASHBOARD_ARCHITECTURE.md](../03_Frontend/DASHBOARD_ARCHITECTURE.md) | Active | Admin Analyst Dashboard (shipped mock) |
 | [DIRECTORY_ARCHITECTURE.md](../03_Frontend/DIRECTORY_ARCHITECTURE.md) | Active | Directory roster · Inspector · Activity Status (Stage 2) |
-| [CONTROL_CENTER_ARCHITECTURE.md](../03_Frontend/CONTROL_CENTER_ARCHITECTURE.md) | Active | Per-analyst ops hub — Wave A shipped (mock) |
-| [APPLICATIONS_MODULE_ARCHITECTURE.md](../03_Frontend/APPLICATIONS_MODULE_ARCHITECTURE.md) | Active | Applications domain — Dashboard + Review Queue (Wave B shipped) |
-| [DISCORD_MODULE_ARCHITECTURE.md](../03_Frontend/DISCORD_MODULE_ARCHITECTURE.md) | Active | Discord domain — Dashboard · Directory · Operations (Wave C shipped) |
-| [ONBOARDING_MODULE_ARCHITECTURE.md](../03_Frontend/ONBOARDING_MODULE_ARCHITECTURE.md) | Planned | Onboarding checklist / progress (Wave D) |
-| [REFERRALS_MODULE_ARCHITECTURE.md](../03_Frontend/REFERRALS_MODULE_ARCHITECTURE.md) | Planned | Referrals domain — mirror Member Referrals (Wave E) |
+| [CONTROL_CENTER_ARCHITECTURE.md](../03_Frontend/CONTROL_CENTER_ARCHITECTURE.md) | Active | Per-analyst ops hub — shipped (mock) |
+| [APPLICATIONS_MODULE_ARCHITECTURE.md](../03_Frontend/APPLICATIONS_MODULE_ARCHITECTURE.md) | Active | Applications domain — Dashboard + Review Queue + Onboarding |
+| [DISCORD_MODULE_ARCHITECTURE.md](../03_Frontend/DISCORD_MODULE_ARCHITECTURE.md) | Active | Discord domain — Dashboard · Directory · Operations |
+| [ONBOARDING_MODULE_ARCHITECTURE.md](../03_Frontend/ONBOARDING_MODULE_ARCHITECTURE.md) | Active | System Provisioning under Applications |
+| [REFERRALS_MODULE_ARCHITECTURE.md](../03_Frontend/REFERRALS_MODULE_ARCHITECTURE.md) | Active | Referrals domain — Dashboard · Directory · Performance · Archive |
+| [COMMISSIONS_MODULE_ARCHITECTURE.md](../03_Frontend/COMMISSIONS_MODULE_ARCHITECTURE.md) | Active | Commission Financial Operations — Dashboard · Directory · Payouts · History |
 | [COMPONENT_HIERARCHY.md](../03_Frontend/COMPONENT_HIERARCHY.md) | Active | Source tree & composition |
 | [RESPONSIVE_STRATEGY.md](../03_Frontend/RESPONSIVE_STRATEGY.md) | Active | Desktop/mobile Admin patterns |
 | [LANDING_PAGE_ARCHITECTURE.md](../03_Frontend/LANDING_PAGE_ARCHITECTURE.md) | Planned | Public `/analysts` |
@@ -85,7 +88,7 @@ Agents and backend developers should load this index first, then only the Analys
 | [APPLICATION_REVIEW_PROCESS.md](../04_Admin/APPLICATION_REVIEW_PROCESS.md) | Draft | Category evaluations + score threshold |
 | [APPROVAL_WORKFLOW.md](../04_Admin/APPROVAL_WORKFLOW.md) | Draft | Stage-based evaluations + pipeline |
 | [AUTOMATED_ALERTS.md](../04_Admin/AUTOMATED_ALERTS.md) | Planned (deferred) | Future alerts — do not implement yet |
-| [COMMISSION_MANAGEMENT.md](../04_Admin/COMMISSION_MANAGEMENT.md) | Planned | Earnings & payouts |
+| [COMMISSION_MANAGEMENT.md](../04_Admin/COMMISSION_MANAGEMENT.md) | Active | Admin Financial Ops summary — see Commissions architecture |
 | [PERFORMANCE_MONITORING.md](../04_Admin/PERFORMANCE_MONITORING.md) | Planned | Growth / quality / intelligence (Stage 2) |
 
 ### 05 — Backend
@@ -103,15 +106,18 @@ Agents and backend developers should load this index first, then only the Analys
 | Document | Status | Role |
 |----------|--------|------|
 | [DOCUMENTATION_SYNC_RULE.md](../06_Implementation/DOCUMENTATION_SYNC_RULE.md) | Active | **Mandatory** docs update after every major implementation |
-| [IMPLEMENTATION_ROADMAP.md](../06_Implementation/IMPLEMENTATION_ROADMAP.md) | Active | **Canonical** Stage 1 / Stage 2 wave sequence |
-| [PHASE_01.md](../06_Implementation/PHASE_01.md) | Complete | Section nav + shells |
-| [PHASE_02.md](../06_Implementation/PHASE_02.md) | Complete | Analyst Dashboard |
-| [PHASE_03.md](../06_Implementation/PHASE_03.md) | Complete | Analyst Directory |
-| [PHASE_04.md](../06_Implementation/PHASE_04.md) | Complete (docs) | Architecture refinement; wave labels superseded by roadmap v2.0 |
-| [PHASE_05_WAVE_A_IMPLEMENTATION.md](../06_Implementation/PHASE_05_WAVE_A_IMPLEMENTATION.md) | Complete | Control Center Wave A |
-| [PHASE_05_WAVE_B_IMPLEMENTATION.md](../06_Implementation/PHASE_05_WAVE_B_IMPLEMENTATION.md) | Complete | Applications Wave B implementation report |
-| [PHASE_05_WAVE_C_IMPLEMENTATION.md](../06_Implementation/PHASE_05_WAVE_C_IMPLEMENTATION.md) | Complete | Discord Wave C implementation report |
+| [IMPLEMENTATION_ROADMAP.md](../06_Implementation/IMPLEMENTATION_ROADMAP.md) | Active | **Canonical** Stage 1 / Stage 2 sequence |
 | [CHANGELOG.md](../06_Implementation/CHANGELOG.md) | Active | Chronological change log |
+| [ANALYST_ADMIN_NAVIGATION_IMPLEMENTATION.md](../06_Implementation/ANALYST_ADMIN_NAVIGATION_IMPLEMENTATION.md) | Complete | Admin Navigation module report |
+| [ANALYST_DASHBOARD_IMPLEMENTATION.md](../06_Implementation/ANALYST_DASHBOARD_IMPLEMENTATION.md) | Complete | Dashboard module report |
+| [ANALYST_DIRECTORY_IMPLEMENTATION.md](../06_Implementation/ANALYST_DIRECTORY_IMPLEMENTATION.md) | Complete | Directory module report |
+| [ANALYST_ARCHITECTURE_REFINEMENT_IMPLEMENTATION.md](../06_Implementation/ANALYST_ARCHITECTURE_REFINEMENT_IMPLEMENTATION.md) | Complete (docs) | Architecture refinement report |
+| [ANALYST_CONTROL_CENTER_IMPLEMENTATION.md](../06_Implementation/ANALYST_CONTROL_CENTER_IMPLEMENTATION.md) | Complete | Control Center module report |
+| [ANALYST_APPLICATIONS_IMPLEMENTATION.md](../06_Implementation/ANALYST_APPLICATIONS_IMPLEMENTATION.md) | Complete | Applications module report |
+| [ANALYST_DISCORD_IMPLEMENTATION.md](../06_Implementation/ANALYST_DISCORD_IMPLEMENTATION.md) | Complete | Discord module report |
+| [ANALYST_ONBOARDING_IMPLEMENTATION.md](../06_Implementation/ANALYST_ONBOARDING_IMPLEMENTATION.md) | Complete | Onboarding / System Provisioning module report |
+| [ANALYST_REFERRALS_IMPLEMENTATION.md](../06_Implementation/ANALYST_REFERRALS_IMPLEMENTATION.md) | Complete | Referrals module report |
+| [ANALYST_COMMISSION_IMPLEMENTATION.md](../06_Implementation/ANALYST_COMMISSION_IMPLEMENTATION.md) | Complete | Commission Financial Operations module report |
 
 ### Assets
 

@@ -14,6 +14,10 @@ import {
   listMockApplications,
 } from "@/lib/analysts/mock/applications";
 import {
+  buildSystemProvisioning,
+  listSystemProvisioning,
+} from "@/lib/analysts/mock/onboarding";
+import {
   APPLICATION_SCORE_THRESHOLD,
   type AnalystApplication,
   type ApplicationDecisionAction,
@@ -24,13 +28,22 @@ import {
   type CategoryEvaluation,
   type EvaluationCategoryId,
 } from "@/types/analysts/applications";
+import type { AnalystSystemProvisioning } from "@/types/analysts/onboarding";
+
 const DEFAULT_FILTERS: ApplicationQueueFilters = {
   search: "",
   status: "all",
 };
 
 function parseView(value: string | null): ApplicationDomainView {
-  if (value === "queue" || value === "archive" || value === "dashboard") return value;
+  if (
+    value === "queue" ||
+    value === "archive" ||
+    value === "dashboard" ||
+    value === "onboarding"
+  ) {
+    return value;
+  }
   return "dashboard";
 }
 
@@ -71,6 +84,8 @@ function matchesFilters(
 ): boolean {
   if (view === "archive") {
     if (!app.archived) return false;
+  } else if (view === "onboarding") {
+    if (app.status !== "approved" || !app.partnershipHandoff) return false;
   } else if (view === "queue") {
     // Rejects are archived; still visible when filtering Rejected in the queue.
     if (app.archived && filters.status !== "rejected") return false;
@@ -84,7 +99,9 @@ function matchesFilters(
     if (!haystack.includes(query)) return false;
   }
 
-  if (filters.status !== "all" && app.status !== filters.status) return false;
+  if (view !== "onboarding" && filters.status !== "all" && app.status !== filters.status) {
+    return false;
+  }
   return true;
 }
 
@@ -116,14 +133,16 @@ function serializeState(
 }
 
 /**
- * Applications domain — Dashboard / Review Queue / Archive.
+ * Applications domain — Dashboard / Review Queue / Onboarding / Archive.
  *
  * URL contract:
  *   /admin/analysts/applications
  *   /admin/analysts/applications?view=queue&status=new
  *   /admin/analysts/applications?view=queue&application=app-001
+ *   /admin/analysts/applications?view=onboarding&application=app-005
  *   /admin/analysts/applications?view=archive
  *
+ * Onboarding = System Provisioning verification after Approve (Wave D).
  * TODO(NestJS): replace mock store with authenticated applications API.
  */
 export function useAnalystApplications() {
@@ -280,21 +299,50 @@ export function useAnalystApplications() {
     [allApps, filters, view]
   );
 
-  const total = filtered.length;
+  const provisioningRows = useMemo((): AnalystSystemProvisioning[] => {
+    void revision;
+    if (view !== "onboarding") return [];
+    const query = filters.search.trim().toLowerCase();
+    return listSystemProvisioning().filter((row) => {
+      if (!query) return true;
+      const haystack =
+        `${row.analystName} ${row.analystId} ${row.email} ${row.applicationId}`.toLowerCase();
+      return haystack.includes(query);
+    });
+  }, [filters.search, revision, view]);
+
+  const listSource =
+    view === "onboarding" ? provisioningRows : filtered;
+  const total = listSource.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const safePage = Math.min(page, totalPages);
   const rows = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
+  const onboardingPageRows = provisioningRows.slice(
+    (safePage - 1) * pageSize,
+    safePage * pageSize
+  );
 
   const selectedApplication = useMemo(() => {
     if (selectedId) {
       const fromAll = allApps.find((a) => a.id === selectedId);
       if (fromAll) return fromAll;
     }
+    if (view === "onboarding") {
+      const first = onboardingPageRows[0];
+      return first ? allApps.find((a) => a.id === first.applicationId) ?? null : null;
+    }
     return rows[0] ?? null;
-  }, [allApps, rows, selectedId]);
+  }, [allApps, onboardingPageRows, rows, selectedId, view]);
+
+  const selectedProvisioning = useMemo(() => {
+    void revision;
+    if (view !== "onboarding" || !selectedApplication) return null;
+    return buildSystemProvisioning(selectedApplication);
+  }, [revision, selectedApplication, view]);
 
   const hasActiveFilters =
-    filters.search.trim() !== "" || filters.status !== "all";
+    filters.search.trim() !== "" ||
+    (view !== "onboarding" && filters.status !== "all");
 
   const bump = () => setRevision((n) => n + 1);
 
@@ -356,6 +404,9 @@ export function useAnalystApplications() {
     resetFilters,
     hasActiveFilters,
     rows,
+    onboardingRows: onboardingPageRows,
+    selectedProvisioning,
+    refreshProvisioning: bump,
     total,
     page: safePage,
     pageSize,

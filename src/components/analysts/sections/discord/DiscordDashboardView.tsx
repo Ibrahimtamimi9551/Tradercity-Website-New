@@ -28,7 +28,7 @@ export function DiscordDashboardView({
 }: DiscordDashboardViewProps) {
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="grid grid-cols-2 gap-2 sm:gap-4 xl:grid-cols-3">
+      <div className="grid grid-cols-2 gap-2 md:gap-3 lg:gap-4 xl:grid-cols-3">
         <WidgetCard
           label="Connected Analysts"
           value={stats.connectedCount}

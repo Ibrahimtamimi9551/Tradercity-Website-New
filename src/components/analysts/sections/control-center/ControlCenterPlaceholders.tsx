@@ -92,14 +92,21 @@ export function ControlCenterCommissionsPlaceholder() {
         </div>
         <div>
           <h2 className="text-sm font-medium text-white sm:text-base">Commissions</h2>
-          <p className="text-xs text-tc-muted">Commission history · Payouts · Wallet</p>
+          <p className="text-xs text-tc-muted">Wave F — payouts · wallet · tiers</p>
         </div>
       </div>
       <div className="rounded-lg border border-dashed border-white/10 bg-black/20 px-4 py-8 text-center">
-        <p className="text-sm text-white/85">Commissions layout reserved</p>
+        <p className="text-sm text-white/85">Commission calculations deferred</p>
         <p className="mt-2 text-xs text-tc-muted">
-          Will deep-link into the Commissions module when available.
+          Wave F will consume Referral Identity, Successful Referrals, membership
+          plan breakdown, and conversion counts from the Referrals domain.
         </p>
+        <a
+          href="/admin/analysts/referrals"
+          className="mt-3 inline-flex text-xs font-medium text-violet-300 hover:text-violet-200"
+        >
+          Open Referrals domain →
+        </a>
       </div>
     </section>
   );

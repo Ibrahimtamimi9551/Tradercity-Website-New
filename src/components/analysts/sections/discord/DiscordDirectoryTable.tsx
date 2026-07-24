@@ -8,7 +8,6 @@ import {
 import { cn } from "@/lib/admin/cn";
 import {
   analystDiscordRoleLabel,
-  analystDiscordServerLabel,
   analystDiscordStatusPresentation,
   analystDiscordSyncPresentation,
   formatAnalystDiscordDate,
@@ -79,16 +78,6 @@ export function DiscordDirectoryTable({
       ),
     },
     {
-      key: "discord",
-      header: "Discord Username",
-      className: "min-w-[8rem]",
-      render: (row) => (
-        <span className="text-sm text-white/85">
-          {row.discordUsername ? `@${row.discordUsername}` : "—"}
-        </span>
-      ),
-    },
-    {
       key: "status",
       header: "Connection Status",
       render: (row) => {
@@ -111,15 +100,6 @@ export function DiscordDirectoryTable({
           )}
         >
           {analystDiscordRoleLabel(row.assignedRole)}
-        </span>
-      ),
-    },
-    {
-      key: "server",
-      header: "Server Status",
-      render: (row) => (
-        <span className="text-sm text-white/75">
-          {analystDiscordServerLabel(row.serverStatus)}
         </span>
       ),
     },

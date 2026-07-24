@@ -1,14 +1,8 @@
-import { ModulePlaceholder } from "@/components/admin/layout/ModulePlaceholder";
+import { CommissionsDomainPage } from "@/components/analysts/sections/commissions";
 
-const ANALYST_SECTIONS = "src/components/analysts/sections/";
-
+/**
+ * Analyst Commission — Financial Operations domain (Wave F).
+ */
 export default function AnalystCommissionsPage() {
-  return (
-    <ModulePlaceholder
-      title="Commissions"
-      subtitle="Commission earnings, tiers, and payout requests."
-      phase="Commissions"
-      domainSectionsPath={ANALYST_SECTIONS}
-    />
-  );
+  return <CommissionsDomainPage />;
 }

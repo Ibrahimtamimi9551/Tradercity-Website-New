@@ -31,7 +31,8 @@ const SUMMARY_BY_STATUS: Record<AnalystLifecycleStatus, string> = {
   under_review: "Application under evaluation. Awaiting structured scorecard completion.",
   verification: "Verification in progress. Confirm identity intent via text channels.",
   partnership_discussion: "Mutual-fit discussion open. Publishing expectations not finalized.",
-  onboarding: "Onboarding checklist in progress. Discord Analyst role not yet assigned.",
+  onboarding:
+    "System provisioning in progress. Verify Discord connection and Analyst role in Applications → Onboarding.",
   active: "Healthy partnership. Publishing consistently. Discord synchronized. No operational issues.",
   growing: "Strong growth trajectory. Merit signals improving. Monitor publishing cadence.",
   suspended: "Partnership suspended. Review Administration tab before reactivation.",

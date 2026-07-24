@@ -1,4 +1,4 @@
-# Phase 04 — Architecture Refinement & Next Implementation Plan
+﻿# Phase 04 — Architecture Refinement & Next Implementation Plan
 
 **Version:** 1.1  
 **Status:** Complete (documentation / architecture)  
@@ -78,7 +78,7 @@ See changelog entries for 2026-07-23 Phase 04 and 2026-07-24 roadmap restructure
 
 ### Wave A — Control Center foundation ✅ **Complete**
 
-**Report:** [`PHASE_05_WAVE_A_IMPLEMENTATION.md`](./PHASE_05_WAVE_A_IMPLEMENTATION.md)
+**Report:** [`ANALYST_CONTROL_CENTER_IMPLEMENTATION.md`](./ANALYST_CONTROL_CENTER_IMPLEMENTATION.md)
 
 | Step | Work | Status |
 |------|------|--------|
@@ -187,7 +187,7 @@ Contracts reserved in:
 
 ## 8. What to do next
 
-1. ~~Begin Wave A — Control Center~~ → **Complete** ([`PHASE_05_WAVE_A_IMPLEMENTATION.md`](./PHASE_05_WAVE_A_IMPLEMENTATION.md))  
+1. ~~Begin Wave A — Control Center~~ → **Complete** ([`ANALYST_CONTROL_CENTER_IMPLEMENTATION.md`](./ANALYST_CONTROL_CENTER_IMPLEMENTATION.md))  
 2. Follow [`IMPLEMENTATION_ROADMAP.md`](./IMPLEMENTATION_ROADMAP.md): begin **Stage 1 Wave B — Applications**  
 3. Do **not** start Activity Status / Stage 2 until Wave E completes (unless explicitly overridden)  
 4. Keep Documentation Sync Rule mandatory after each wave  

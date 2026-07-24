@@ -51,10 +51,10 @@ Operational domains → each owns Layer 1–3 for its capability
 | Module | Layer 1 | Layer 2 | Layer 3 |
 |--------|---------|---------|---------|
 | Directory | Directory table | Directory Inspector | Analyst Control Center (**shipped**) |
-| Applications | Application Dashboard / Review Queue | Application Viewer (wider: verify + evaluate + notes) | Application Detail *(future)* · Control Center after Approved |
+| Applications | Application Dashboard / Review Queue / Onboarding | Application Viewer · System Provisioning panel | Control Center after Approved |
 | Discord | Discord Directory / Dashboard queues | Discord Inspector | Discord Operations · Control Center Discord tab |
 | Referrals | Referral Directory / Dashboard | Referral Inspector | Control Center Referrals / Commissions |
-| Onboarding | Optional onboarding queue | Checklist summary | Control Center Onboarding |
+| Onboarding | Applications → Onboarding queue | System Provisioning checklist | (not a Control Center education tab) |
 | Control Center | — | — | Per-analyst ops hub (tabs + Administration) |
 
 Dashboard queues are the “attention list”; they should deep-link into the owning domain’s Layer 1 with filters applied.

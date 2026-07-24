@@ -64,11 +64,16 @@ Rename mindset: this is **not** an employment interview.
 
 ---
 
-## Discord after onboarding
+## After Approve — System Provisioning
 
 ```text
-Onboarding Complete → Assign Analyst Role
+Approved → System Provisioning (Applications → Onboarding)
+→ Discord Connected · Role Assigned (verified, not re-entered)
+→ Operationally Ready
 ```
+
+Discord role assignment is performed in the Discord domain and **verified** in Onboarding.  
+Analyst education belongs to the future Analyst Dashboard — not this path.
 
 Shared Discord infrastructure — see [`../03_Frontend/DISCORD_MODULE_ARCHITECTURE.md`](../03_Frontend/DISCORD_MODULE_ARCHITECTURE.md).
 
@@ -83,8 +88,8 @@ Owned by Control Center Administration:
 
 ## UI status
 
-Application → Verification → Evaluation lives in **Applications Review Queue** (Stage 1 Wave B).  
-Legacy Verification + Partnerships routes are transitional shells to fold.  
-Application structured evaluation UI not started.
+Application → Verification → Evaluation lives in **Applications Review Queue** (Wave B).  
+Post-approval provisioning lives in **Applications → Onboarding** (Wave D).  
+Legacy Verification + Partnerships routes are transitional shells to fold.
 
 Canonical sequence: [`../06_Implementation/IMPLEMENTATION_ROADMAP.md`](../06_Implementation/IMPLEMENTATION_ROADMAP.md).

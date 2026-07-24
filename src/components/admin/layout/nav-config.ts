@@ -4,10 +4,9 @@
   CreditCard,
   MessageSquare,
   Gift,
+  Coins,
   Mic2,
   ClipboardList,
-  Handshake,
-  Coins,
   Home,
   FileText,
   BookOpen,
@@ -51,8 +50,8 @@ export const ANALYSTS_NAV: AdminNavItem[] = [
   { label: "Directory", href: "/admin/analysts/directory", icon: Mic2 },
   { label: "Applications", href: "/admin/analysts/applications", icon: ClipboardList },
   { label: "Discord", href: "/admin/analysts/discord", icon: MessageSquare },
-  { label: "Partnerships", href: "/admin/analysts/partnerships", icon: Handshake },
-  { label: "Commissions", href: "/admin/analysts/commissions", icon: Coins },
+  { label: "Referrals", href: "/admin/analysts/referrals", icon: Gift },
+  { label: "Commission", href: "/admin/analysts/commissions", icon: Coins },
 ];
 
 /** @deprecated Use ANALYSTS_NAV. */

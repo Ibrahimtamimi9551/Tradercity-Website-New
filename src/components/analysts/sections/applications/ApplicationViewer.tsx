@@ -740,7 +740,7 @@ function DecisionTab({
       <ul className="space-y-1.5 text-xs text-tc-muted">
         <li>
           <span className="text-emerald-300">Approve</span> → create Analyst identity · Directory ·
-          Discord · reserve Referral → Ready for Onboarding
+          Discord · reserve Referral → System Provisioning (Onboarding)
         </li>
         <li>
           <span className="text-rose-300">Reject</span> → archive application · store decision reason

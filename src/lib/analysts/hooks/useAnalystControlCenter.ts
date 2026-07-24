@@ -18,6 +18,7 @@ const VALID_TABS: AnalystControlCenterTabId[] = [
   "administration",
   "performance",
   "discord",
+  "referrals",
   "commissions",
   "notes",
 ];

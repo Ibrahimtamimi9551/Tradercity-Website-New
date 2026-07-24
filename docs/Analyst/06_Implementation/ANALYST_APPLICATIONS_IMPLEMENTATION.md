@@ -90,5 +90,5 @@ Approve produces a partnership handoff that feeds Wave C Discord prep (mock). **
 
 ## Next recommended work
 
-**Stage 1 Wave D — Onboarding** (Wave C Discord complete).  
-See [`IMPLEMENTATION_ROADMAP.md`](./IMPLEMENTATION_ROADMAP.md).
+~~Wave C Discord · Wave D Onboarding~~ → complete.  
+Next: **Wave E — Referrals** ([`IMPLEMENTATION_ROADMAP.md`](./IMPLEMENTATION_ROADMAP.md)).

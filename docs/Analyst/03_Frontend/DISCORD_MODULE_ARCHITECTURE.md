@@ -1,4 +1,4 @@
-# Analyst Discord Module Architecture
+﻿# Analyst Discord Module Architecture
 
 **Version:** 3.0  
 **Status:** Active — Stage 1 Wave C shipped (mock)  
@@ -6,7 +6,7 @@
 **Route:** `/admin/analysts/discord`  
 **Nav placement:** First-class Analysts sidebar domain (mirror Member Discord)  
 **Roadmap:** [`../06_Implementation/IMPLEMENTATION_ROADMAP.md`](../06_Implementation/IMPLEMENTATION_ROADMAP.md)  
-**Implementation report:** [`../06_Implementation/PHASE_05_WAVE_C_IMPLEMENTATION.md`](../06_Implementation/PHASE_05_WAVE_C_IMPLEMENTATION.md)
+**Implementation report:** [`../06_Implementation/ANALYST_DISCORD_IMPLEMENTATION.md`](../06_Implementation/ANALYST_DISCORD_IMPLEMENTATION.md)
 
 ---
 
@@ -70,7 +70,7 @@ Discord
 
 ### Directory columns
 
-- Analyst · Discord Username · Connection Status · Assigned Role · Server Status · Last Sync  
+- Analyst · Connection Status · Assigned Role · Last Sync  
 
 ### Statuses (keep simple)
 
@@ -82,7 +82,7 @@ Discord
 - Synchronize Roles · Assign Role · Remove Role · Disconnect Account  
 - View Audit History (panel)
 
-**Assign Role gate (production):** Onboarding Complete → Assign Analyst Role. Mock allows ops override until Wave D.
+**Assign Role:** Performed in Discord Operations; **verified** in Applications → Onboarding (System Provisioning). Not gated on analyst education.
 
 ---
 
@@ -176,4 +176,4 @@ src/types/analysts/discord.ts
 - Ecosystem: [`../02_Product_Architecture/ANALYST_ECOSYSTEM_ARCHITECTURE.md`](../02_Product_Architecture/ANALYST_ECOSYSTEM_ARCHITECTURE.md)  
 - Control Center: [`CONTROL_CENTER_ARCHITECTURE.md`](./CONTROL_CENTER_ARCHITECTURE.md)  
 - Lifecycle: [`../01_Product_Vision/ANALYST_USER_LIFECYCLE.md`](../01_Product_Vision/ANALYST_USER_LIFECYCLE.md)  
-- Wave C report: [`../06_Implementation/PHASE_05_WAVE_C_IMPLEMENTATION.md`](../06_Implementation/PHASE_05_WAVE_C_IMPLEMENTATION.md)
+- Discord report: [`../06_Implementation/ANALYST_DISCORD_IMPLEMENTATION.md`](../06_Implementation/ANALYST_DISCORD_IMPLEMENTATION.md)

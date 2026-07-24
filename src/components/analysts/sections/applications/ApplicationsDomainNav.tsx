@@ -6,6 +6,7 @@ import type { ApplicationDomainView } from "@/types/analysts/applications";
 const VIEWS: { id: ApplicationDomainView; label: string }[] = [
   { id: "dashboard", label: "Dashboard" },
   { id: "queue", label: "Review Queue" },
+  { id: "onboarding", label: "Onboarding" },
   { id: "archive", label: "Archive" },
 ];
 

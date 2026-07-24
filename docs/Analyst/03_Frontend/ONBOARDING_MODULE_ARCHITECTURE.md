@@ -1,96 +1,144 @@
-# Analyst Onboarding Module Architecture
+﻿# Analyst Onboarding Module Architecture
 
-**Version:** 1.0  
-**Status:** Planned — Stage 1 Wave D  
+**Version:** 2.0  
+**Status:** Implemented — Stage 1 Wave D (mock-first)  
 **Authority:** `docs/Analyst/03_Frontend/`  
 **Roadmap:** [`../06_Implementation/IMPLEMENTATION_ROADMAP.md`](../06_Implementation/IMPLEMENTATION_ROADMAP.md)  
-**Lifecycle:** [`../01_Product_Vision/ANALYST_USER_LIFECYCLE.md`](../01_Product_Vision/ANALYST_USER_LIFECYCLE.md)
+**Report:** [`../06_Implementation/ANALYST_ONBOARDING_IMPLEMENTATION.md`](../06_Implementation/ANALYST_ONBOARDING_IMPLEMENTATION.md)
 
 ---
 
-## 1. Purpose
+## 1. Philosophy (v2)
 
-Guide newly approved analysts into becoming **productive partners**.
+This module is **not** analyst education.
 
-Answers:
+It answers one question:
 
-> What must this partner complete before they are production-ready, and how far along are they?
+> Has TraderCity successfully provisioned every required operational module for this newly approved analyst?
 
-Onboarding is Stage 1 partnership establishment — not intelligence or performance monitoring.
+| Responsibility | Owner |
+|----------------|--------|
+| System Provisioning / Initialization Verification | **Admin Platform** (this module) |
+| Platform introduction · standards · training · resources | **Future Analyst Dashboard** (partner-facing) |
+
+Do **not** implement orientation content here.
 
 ---
 
-## 2. Scope (Wave D)
+## 2. Position in navigation
 
-| Capability | Notes |
-|------------|-------|
-| Welcome Checklist | Ordered required tasks |
-| Profile Completion | Identity / public profile readiness |
-| Resource Access | Docs, tools, channels |
-| Documentation | Partner standards / publishing rules |
-| First Report Guidance | Path to first publish |
-| Required Tasks | Explicit completion gates |
-| Onboarding Progress | % / stage completeness |
-| Completion Tracking | Mark complete → unlock Discord Analyst role gate |
-
-Discord assign gate remains:
+Onboarding is an **Applications sub-module** — not a top-level sidebar item.
 
 ```text
-Onboarding Complete → Assign Analyst Role
+Applications
+├── Dashboard
+├── Review Queue
+├── Onboarding
+└── Archive
+```
+
+An analyst reaches Onboarding **only after Approve**.
+
+---
+
+## 3. Business flow
+
+```text
+Application → Verification → Evaluation → Decision → Approved
+────────────────────────────────────────────────────────────
+System Provisioning (this module)
+→ Operational Analyst Ready
+→ Analyst Dashboard / Orientation (future)
+→ Begins contributing
 ```
 
 ---
 
-## 3. Surfaces
+## 4. UI structure
+
+Simple verification surface — **not** a dashboard.
+
+No analytics · KPIs · progress charts · percentages · Ready/In Progress/Blocked summary cards.
+
+```text
+Application Approved
+  Name · Approved By · Approved Date
+────────────────────────
+System Initialization
+  ✓ / ○ / ✗ checklist items (one per operational module)
+────────────────────────
+Operational Status
+  ✓ Operationally Ready  |  ⚠ Provisioning Required  |  ✗ Provisioning Failed
+```
+
+Failed items may expose **Retry** (re-read / future backend retry) and a link into the owning domain (e.g. Discord Operations).
+
+---
+
+## 5. Checklist ↔ domains
+
+| Item | Owning domain | Source |
+|------|---------------|--------|
+| Analyst Identity Created | Applications | Partnership handoff |
+| Directory Record Created | Directory | Directory store / handoff flag |
+| Control Center Created | Control Center | Lazy via Directory |
+| Discord Record Created | Discord | Discord store / handoff |
+| Discord Connected | Discord | Connection status |
+| Discord Role Assigned | Discord | Assigned role |
+| Referral Record Initialized | Referrals (Wave E) | Reserved at Approve |
+| Commission Record Initialized | Commissions (Wave E) | Reserved at Approve |
+| Analyst Dashboard Profile | Future Analyst Dashboard | Always **Future** |
+| Backend Provisioning Ready | Backend | Mock-ready until NestJS |
+
+Never duplicate data entry — only verify outputs from prior waves.
+
+---
+
+## 6. Surfaces
 
 | Surface | Role |
 |---------|------|
-| Control Center → Onboarding | Primary per-partner workspace |
-| Optional `/admin/analysts/onboarding` | Cross-analyst queue / board (if operators need it) |
+| Applications → Onboarding | Primary queue + verification panel |
+| `/admin/analysts/applications/[id]?surface=onboarding` | Mobile / deep link |
+| Control Center | Lifecycle status only — not an education workspace |
 
-**Sidebar:** Placement locks during Wave D acceptance — do not add a permanent nav item before this doc is implemented.
-
----
-
-## 4. UX pattern
-
-Follow [`OPERATIONAL_UX_PATTERN.md`](./OPERATIONAL_UX_PATTERN.md) if a queue ships:
-
-```text
-Onboarding Queue (optional)
-        ↓
-Inspector / checklist summary
-        ↓
-Control Center → Onboarding
-```
+**Sidebar:** No new top-level nav item.
 
 ---
 
-## 5. Source ownership (planned)
+## 7. Source ownership
 
 ```text
-src/app/admin/analysts/onboarding/page.tsx   # optional queue
-src/components/analysts/sections/onboarding/
-src/components/analysts/sections/control-center/  # Onboarding tab enrichment
-src/lib/analysts/mock/onboarding.ts
 src/types/analysts/onboarding.ts
+src/lib/analysts/mock/onboarding.ts
+src/components/analysts/sections/applications/OnboardingQueueTable.tsx
+src/components/analysts/sections/applications/SystemProvisioningPanel.tsx
+src/components/analysts/sections/applications/ApplicationsDomainNav.tsx  # + Onboarding tab
+src/lib/analysts/hooks/useAnalystApplications.ts  # view=onboarding
 ```
 
 ---
 
-## 6. Implementation status
+## 8. Future NestJS
 
-| Capability | Status |
-|------------|--------|
-| Architecture | Planned (this doc) |
-| Control Center Onboarding tab | Placeholder (Wave A) |
-| Checklist / progress mock | Not started |
-| Discord unlock gate (mock) | Not started |
+Backend creates records on Approve. This page verifies:
+
+```text
+✓ Created · ✓ Connected · ✓ Initialized · ✓ Ready
+```
+
+On failure:
+
+```text
+✗ Failed → Retry → open owning domain
+```
+
+Identity merge / existing member edge cases deferred to final Analyst Management completion.
 
 ---
 
 ## Related
 
-- Roadmap Wave D: [`../06_Implementation/IMPLEMENTATION_ROADMAP.md`](../06_Implementation/IMPLEMENTATION_ROADMAP.md)  
-- Discord role trigger: [`DISCORD_MODULE_ARCHITECTURE.md`](./DISCORD_MODULE_ARCHITECTURE.md)  
+- Onboarding report: [`../06_Implementation/ANALYST_ONBOARDING_IMPLEMENTATION.md`](../06_Implementation/ANALYST_ONBOARDING_IMPLEMENTATION.md)  
+- Discord domain: [`DISCORD_MODULE_ARCHITECTURE.md`](./DISCORD_MODULE_ARCHITECTURE.md)  
 - Approval pipeline: [`../04_Admin/APPROVAL_WORKFLOW.md`](../04_Admin/APPROVAL_WORKFLOW.md)

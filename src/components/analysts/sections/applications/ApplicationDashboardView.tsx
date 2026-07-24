@@ -25,7 +25,7 @@ export function ApplicationDashboardView({
 }: ApplicationDashboardViewProps) {
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="grid grid-cols-2 gap-2 sm:gap-4 xl:grid-cols-5">
+      <div className="grid grid-cols-2 gap-2 md:gap-3 lg:gap-4 xl:grid-cols-5">
         <WidgetCard
           label="New Applications"
           value={stats.newCount}

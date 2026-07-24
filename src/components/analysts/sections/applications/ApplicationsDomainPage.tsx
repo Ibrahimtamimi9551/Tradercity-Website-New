@@ -17,11 +17,14 @@ import type {
   AnalystApplication,
   ApplicationViewerTabId,
 } from "@/types/analysts/applications";
+import type { AnalystSystemProvisioning } from "@/types/analysts/onboarding";
 import { ApplicationDashboardView } from "./ApplicationDashboardView";
 import { ApplicationQueueFiltersBar } from "./ApplicationQueueFiltersBar";
 import { ApplicationViewer } from "./ApplicationViewer";
 import { ApplicationsDomainNav } from "./ApplicationsDomainNav";
 import { ApplicationsTable } from "./ApplicationsTable";
+import { OnboardingQueueTable } from "./OnboardingQueueTable";
+import { SystemProvisioningPanel } from "./SystemProvisioningPanel";
 
 /** Wider than Directory Inspector — application forms need more review room. */
 const APPLICATIONS_DETAIL_WIDTH =
@@ -48,6 +51,9 @@ function ApplicationsDomainContent() {
     selectedId,
     setSelectedId,
     selectedApplication,
+    onboardingRows,
+    selectedProvisioning,
+    refreshProvisioning,
     openQueueWithStatus,
     updateCategoryEvaluation,
     updateVerification,
@@ -94,6 +100,19 @@ function ApplicationsDomainContent() {
     [router, setSelectedId, viewerTab]
   );
 
+  const onSelectProvisioning = useCallback(
+    (row: AnalystSystemProvisioning) => {
+      if (!isAdminDesktop()) {
+        router.push(
+          `/admin/analysts/applications/${row.applicationId}?surface=onboarding`
+        );
+        return;
+      }
+      setSelectedId(row.applicationId);
+    },
+    [router, setSelectedId]
+  );
+
   const header = (
     <div className="space-y-4 sm:space-y-5">
       <PageTitle
@@ -111,6 +130,59 @@ function ApplicationsDomainContent() {
         {header}
         <ApplicationDashboardView stats={stats} onOpenStatus={openQueueWithStatus} />
       </div>
+    );
+  }
+
+  if (view === "onboarding") {
+    const onboardingList = (
+      <div className="space-y-4 sm:space-y-6">
+        {header}
+        <p className="text-sm text-tc-muted">
+          System provisioning — verify every operational module was initialized after Approve.
+        </p>
+        <ApplicationQueueFiltersBar
+          filters={{ search: filters.search, status: "all" }}
+          hasActiveFilters={hasActiveFilters}
+          onSearchChange={(search) => setFilters({ search })}
+          onStatusChange={() => undefined}
+          onReset={resetFilters}
+          hideStatus
+          searchPlaceholder="Search approved analyst…"
+        />
+        <AdminDirectoryPanel tone="purple">
+          <OnboardingQueueTable
+            rows={onboardingRows}
+            selectedId={selectedId}
+            onRowSelect={onSelectProvisioning}
+          />
+          <div className="px-1.5 sm:px-0">
+            <Pagination
+              page={page}
+              pageSize={pageSize}
+              total={total}
+              onPageChange={setPage}
+              onPageSizeChange={setPageSize}
+              itemLabel="approved analysts"
+              className="max-sm:gap-2 max-sm:text-xs"
+            />
+          </div>
+        </AdminDirectoryPanel>
+      </div>
+    );
+
+    return (
+      <AdminMasterDetail
+        layout="page"
+        className={APPLICATIONS_DETAIL_WIDTH}
+        list={onboardingList}
+        detail={
+          <SystemProvisioningPanel
+            provisioning={selectedProvisioning}
+            onRetry={refreshProvisioning}
+            className="h-full"
+          />
+        }
+      />
     );
   }
 

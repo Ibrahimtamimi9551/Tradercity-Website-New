@@ -1,4 +1,4 @@
-# Analyst Backend Integration Posture
+﻿# Analyst Backend Integration Posture
 
 **Version:** 0.3  
 **Status:** Draft  
@@ -46,7 +46,7 @@ Directory URL params already used by widgets and filters:
 
 Reserve: `activityStatus`
 
-Also documented in [`../06_Implementation/PHASE_03.md`](../06_Implementation/PHASE_03.md).
+Also documented in [`../06_Implementation/ANALYST_DIRECTORY_IMPLEMENTATION.md`](../06_Implementation/ANALYST_DIRECTORY_IMPLEMENTATION.md).
 
 ---
 

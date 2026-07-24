@@ -1,4 +1,4 @@
-# Analyst Ecosystem Architecture
+﻿# Analyst Ecosystem Architecture
 
 **Version:** 1.4.0  
 **Status:** Active (canonical Analyst architecture)  
@@ -106,7 +106,7 @@ MEMBERS                          ← Member Platform / Member Domain
   Dashboard · Members · Subscriptions · Discord · Referrals
 
 ANALYSTS                         ← Analyst Platform / Analyst Domain
-  Dashboard · Directory · Applications · Discord · Referrals
+  Dashboard · Directory · Applications · Discord · Referrals · Commission
   (+ Control Center via Directory)
 
 CONTENT                          ← Content Platform / Content Domain (coming soon)
@@ -134,7 +134,13 @@ Discord
 Referrals
   ├── Referral Dashboard
   ├── Referral Directory
-  └── Referral Intelligence
+  ├── Referral Performance
+  └── Archive
+Commission
+  ├── Commission Dashboard
+  ├── Commission Directory
+  ├── Payouts
+  └── History
 ```
 
 ### Analyst Domain modules (Admin)
@@ -145,13 +151,14 @@ Referrals
 | Directory | Operational roster + Inspector | Shipped (mock) — [`DIRECTORY_ARCHITECTURE.md`](../03_Frontend/DIRECTORY_ARCHITECTURE.md) |
 | Applications | Intake + verification + evaluation pipeline | **Wave B shipped (mock)** — [`APPLICATIONS_MODULE_ARCHITECTURE.md`](../03_Frontend/APPLICATIONS_MODULE_ARCHITECTURE.md) |
 | Discord | Analyst Discord ops (shared infra) | **Wave C shipped (mock)** — [`DISCORD_MODULE_ARCHITECTURE.md`](../03_Frontend/DISCORD_MODULE_ARCHITECTURE.md) |
-| Onboarding | Partner production-readiness | Planned Wave D — [`ONBOARDING_MODULE_ARCHITECTURE.md`](../03_Frontend/ONBOARDING_MODULE_ARCHITECTURE.md) |
-| Referrals | Referral + commission commercial ops | Planned Wave E — [`REFERRALS_MODULE_ARCHITECTURE.md`](../03_Frontend/REFERRALS_MODULE_ARCHITECTURE.md) |
+| Onboarding | System Provisioning (under Applications) | **Wave D shipped (mock)** — [`ONBOARDING_MODULE_ARCHITECTURE.md`](../03_Frontend/ONBOARDING_MODULE_ARCHITECTURE.md) |
+| Referrals | Partnership growth · identity · conversions | **Wave E shipped (mock)** — [`REFERRALS_MODULE_ARCHITECTURE.md`](../03_Frontend/REFERRALS_MODULE_ARCHITECTURE.md) |
+| Commission | Financial Operations · payouts · ledger | **Wave F shipped (mock)** — [`COMMISSIONS_MODULE_ARCHITECTURE.md`](../03_Frontend/COMMISSIONS_MODULE_ARCHITECTURE.md) |
 | Control Center | Per-analyst operational management | **Wave A shipped (mock)** — [`CONTROL_CENTER_ARCHITECTURE.md`](../03_Frontend/CONTROL_CENTER_ARCHITECTURE.md) |
-| Intelligence | Activity / health / BI | Stage 2 — roadmap Waves F–I |
+| Intelligence | Activity / health / BI | Stage 2 — roadmap Waves G–J |
 | Automated Alerts | Cross-module attention | Deferred — [`AUTOMATED_ALERTS.md`](../04_Admin/AUTOMATED_ALERTS.md) |
 
-**Folded shells:** Verification → Applications Review Queue · Partnership interview notes → Applications · Commissions commercial tracking → Referrals (Wave E).
+**Folded shells:** Verification → Applications Review Queue · Partnership interview notes → Applications.
 
 Detail: [`../04_Admin/ANALYST_ADMIN_WORKFLOW.md`](../04_Admin/ANALYST_ADMIN_WORKFLOW.md)
 
@@ -208,11 +215,11 @@ Lifecycle Status ≠ Activity Status. Both are first-class. Activity Status is *
 | `/admin/analysts/applications` | Applications domain | **Wave B (mock)** |
 | `/admin/analysts/applications/[id]` | Application Viewer (mobile) | **Wave B (mock)** |
 | `/admin/analysts/discord` | Discord domain | **Wave C shipped (mock)** |
-| `/admin/analysts/referrals` | Referrals domain | Placeholder → Wave E (sidebar) |
+| `/admin/analysts/referrals` | Referrals domain | **Wave E shipped (mock)** |
 | `/admin/analysts/onboarding` | Onboarding queue (optional) | Planned Wave D |
 | `/admin/analysts/verification` | Redirect → Applications Review Queue | Folded (Wave B) |
 | `/admin/analysts/partnerships` | Fold into Applications | Transitional shell |
-| `/admin/analysts/commissions` | Fold into Referrals | Transitional shell |
+| `/admin/analysts/commissions` | Commission Financial Ops | **Wave F shipped (mock)** |
 | `/admin/analysts/[id]` | Control Center | Wave A (mock) |
 
 ### Source ownership
@@ -256,8 +263,8 @@ Marketing Homepage “Analyst Team” remains presentation-only until wired here
 | 02 | Analyst Dashboard | Complete |
 | 03 | Analyst Directory | Complete |
 | 04 | Architecture refinement + implementation plan | Complete (docs) |
-| 05 / Wave A | Analyst Control Center | **Complete (mock)** — [`PHASE_05_WAVE_A_IMPLEMENTATION.md`](../06_Implementation/PHASE_05_WAVE_A_IMPLEMENTATION.md) |
-| Stage 1 Waves B–E | Applications → Discord → Onboarding → Referrals | **B · C complete** — see [`IMPLEMENTATION_ROADMAP.md`](../06_Implementation/IMPLEMENTATION_ROADMAP.md) |
+| 05 / Wave A | Analyst Control Center | **Complete (mock)** — [`ANALYST_CONTROL_CENTER_IMPLEMENTATION.md`](../06_Implementation/ANALYST_CONTROL_CENTER_IMPLEMENTATION.md) |
+| Stage 1 Waves B–F | Applications → Discord → Onboarding → Referrals → Commission | **Complete (mock)** — see [`IMPLEMENTATION_ROADMAP.md`](../06_Implementation/IMPLEMENTATION_ROADMAP.md) |
 | Stage 2 Waves F–I | Activity · Status · Ops Intelligence · BI | After Stage 1 operational |
 | Public | Landing · Apply · Partner dashboard | Pending |
 | Backend | Replace mocks | Pending |
@@ -286,7 +293,7 @@ Marketing Homepage “Analyst Team” remains presentation-only until wired here
 | Activity Status | Stage 2 — independent of Lifecycle; not Stage 1 |
 | Stage 1 vs Stage 2 | Program (Applicant → Active) before Intelligence |
 | Identity migration | **Future edge case** — merge existing Discord / VIP / referral identities only in final Analyst Management phase |
-| Partner Analyst Dashboard | Design **after** Stage 1 operational foundation (Applications · Discord · Onboarding · Referrals · Control Center) |
+| Partner Analyst Dashboard | Design **after** Stage 1 foundation + docs bridge (Activity · Working Status · Data Contracts · Backend Sync) |
 | Automated alerts | Deferred until Discord, Reports, Publishing, Commission, Performance, Content mature |
 | Admin Dashboard | Evolve naturally as modules ship — no artificial expansion |
 

@@ -1,10 +1,10 @@
-# Analyst Platform — Implementation Roadmap
+﻿# Analyst Platform — Implementation Roadmap
 
 **Version:** 2.0  
 **Status:** Active (canonical coding sequence)  
 **Date:** July 24, 2026  
 **Authority:** `docs/Analyst/06_Implementation/`  
-**Supersedes:** Wave sequence in [`PHASE_04.md`](./PHASE_04.md) §3 (Waves B–F as of 2026-07-23)
+**Supersedes:** Wave sequence in [`ANALYST_ARCHITECTURE_REFINEMENT_IMPLEMENTATION.md`](./ANALYST_ARCHITECTURE_REFINEMENT_IMPLEMENTATION.md) §3 (Waves B–F as of 2026-07-23)
 
 ---
 
@@ -61,9 +61,16 @@ Discord
 └── Discord Intelligence (future — Stage 2)
 
 Referrals
- ├── Referral Dashboard
+├── Referral Dashboard
 ├── Referral Directory
-└── Referral Intelligence
+├── Referral Performance
+└── Archive
+
+Commission
+├── Commission Dashboard
+├── Commission Directory
+├── Payouts
+└── History
 
 (+ Control Center — per-analyst hub; opened from Directory, not a flat roster duplicate)
 ```
@@ -86,17 +93,22 @@ Until Wave B+ ships, sidebar may still show legacy shells (`Verification`, `Part
 |--------------|-------------|
 | `/admin/analysts/verification` | Applications → Review Queue |
 | Partnership discussion / interview | Applications → Review Queue (notes + stage evaluation) |
-| Commissions tracking (commercial) | Referrals (Wave E) + Control Center Commissions tab |
+| Commissions tracking (commercial) | **Commission domain (Wave F)** · Control Center summary |
 | Activity Status (Directory column) | **Stage 2 — Wave G** (not Stage 1) |
 
-### Onboarding (Wave D)
+### Onboarding (Wave D) ✅
 
-Onboarding is a Stage 1 **lifecycle capability**. Primary surfaces:
+Onboarding is **Admin System Provisioning** inside Applications — not analyst education.
 
-- Control Center → Onboarding workspace (per partner)
-- Optional domain queue (`/admin/analysts/onboarding`) if operators need a cross-analyst checklist board
+```text
+Applications
+├── Dashboard
+├── Review Queue
+├── Onboarding   ← verify module initialization after Approve
+└── Archive
+```
 
-Sidebar placement locks during Wave D architecture — do not invent a permanent nav item before that wave’s module doc is accepted.
+Partner orientation belongs to the **future Analyst Dashboard**.
 
 ---
 
@@ -104,7 +116,7 @@ Sidebar placement locks during Wave D architecture — do not invent a permanent
 
 **Goal:** Analyst moves from **Applicant → Active Partner** and becomes a fully operational member of the TraderCity ecosystem.
 
-At the completion of **Wave E**, the Analyst Program should be considered **operational**.
+At the completion of **Wave F**, the Analyst Program’s **operational foundation** (Applicant → Active Partner → Referral → Financial settlement) is complete.
 
 ### Phase 01–05 ✅ Completed — Platform Foundation
 
@@ -117,13 +129,13 @@ At the completion of **Wave E**, the Analyst Program should be considered **oper
 | 04 | Architecture refinement (docs) | Complete |
 | 05 / Wave A | Control Center · Operational UX pattern · Backend planning · Mock-first frontend | Complete |
 
-**Report:** [`PHASE_05_WAVE_A_IMPLEMENTATION.md`](./PHASE_05_WAVE_A_IMPLEMENTATION.md)
+**Report:** [`ANALYST_CONTROL_CENTER_IMPLEMENTATION.md`](./ANALYST_CONTROL_CENTER_IMPLEMENTATION.md)
 
 ---
 
 ### Wave B — Applications ✅ **Complete**
 
-**Report:** [`PHASE_05_WAVE_B_IMPLEMENTATION.md`](./PHASE_05_WAVE_B_IMPLEMENTATION.md)
+**Report:** [`ANALYST_APPLICATIONS_IMPLEMENTATION.md`](./ANALYST_APPLICATIONS_IMPLEMENTATION.md)
 
 Applications is a **complete operational domain**, not only an application list.
 
@@ -141,6 +153,7 @@ Applications
 Applications
 ├── Application Dashboard ✅
 ├── Review Queue / Verification ✅
+├── Onboarding (System Provisioning) ✅ Wave D
 ├── Application Intelligence (future — Stage 2)
 └── Archive ✅
 ```
@@ -165,7 +178,7 @@ Applications
 
 ### Wave C — Discord ✅ **Complete**
 
-**Report:** [`PHASE_05_WAVE_C_IMPLEMENTATION.md`](./PHASE_05_WAVE_C_IMPLEMENTATION.md)
+**Report:** [`ANALYST_DISCORD_IMPLEMENTATION.md`](./ANALYST_DISCORD_IMPLEMENTATION.md)
 
 Discord is a **first-class operational domain**, mirroring Member Management architecture with Analyst-specific business logic.
 
@@ -210,40 +223,40 @@ Discord
 
 ---
 
-### Wave D — Onboarding
+### Wave D — Onboarding ✅ **Complete**
 
-**Purpose:** Guide newly approved analysts into becoming productive partners.
+**Report:** [`ANALYST_ONBOARDING_IMPLEMENTATION.md`](./ANALYST_ONBOARDING_IMPLEMENTATION.md)
 
-#### Scope
+**Purpose:** Verify TraderCity provisioned every required operational module after Approve.
 
-- Welcome Checklist  
-- Profile Completion  
-- Resource Access  
-- Documentation  
-- First Report Guidance  
-- Required Tasks  
-- Onboarding Progress  
-- Completion Tracking  
+#### Scope (shipped)
 
-**Goal:** Analyst becomes fully onboarded and production-ready (Discord Analyst role gate remains: Onboarding Complete → Assign Role).
+- Applications → Onboarding sub-view  
+- System Initialization checklist (Identity · Directory · Control Center · Discord · Referral · Commission · Backend)  
+- Overall status: Operationally Ready · Provisioning Required · Failed  
+- No analytics / KPIs / progress %  
+- Analyst Dashboard Profile marked Future  
+- Orientation / education deferred to partner Analyst Dashboard  
 
-| Step | Work |
-|------|------|
-| D1 | Onboarding architecture doc accepted (surfaces + nav placement) |
-| D2 | Control Center Onboarding workspace (checklist + progress) |
-| D3 | Optional cross-analyst Onboarding queue if needed |
-| D4 | Completion tracking + mock “mark complete” → unlock Discord assign gate |
-| D5 | Docs sync |
+| Step | Work | Status |
+|------|------|--------|
+| D1 | Architecture: provisioning philosophy + Applications placement | Done |
+| D2 | Onboarding queue + System Provisioning panel | Done |
+| D3 | Consume Applications + Discord (+ Directory / CC) outputs | Done |
+| D4 | Overall readiness + failed Retry affordance | Done |
+| D5 | Docs sync | Done |
 
-**Exit criteria:** Approved analyst can be tracked from agreement/onboarding start to production-ready complete in mock.
+**Exit criteria met:** Admin can verify post-approval provisioning without teaching the analyst or duplicating domain data.
 
 **Architecture:** [`../03_Frontend/ONBOARDING_MODULE_ARCHITECTURE.md`](../03_Frontend/ONBOARDING_MODULE_ARCHITECTURE.md)
 
 ---
 
-### Wave E — Referral System
+### Wave E — Referral System ✅ **Complete**
 
-Mirror Member Platform referral architecture. Reuse existing referral business logic wherever possible.
+**Report:** [`ANALYST_REFERRALS_IMPLEMENTATION.md`](./ANALYST_REFERRALS_IMPLEMENTATION.md)
+
+Referrals is a **first-class operational domain** for partnership growth.
 
 #### Left navigation
 
@@ -255,45 +268,95 @@ Referrals
 
 ```text
 Referrals
-├── Referral Dashboard
-├── Referral Directory
-└── Referral Intelligence
+├── Dashboard ✅
+├── Directory ✅
+├── Performance ✅
+└── Archive ✅
 ```
 
-#### Scope
+#### Scope (shipped)
 
-- Referral Code  
-- Invite Link  
-- Referral Tracking  
-- Referral Performance  
-- Commission Tracking  
-- Credit System  
-- Future Payout Preparation  
+- Referral Identity · Code · Link (compact display + copy full URL)  
+- Referral Status: **Enabled / Disabled** only (+ filters)  
+- Performance counts + membership plan breakdown (Monthly · Quarterly · Yearly · Lifetime)  
+- Analyst Profile / Control Center referral summary  
+- Commission **prep only** — no payout math  
 
-**Goal:** Analyst partnership becomes commercially operational.
+| Step | Work | Status |
+|------|------|--------|
+| E1 | Add Referrals to Analyst sidebar; domain shell | Done |
+| E2 | Referral Dashboard + Directory + Performance + Archive | Done |
+| E3 | Referral code / link / tracking surfaces + Profile | Done |
+| E4 | Commission prep exposure (no NestJS / no math) | Done |
+| E5 | Control Center Referrals tab + Directory Inspector summary | Done |
+| E6 | Docs sync | Done |
 
-| Step | Work |
-|------|------|
-| E1 | Add Referrals to Analyst sidebar; domain shell |
-| E2 | Referral Dashboard + Directory (mock) |
-| E3 | Referral code / invite link / tracking surfaces |
-| E4 | Commission / credit reflection (prep for payouts; no NestJS) |
-| E5 | Control Center Referrals / Commissions tabs enriched |
-| E6 | Docs sync |
-
-**Exit criteria:** Operator can see partner referral + commission posture in-domain; Program considered **operational**.
+**Exit criteria met:** Operator manages partner referral posture in-domain; Program considered **operational**. Commission deferred to Wave F.
 
 **Architecture:** [`../03_Frontend/REFERRALS_MODULE_ARCHITECTURE.md`](../03_Frontend/REFERRALS_MODULE_ARCHITECTURE.md)
 
 ---
 
+### Wave F — Commission ✅ **Complete**
+
+**Report:** [`ANALYST_COMMISSION_IMPLEMENTATION.md`](./ANALYST_COMMISSION_IMPLEMENTATION.md)
+
+Commission is a **first-class Financial Operations domain** — the financial outcome of Referrals, plus manual USDT BEP-20 payout recording.
+
+#### Left navigation
+
+```text
+Commission
+```
+
+#### Internal views
+
+```text
+Commission
+├── Dashboard ✅  (program KPIs · full analyst workspace)
+├── Directory ✅  (roster · slim inspector)
+├── Payouts ✅    (search → one card)
+└── History ✅
+```
+
+#### Scope (shipped)
+
+- Commission Identity · Pending / Approved / Paid lifecycle  
+- Referral credit model: Monthly $10 · Quarterly $30 · Yearly $60 (no Lifetime)  
+- **Slim Directory inspector** vs **Dashboard operational workspace**  
+- Breakdown `N × $credit` · Referral Commission Records · timeline · payment details (on Dashboard)  
+- Billing cycle · Monthly Business · Next Tier progress bar (auto %)  
+- Search-first Payouts (one analyst at a time · copy wallet · tx hash)  
+- Copy actions for wallet · tx · referral code/link  
+- Permanent payout ledger · payment evidence / dispute placeholders  
+- Control Center + Directory Inspector commission summary  
+
+| Step | Work | Status |
+|------|------|--------|
+| F1 | Add Commission to Analyst sidebar; domain shell | Done |
+| F2 | Dashboard · Directory · Payouts · History | Done |
+| F3 | Slim inspector + Dashboard workspace | Done |
+| F4 | Manual crypto payout workflow (mock) | Done |
+| F5 | Control Center + Directory summary; consume Referrals | Done |
+| F6 | Docs sync (architecture · API · status · changelog) | Done |
+| F7 | Credit model · Referral Commission Records · Next Tier · copy | Done |
+| F8 | Hierarchy refinement (slim profile · search-first payouts) | Done |
+
+**Exit criteria met:** Stage 1 operational foundation complete (mock-first). NestJS calculation / real chain deferred.
+
+**Architecture:** [`../03_Frontend/COMMISSIONS_MODULE_ARCHITECTURE.md`](../03_Frontend/COMMISSIONS_MODULE_ARCHITECTURE.md)
+
+---
+
 ## 4. Stage 2 — Operational Intelligence (Future)
 
-Only after Stage 1 (through Wave E) is complete.
+Only after Stage 1 (through Wave F Commission) is complete.
+
+**Before coding the partner Analyst Dashboard:** document Activity Tracking, Working Status, Dashboard Data Contracts, and Backend Sync Strategy.
 
 This stage optimizes **active** partnerships rather than creating them.
 
-### Future Wave F — Activity Tracking
+### Future Wave G — Activity Tracking
 
 - Reports Published  
 - Lessons Created  
@@ -302,7 +365,7 @@ This stage optimizes **active** partnerships rather than creating them.
 - Publishing Frequency  
 - Engagement Metrics  
 
-### Future Wave G — Activity Status
+### Future Wave H — Activity Status
 
 Operational engagement states independent of partnership lifecycle, e.g.:
 
@@ -314,7 +377,7 @@ Operational engagement states independent of partnership lifecycle, e.g.:
 
 *(Supersedes prior Phase 04 “Wave B — Activity Status on Directory” as a Stage 1 item. Directory Activity Status ships here.)*
 
-### Future Wave H — Operational Intelligence
+### Future Wave I — Operational Intelligence
 
 - Attention Queue  
 - Health Score  
@@ -323,7 +386,7 @@ Operational engagement states independent of partnership lifecycle, e.g.:
 - Smart Filters  
 - Domain `* Intelligence` views (Applications / Discord / …)
 
-### Future Wave I — Business Intelligence
+### Future Wave J — Business Intelligence
 
 - Performance Trends  
 - Revenue Analytics  
@@ -350,14 +413,18 @@ Stage 1 — Analyst Program
   Phases 01–05 / Wave A     ✅ Foundation (Dashboard · Directory · Control Center)
   Wave B  Applications      ✅ Complete
   Wave C  Discord           ✅ Complete
-  Wave D  Onboarding        ← NEXT
-  Wave E  Referrals           → Program operational
+  Wave D  Onboarding        ✅ Complete (System Provisioning)
+  Wave E  Referrals         ✅ Complete
+  Wave F  Commission        ✅ Complete → Stage 1 foundation complete
+
+Stage 1 → Docs bridge (recommended before partner dashboard)
+  Activity Tracking · Working Status · Data Contracts · Backend Sync
 
 Stage 2 — Analyst Intelligence
-  Wave F  Activity Tracking
-  Wave G  Activity Status
-  Wave H  Operational Intelligence
-  Wave I  Business Intelligence
+  Wave G  Activity Tracking
+  Wave H  Activity Status
+  Wave I  Operational Intelligence
+  Wave J  Business Intelligence
 ```
 
 ---
@@ -365,20 +432,26 @@ Stage 2 — Analyst Intelligence
 ## 6. What to do next
 
 1. ~~Accept this roadmap~~  
-2. ~~Begin **Wave B — Applications**~~ → **Complete** ([`PHASE_05_WAVE_B_IMPLEMENTATION.md`](./PHASE_05_WAVE_B_IMPLEMENTATION.md))  
-3. ~~Begin **Stage 1 Wave C — Discord**~~ → **Complete** ([`PHASE_05_WAVE_C_IMPLEMENTATION.md`](./PHASE_05_WAVE_C_IMPLEMENTATION.md))  
-4. Begin **Stage 1 Wave D — Onboarding** after review  
-5. Keep [`DOCUMENTATION_SYNC_RULE.md`](./DOCUMENTATION_SYNC_RULE.md) mandatory after each wave  
-6. Do **not** start Stage 2 (Activity Status, Intelligence) before Wave E completes unless product-owner explicitly overrides.  
-7. Do **not** design partner Analyst Dashboard until Stage 1 operational foundation is complete.
+2. ~~Begin **Wave B — Applications**~~ → **Complete** ([`ANALYST_APPLICATIONS_IMPLEMENTATION.md`](./ANALYST_APPLICATIONS_IMPLEMENTATION.md))  
+3. ~~Begin **Stage 1 Wave C — Discord**~~ → **Complete** ([`ANALYST_DISCORD_IMPLEMENTATION.md`](./ANALYST_DISCORD_IMPLEMENTATION.md))  
+4. ~~Begin **Stage 1 Wave D — Onboarding**~~ → **Complete** ([`ANALYST_ONBOARDING_IMPLEMENTATION.md`](./ANALYST_ONBOARDING_IMPLEMENTATION.md))  
+5. ~~Begin **Stage 1 Wave E — Referrals**~~ → **Complete** ([`ANALYST_REFERRALS_IMPLEMENTATION.md`](./ANALYST_REFERRALS_IMPLEMENTATION.md))  
+6. ~~Begin **Stage 1 Wave F — Commission**~~ → **Complete** ([`ANALYST_COMMISSION_IMPLEMENTATION.md`](./ANALYST_COMMISSION_IMPLEMENTATION.md))  
+7. Keep [`DOCUMENTATION_SYNC_RULE.md`](./DOCUMENTATION_SYNC_RULE.md) mandatory after each wave  
+8. **Docs bridge** — Activity Tracking · Working Status · Dashboard Data Contracts · Backend Sync (before partner Analyst Dashboard coding)  
+9. Do **not** start Stage 2 Intelligence coding until the docs bridge is accepted unless product-owner explicitly overrides.  
+10. Partner Analyst Dashboard aggregates completed domains — it must not own commission/referral business logic.
 
 ---
 
 ## Related
 
-- Prior architecture phase: [`PHASE_04.md`](./PHASE_04.md)  
-- Wave A report: [`PHASE_05_WAVE_A_IMPLEMENTATION.md`](./PHASE_05_WAVE_A_IMPLEMENTATION.md)  
-- Wave B report: [`PHASE_05_WAVE_B_IMPLEMENTATION.md`](./PHASE_05_WAVE_B_IMPLEMENTATION.md)  
-- Wave C report: [`PHASE_05_WAVE_C_IMPLEMENTATION.md`](./PHASE_05_WAVE_C_IMPLEMENTATION.md)  
+- Prior architecture phase: [`ANALYST_ARCHITECTURE_REFINEMENT_IMPLEMENTATION.md`](./ANALYST_ARCHITECTURE_REFINEMENT_IMPLEMENTATION.md)  
+- Control Center report: [`ANALYST_CONTROL_CENTER_IMPLEMENTATION.md`](./ANALYST_CONTROL_CENTER_IMPLEMENTATION.md)  
+- Applications report: [`ANALYST_APPLICATIONS_IMPLEMENTATION.md`](./ANALYST_APPLICATIONS_IMPLEMENTATION.md)  
+- Discord report: [`ANALYST_DISCORD_IMPLEMENTATION.md`](./ANALYST_DISCORD_IMPLEMENTATION.md)  
+- Onboarding report: [`ANALYST_ONBOARDING_IMPLEMENTATION.md`](./ANALYST_ONBOARDING_IMPLEMENTATION.md)  
+- Referrals report: [`ANALYST_REFERRALS_IMPLEMENTATION.md`](./ANALYST_REFERRALS_IMPLEMENTATION.md)  
+- Commission report: [`ANALYST_COMMISSION_IMPLEMENTATION.md`](./ANALYST_COMMISSION_IMPLEMENTATION.md)  
 - Ecosystem IA: [`../02_Product_Architecture/ANALYST_ECOSYSTEM_ARCHITECTURE.md`](../02_Product_Architecture/ANALYST_ECOSYSTEM_ARCHITECTURE.md)  
 - Status: [`../00_Overview/PROJECT_STATUS.md`](../00_Overview/PROJECT_STATUS.md)

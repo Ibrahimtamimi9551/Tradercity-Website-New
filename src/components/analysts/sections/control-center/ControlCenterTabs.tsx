@@ -9,6 +9,7 @@ const TABS: { id: AnalystControlCenterTabId; label: string }[] = [
   { id: "administration", label: "Administration" },
   { id: "performance", label: "Performance" },
   { id: "discord", label: "Discord" },
+  { id: "referrals", label: "Referrals" },
   { id: "commissions", label: "Commissions" },
   { id: "notes", label: "Notes" },
 ];

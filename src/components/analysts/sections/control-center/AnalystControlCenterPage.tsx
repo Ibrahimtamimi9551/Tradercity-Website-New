@@ -19,11 +19,12 @@ import {
 import { ControlCenterNotes } from "./ControlCenterNotes";
 import { ControlCenterOverview } from "./ControlCenterOverview";
 import {
-  ControlCenterCommissionsPlaceholder,
   ControlCenterPerformancePlaceholder,
   ControlCenterTimelinePlaceholder,
 } from "./ControlCenterPlaceholders";
+import { ControlCenterCommissionsPanel } from "./ControlCenterCommissionsPanel";
 import { ControlCenterDiscordPanel } from "./ControlCenterDiscordPanel";
+import { ControlCenterReferralsPanel } from "./ControlCenterReferralsPanel";
 import { ControlCenterTabs } from "./ControlCenterTabs";
 import { SuspendPartnershipModal } from "./SuspendPartnershipModal";
 
@@ -103,7 +104,9 @@ export function AnalystControlCenterPageContent({
       <ControlCenterTabs active={activeTab} onChange={setTab} />
 
       <div role="tabpanel" aria-labelledby={`control-center-tab-${activeTab}`}>
-        {activeTab === "overview" ? <ControlCenterOverview profile={profile} /> : null}
+        {activeTab === "overview" ? (
+          <ControlCenterOverview profile={profile} onOpenTab={setTab} />
+        ) : null}
         {activeTab === "timeline" ? <ControlCenterTimelinePlaceholder /> : null}
         {activeTab === "administration" ? (
           <ControlCenterAdministration profile={profile} onSuspend={openSuspend} />
@@ -112,7 +115,12 @@ export function AnalystControlCenterPageContent({
         {activeTab === "discord" ? (
           <ControlCenterDiscordPanel profile={profile} />
         ) : null}
-        {activeTab === "commissions" ? <ControlCenterCommissionsPlaceholder /> : null}
+        {activeTab === "referrals" ? (
+          <ControlCenterReferralsPanel profile={profile} />
+        ) : null}
+        {activeTab === "commissions" ? (
+          <ControlCenterCommissionsPanel profile={profile} />
+        ) : null}
         {activeTab === "notes" ? (
           <ControlCenterNotes profile={profile} onAddNote={addNote} />
         ) : null}

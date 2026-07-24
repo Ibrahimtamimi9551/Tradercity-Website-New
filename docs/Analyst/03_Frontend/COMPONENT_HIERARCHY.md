@@ -1,10 +1,10 @@
 # Analyst Frontend — Component Hierarchy
 
-**Version:** 1.3  
+**Version:** 1.5  
 **Status:** Active  
 **Authority:** `docs/Analyst/03_Frontend/`  
-**Module docs:** [`DIRECTORY_ARCHITECTURE.md`](./DIRECTORY_ARCHITECTURE.md) · [`DASHBOARD_ARCHITECTURE.md`](./DASHBOARD_ARCHITECTURE.md) · [`CONTROL_CENTER_ARCHITECTURE.md`](./CONTROL_CENTER_ARCHITECTURE.md)  
-**Last Updated:** July 23, 2026
+**Module docs:** [`DIRECTORY_ARCHITECTURE.md`](./DIRECTORY_ARCHITECTURE.md) · [`DASHBOARD_ARCHITECTURE.md`](./DASHBOARD_ARCHITECTURE.md) · [`CONTROL_CENTER_ARCHITECTURE.md`](./CONTROL_CENTER_ARCHITECTURE.md) · [`REFERRALS_MODULE_ARCHITECTURE.md`](./REFERRALS_MODULE_ARCHITECTURE.md) · [`COMMISSIONS_MODULE_ARCHITECTURE.md`](./COMMISSIONS_MODULE_ARCHITECTURE.md)  
+**Last Updated:** July 25, 2026
 
 ---
 
@@ -15,27 +15,40 @@ src/app/admin/analysts/
   page.tsx                          # Dashboard
   directory/page.tsx                # Directory
   [id]/page.tsx                    # Control Center (Wave A)
-  applications/page.tsx             # Applications domain (Wave B)
-  applications/[id]/page.tsx       # Application mobile detail
+  applications/page.tsx             # Applications domain (Waves B + D)
+  applications/[id]/page.tsx       # Application / Onboarding mobile detail
   discord/page.tsx                  # Discord domain (Wave C)
   discord/[id]/page.tsx            # Discord mobile detail
-  verification|partnerships|referrals|commissions/page.tsx  # shells / redirects
+  referrals/page.tsx                # Referrals domain (Wave E)
+  referrals/[id]/page.tsx          # Referral Profile mobile
+  commissions/page.tsx              # Commission domain (Wave F)
+  commissions/[id]/page.tsx        # Commission Profile mobile
+  verification|partnerships/page.tsx
 
 src/components/analysts/sections/
   dashboard/
   directory/
+    … AnalystDirectoryDetails.tsx   # + Referral + Commission Summary
   control-center/
-    … ControlCenterDiscordPanel.tsx   # Wave C — consumes Discord domain
+    … ControlCenterDiscordPanel.tsx
+    … ControlCenterReferralsPanel.tsx
+    … ControlCenterCommissionsPanel.tsx  # Wave F
   applications/
+    … OnboardingQueueTable.tsx · SystemProvisioningPanel.tsx
   discord/
-    DiscordDomainPage.tsx
-    DiscordDashboardView.tsx
-    DiscordDirectoryTable.tsx
-    DiscordDetails.tsx
-    DiscordOperationsView.tsx
-    DiscordDetailView.tsx
-    DiscordDomainNav.tsx
-    DiscordFiltersBar.tsx
+    DiscordDomainPage.tsx …
+  referrals/
+    ReferralsDomainPage.tsx …
+  commissions/
+    CommissionsDomainPage.tsx
+    CommissionDashboardView.tsx
+    CommissionDirectoryTable.tsx
+    CommissionDetails.tsx
+    CommissionPayoutsView.tsx
+    CommissionHistoryView.tsx
+    CommissionDetailView.tsx
+    CommissionsDomainNav.tsx
+    CommissionFiltersBar.tsx
 
 src/lib/analysts/
   mock/dashboard.ts
@@ -46,12 +59,21 @@ src/lib/analysts/
   mock/discord.ts
   mock/discord-mutations.ts
   mock/partnership-activation.ts
+  mock/onboarding.ts
+  mock/referrals.ts
+  mock/referrals-mutations.ts
+  mock/commissions.ts                 # Wave F
+  mock/commissions-mutations.ts
   hooks/useAnalystsDirectory.ts
   hooks/useAnalystControlCenter.ts
   hooks/useAnalystApplications.ts
   hooks/useAnalystDiscord.ts
+  hooks/useAnalystReferrals.ts
+  hooks/useAnalystCommissions.ts
   format-control-center.ts
   format-discord.ts
+  format-referrals.ts
+  format-commissions.ts
 
 src/types/analysts/
   dashboard.ts
@@ -59,16 +81,18 @@ src/types/analysts/
   control-center.ts
   applications.ts
   discord.ts
+  onboarding.ts
+  referrals.ts
+  commissions.ts                      # Wave F
 ```
 
 ---
 
-## Planned source tree (later waves)
+## Planned source tree (later)
 
 ```text
-src/app/admin/analysts/
-  onboarding/   # Wave D (optional queue)
-  referrals/    # Wave E domain (replace placeholder)
+Partner Analyst Dashboard aggregation (after docs bridge)
+Stage 2 Activity / Intelligence surfaces
 ```
 
 ---
@@ -79,7 +103,7 @@ src/app/admin/analysts/
 AnalystsDirectoryPage
   → AdminMasterDetail
        list: … → AnalystsTable (+ AnalystRowActions)
-       detail: AnalystDirectoryDetails (Inspector)
+       detail: AnalystDirectoryDetails (Inspector + Referral + Commission Summary)
 ```
 
 Identity Link → `/admin/analysts/[id]`

@@ -20,8 +20,11 @@ Shared platform concepts (governance, Auth, Membership SoT, Admin design freeze)
 | Operational UX rule | [`../03_Frontend/OPERATIONAL_UX_PATTERN.md`](../03_Frontend/OPERATIONAL_UX_PATTERN.md) |
 | Directory (shipped ops module) | [`../03_Frontend/DIRECTORY_ARCHITECTURE.md`](../03_Frontend/DIRECTORY_ARCHITECTURE.md) |
 | Control Center (shipped) | [`../03_Frontend/CONTROL_CENTER_ARCHITECTURE.md`](../03_Frontend/CONTROL_CENTER_ARCHITECTURE.md) |
-| Next coding (Wave C Discord) | [`../03_Frontend/DISCORD_MODULE_ARCHITECTURE.md`](../03_Frontend/DISCORD_MODULE_ARCHITECTURE.md) |
+| Discord (shipped) | [`../03_Frontend/DISCORD_MODULE_ARCHITECTURE.md`](../03_Frontend/DISCORD_MODULE_ARCHITECTURE.md) |
 | Applications (shipped) | [`../03_Frontend/APPLICATIONS_MODULE_ARCHITECTURE.md`](../03_Frontend/APPLICATIONS_MODULE_ARCHITECTURE.md) |
+| Onboarding (shipped) | [`../03_Frontend/ONBOARDING_MODULE_ARCHITECTURE.md`](../03_Frontend/ONBOARDING_MODULE_ARCHITECTURE.md) |
+| Referrals (shipped) | [`../03_Frontend/REFERRALS_MODULE_ARCHITECTURE.md`](../03_Frontend/REFERRALS_MODULE_ARCHITECTURE.md) |
+| Commission (shipped) | [`../03_Frontend/COMMISSIONS_MODULE_ARCHITECTURE.md`](../03_Frontend/COMMISSIONS_MODULE_ARCHITECTURE.md) |
 | Product “what / why” | [`../01_Product_Vision/`](../01_Product_Vision/) |
 | System design | [`../02_Product_Architecture/`](../02_Product_Architecture/) |
 | UI surfaces | [`../03_Frontend/`](../03_Frontend/) |

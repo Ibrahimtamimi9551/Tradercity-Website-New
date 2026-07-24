@@ -200,7 +200,7 @@ export function DiscordDetails({
             />
           </div>
           <p className="text-[10px] leading-relaxed text-tc-muted">
-            Assign Role gate (production): Onboarding Complete → Assign Analyst Role.
+            Assign Role: verified in Applications → Onboarding (System Provisioning).
             Mock allows ops override. Future: publishing / private / education / mod
             permissions — reserved.
           </p>

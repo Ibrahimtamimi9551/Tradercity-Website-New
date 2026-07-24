@@ -1,14 +1,9 @@
-import { ModulePlaceholder } from "@/components/admin/layout/ModulePlaceholder";
+import { ReferralsDomainPage } from "@/components/analysts/sections/referrals";
 
-const ANALYST_SECTIONS = "src/components/analysts/sections/";
-
-export default function AnalystReferralsPage() {
-  return (
-    <ModulePlaceholder
-      title="Analyst Referrals"
-      subtitle="Analyst referral attribution and conversion performance."
-      phase="Analyst Referrals"
-      domainSectionsPath={ANALYST_SECTIONS}
-    />
-  );
+/**
+ * Stage 1 Wave E — Analyst Referrals operational domain.
+ * Dashboard · Directory · Performance · Archive (mock-first).
+ */
+export default function AnalystReferralsRoutePage() {
+  return <ReferralsDomainPage />;
 }

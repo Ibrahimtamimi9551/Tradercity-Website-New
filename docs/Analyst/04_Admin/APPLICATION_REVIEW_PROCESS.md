@@ -1,4 +1,4 @@
-# Application Review Process
+﻿# Application Review Process
 
 **Version:** 0.3  
 **Status:** Draft (product defined; Admin UI Wave B shipped mock)  
@@ -87,7 +87,7 @@ Approve creates a mock partnership handoff (analyst identity + Discord prep) for
 
 Route `/admin/analysts/applications` — **Wave B shipped (mock)**: Dashboard · Review Queue · Archive.  
 Verification is inside Review Queue (legacy `/admin/analysts/verification` redirects).  
-Report: [`../06_Implementation/PHASE_05_WAVE_B_IMPLEMENTATION.md`](../06_Implementation/PHASE_05_WAVE_B_IMPLEMENTATION.md)
+Report: [`../06_Implementation/ANALYST_APPLICATIONS_IMPLEMENTATION.md`](../06_Implementation/ANALYST_APPLICATIONS_IMPLEMENTATION.md)
 
 ---
 

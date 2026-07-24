@@ -7,6 +7,7 @@ import {
   Coins,
   type LucideIcon,
 } from "lucide-react";
+import { AdminStatGrid } from "@/components/admin/directory";
 import { WidgetCard } from "@/components/admin/ui";
 import { MOCK_ANALYST_DASHBOARD } from "@/lib/analysts/mock/dashboard";
 
@@ -19,7 +20,7 @@ const iconByStatId: Record<string, LucideIcon> = {
 
 export function AnalystOperationalWidgets() {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+    <AdminStatGrid mobileCols={2} mdCols={2} xlCols={4}>
       {MOCK_ANALYST_DASHBOARD.stats.map((stat) => (
         <WidgetCard
           key={stat.id}
@@ -32,8 +33,9 @@ export function AnalystOperationalWidgets() {
           trend={stat.trend}
           href={stat.href}
           linkText={stat.linkText}
+          compactMobile
         />
       ))}
-    </div>
+    </AdminStatGrid>
   );
 }

@@ -1,4 +1,4 @@
-# Analyst Frontend — Admin Dashboard Architecture
+﻿# Analyst Frontend — Admin Dashboard Architecture
 
 **Version:** 1.2  
 **Status:** Active (Admin Analyst Dashboard shipped on mocks)  
@@ -94,4 +94,4 @@ Design freeze: `docs/AI/Agents/Admin/02_Frontend_Design_System_and_UX_Rules.md` 
 - UX pattern: [`OPERATIONAL_UX_PATTERN.md`](./OPERATIONAL_UX_PATTERN.md)  
 - Alerts (deferred): [`../04_Admin/AUTOMATED_ALERTS.md`](../04_Admin/AUTOMATED_ALERTS.md)  
 - Component tree: [`COMPONENT_HIERARCHY.md`](./COMPONENT_HIERARCHY.md)  
-- Phase record: [`../06_Implementation/PHASE_02.md`](../06_Implementation/PHASE_02.md)
+- Phase record: [`../06_Implementation/ANALYST_DASHBOARD_IMPLEMENTATION.md`](../06_Implementation/ANALYST_DASHBOARD_IMPLEMENTATION.md)

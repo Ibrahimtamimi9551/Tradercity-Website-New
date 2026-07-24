@@ -1,10 +1,10 @@
-# Analyst Directory Architecture
+﻿# Analyst Directory Architecture
 
 **Version:** 1.1  
 **Status:** Active — documents shipped Admin Directory (mock) + planned extensions  
 **Authority:** `docs/Analyst/03_Frontend/`  
 **Route:** `/admin/analysts/directory`  
-**Phase record:** [`../06_Implementation/PHASE_03.md`](../06_Implementation/PHASE_03.md)  
+**Phase record:** [`../06_Implementation/ANALYST_DIRECTORY_IMPLEMENTATION.md`](../06_Implementation/ANALYST_DIRECTORY_IMPLEMENTATION.md)  
 **Terminology:** UI = **Directory** · Product = Analyst Platform · Engineering = Analyst Domain  
 **Last Updated:** July 23, 2026
 

@@ -1,13 +1,13 @@
-# Analyst Applications Module Architecture
+﻿# Analyst Applications Module Architecture
 
 **Version:** 2.2  
-**Status:** Active — Stage 1 Wave B **shipped (mock)** · refined 2026-07-24  
+**Status:** Active — Stage 1 Waves B + D **shipped (mock)** · Onboarding = System Provisioning  
 **Authority:** `docs/Analyst/03_Frontend/`  
 **Route:** `/admin/analysts/applications`  
 **Nav:** First-class domain — **Applications** (single sidebar item)  
 **Review process:** [`../04_Admin/APPLICATION_REVIEW_PROCESS.md`](../04_Admin/APPLICATION_REVIEW_PROCESS.md)  
 **Roadmap:** [`../06_Implementation/IMPLEMENTATION_ROADMAP.md`](../06_Implementation/IMPLEMENTATION_ROADMAP.md)  
-**Implementation report:** [`../06_Implementation/PHASE_05_WAVE_B_IMPLEMENTATION.md`](../06_Implementation/PHASE_05_WAVE_B_IMPLEMENTATION.md)
+**Implementation report:** [`../06_Implementation/ANALYST_APPLICATIONS_IMPLEMENTATION.md`](../06_Implementation/ANALYST_APPLICATIONS_IMPLEMENTATION.md)
 
 ---
 
@@ -26,7 +26,7 @@ Application → Verification → Evaluation → Decision
         ↓ (Approve)
 Create Analyst Identity
 → Directory · Control Center · Discord · Referral reserved
-→ Ready for Onboarding
+→ System Provisioning (Applications → Onboarding)
 ```
 
 One operational pipeline for intake. After Approve, Applications only record how the partner entered — operational domains own the analyst.
@@ -49,6 +49,7 @@ Applications
 Applications
 ├── Application Dashboard
 ├── Review Queue / Verification
+├── Onboarding (System Provisioning) ✅ Wave D
 ├── Application Intelligence (future — Stage 2)
 └── Archive
 ```
@@ -57,6 +58,7 @@ Applications
 |------|------|
 | Application Dashboard | Queue health: New · Under Review · Pending Information · Approved · Rejected |
 | Review Queue | Table + Application Viewer — verification, evaluation, notes, decisions |
+| Onboarding | Post-Approve System Provisioning verification (not analyst education) |
 | Application Intelligence | Future Stage 2 analytics inside this domain |
 | Archive | Historical applications |
 
@@ -146,7 +148,7 @@ Reviewers should not need to thrash between Application and Evaluation tabs to s
 | Verification | Identity/intent authenticity (not KYC) |
 | Evaluation | 10 categories + overall /100 |
 | Notes | Internal + interview notes |
-| Approve | **Partnership activation** — Analyst identity · Directory · Discord · Referral reserved · Ready for Onboarding |
+| Approve | **Partnership activation** — Analyst identity · Directory · Discord · Referral reserved · System Provisioning |
 | Reject | Archive · store decision reason |
 | Request Information | Pending Information · resume later |
 
@@ -193,8 +195,9 @@ Internal view routing uses query params:
 | Capability | Status |
 |------------|--------|
 | Shell route | Replaced — domain shipped |
-| Domain IA (Dashboard / Queue / Archive) | **Shipped (mock)** |
+| Domain IA (Dashboard / Queue / Onboarding / Archive) | **Shipped (mock)** — Onboarding Wave D |
 | Table + Viewer + verification pipeline | **Shipped (mock)** |
+| System Provisioning (Onboarding) | **Shipped (mock)** — Wave D |
 | Structured evaluation UI | **Shipped** — Evaluation Workspace (summary + scorecard) |
 | Fold Verification nav | **Done** (removed + redirect) |
 | Mobile dedicated page | **Shipped** |
@@ -207,4 +210,4 @@ Internal view routing uses query params:
 
 - Admin review process: [`../04_Admin/APPLICATION_REVIEW_PROCESS.md`](../04_Admin/APPLICATION_REVIEW_PROCESS.md)  
 - Approval / stage evaluation: [`../04_Admin/APPROVAL_WORKFLOW.md`](../04_Admin/APPROVAL_WORKFLOW.md)  
-- Roadmap Wave B: [`../06_Implementation/IMPLEMENTATION_ROADMAP.md`](../06_Implementation/IMPLEMENTATION_ROADMAP.md)
+- Roadmap: [`../06_Implementation/IMPLEMENTATION_ROADMAP.md`](../06_Implementation/IMPLEMENTATION_ROADMAP.md)

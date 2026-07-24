@@ -21,6 +21,9 @@ type ApplicationQueueFiltersBarProps = {
   onSearchChange: (value: string) => void;
   onStatusChange: (value: ApplicationQueueFilters["status"]) => void;
   onReset: () => void;
+  /** Onboarding view — search only (all rows are approved). */
+  hideStatus?: boolean;
+  searchPlaceholder?: string;
 };
 
 export function ApplicationQueueFiltersBar({
@@ -29,6 +32,8 @@ export function ApplicationQueueFiltersBar({
   onSearchChange,
   onStatusChange,
   onReset,
+  hideStatus = false,
+  searchPlaceholder = "Search name, handle, specialization…",
 }: ApplicationQueueFiltersBarProps) {
   const [searchDraft, setSearchDraft] = useState(filters.search);
 
@@ -49,18 +54,20 @@ export function ApplicationQueueFiltersBar({
         <SearchInput
           value={searchDraft}
           onChange={setSearchDraft}
-          placeholder="Search name, handle, specialization…"
+          placeholder={searchPlaceholder}
           className="lg:max-w-md"
         />
-        <SelectField
-          aria-label="Filter by status"
-          value={filters.status}
-          options={statusOptions}
-          onChange={(value) =>
-            onStatusChange(value as ApplicationQueueFilters["status"])
-          }
-          className="lg:w-56"
-        />
+        {hideStatus ? null : (
+          <SelectField
+            aria-label="Filter by status"
+            value={filters.status}
+            options={statusOptions}
+            onChange={(value) =>
+              onStatusChange(value as ApplicationQueueFilters["status"])
+            }
+            className="lg:w-56"
+          />
+        )}
         {hasActiveFilters ? (
           <button
             type="button"
