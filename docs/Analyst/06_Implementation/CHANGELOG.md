@@ -4,6 +4,12 @@
 
 | Date | Phase / module | Change |
 |------|----------------|--------|
+| 2026-07-26 | **Public apply Phase 1** | Functional mock journey: Homepage CTA · `/analysts` · `/analysts/apply` (+ RequireAuth) · success · Free/VIP card · `/dashboard/application` · `createMockApplication` → Admin queue; [`ANALYST_PUBLIC_APPLICATION_JOURNEY_IMPLEMENTATION.md`](./ANALYST_PUBLIC_APPLICATION_JOURNEY_IMPLEMENTATION.md) |
+| 2026-07-26 | **Public apply flow (docs)** | Locked Final Analyst Application Flow — never interrupt intent; landing required for all entries; auth `returnUrl` → form; post-submit Member Dashboard tracking; [`APPLICATION_FLOW.md`](../03_Frontend/APPLICATION_FLOW.md) v1.0 · landing · lifecycle · ecosystem · auth redirects synced |
+| 2026-07-26 | **Partner Dashboard UI refinement sprint** | Final polish: Hero centerpiece + SVG illustration; glass/elevation cards; SaaS charts (curve/tooltip/draw); CountUp; semantic icons; payout balance band; wallet Edit→Validate→Confirm→Save; payout Confirm→Loading→Success→Status lock; accordions; empty/loading; mobile QA; docs synced; [`ANALYST_PARTNER_DASHBOARD_UI_REFINEMENT_IMPLEMENTATION.md`](./ANALYST_PARTNER_DASHBOARD_UI_REFINEMENT_IMPLEMENTATION.md) |
+| 2026-07-26 | **Partner Dashboard UI Phase 2–3** | VIP design language + purple accent (not monochrome); module personalities; polished charts; badges/buttons/empty/skeletons; wallet modal; multi-step mock payout flow; expand animations — architecture preserved |
+| 2026-07-26 | **Partner Dashboard product alignment** | Partnership Performance Dashboard flow — Hero→…→Help; Bronze–Diamond milestones; area charts; payout window rules; Request Status + Recent Payouts; expandable breakdown/invoice; docs `00`/`01`/`03`/`04`/`08` updated |
+| 2026-07-26 | **Partner Dashboard Foundation** | Docs bridge `07_Partner_Dashboard/` · `/analyst/dashboard` purple shell · module registry · AnalystDashboardProvider · Analyst Dashboard Service mock projection from Management · PO freeze override (no NestJS); [`ANALYST_PARTNER_DASHBOARD_FOUNDATION_IMPLEMENTATION.md`](./ANALYST_PARTNER_DASHBOARD_FOUNDATION_IMPLEMENTATION.md) |
 | 2026-07-22 | 01–03 | Shipped section nav, Analyst Dashboard, Analyst Directory (mocks) |
 | 2026-07-22 | Docs | Established isolated `docs/Analyst/` subsystem; legacy paths redirected |
 | 2026-07-23 | Terminology | Platform Terminology refactor — Members/Analysts/Content UI nouns |

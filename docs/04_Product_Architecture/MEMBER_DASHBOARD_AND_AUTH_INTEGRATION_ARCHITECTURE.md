@@ -54,7 +54,18 @@ This document covers the **member** side only (plus Auth, which gates both membe
 | `/payment-activation` | `src/components/payment-activation/` | Partial — hardcoded payment/verify UX |
 | `/pricing` | `src/components/pricing/` | Complete UI; quote handoff incomplete |
 
-**Auth reality today:** No auth library, no middleware, no session cookies. Dashboards are publicly reachable.
+**Auth reality today:** Development mock session under `src/lib/auth/` (localStorage). No NestJS JWT, no middleware cookies. Dashboards remain publicly reachable; soft `RequireAuth` is available for gated journeys.
+
+### Development mock (temporary)
+
+| Item | Location |
+|------|----------|
+| Mock service | `src/lib/auth/mock/mock-auth-service.ts` |
+| Session + context | `src/lib/auth/AuthProvider.tsx` |
+| Redirect helpers | `src/lib/auth/redirects.ts` |
+| Soft route guard | `src/lib/auth/RequireAuth.tsx` |
+
+Marked **DEV MOCK ONLY** — replace with NestJS JWT/session without rewriting login UI. See [`ENGINEERING_FREEZE_OVERRIDE_ANALYST_FOUNDATION.md`](../00_Project_Governance/ENGINEERING_FREEZE_OVERRIDE_ANALYST_FOUNDATION.md).
 
 ---
 
@@ -88,14 +99,19 @@ This document covers the **member** side only (plus Auth, which gates both membe
 
 ### 3.4 Post-login redirect rules
 
-| Condition | Redirect |
-|-----------|----------|
-| Intent `plan=free` or no VIP Membership | `/dashboard/free` |
-| Active VIP Membership | `/dashboard/vip` |
-| Intent VIP / unpaid quote / pending payment | `/payment-activation` (or pricing → quote → activation) |
-| Admin staff (future) | `/admin` after Admin auth |
+| Priority | Condition | Redirect |
+|----------|-----------|----------|
+| 1 | Safe `returnUrl` / `next` (same-origin path) | That path — **preserves user intent** |
+| 2 | Intent VIP / unpaid quote / pending payment | `/payment-activation` (or pricing → quote → activation) |
+| 3 | Active VIP Membership (no return intent) | `/dashboard/vip` |
+| 4 | Intent `plan=free` or no VIP Membership | `/dashboard/free` |
+| — | Admin staff (future) | `/admin` after Admin auth |
 
-**Today’s bug/debt:** Login Google always goes to `/dashboard/free` regardless of VIP intent.
+**Analyst apply (locked):** Apply CTA when logged out must use `/login?returnUrl=/analysts/apply`. After authentication, go **directly to the application form** — do **not** dump the user on Free/VIP Dashboard. See [`docs/Analyst/03_Frontend/APPLICATION_FLOW.md`](../Analyst/03_Frontend/APPLICATION_FLOW.md).
+
+**Implementation note:** `src/lib/auth/redirects.ts` (`resolvePostAuthRedirect`) already prioritizes safe `returnUrl`. Wire `/analysts/apply` with `RequireAuth` when that surface ships.
+
+**Today’s bug/debt:** Login Google always goes to `/dashboard/free` regardless of VIP intent when no `returnUrl` is present.
 
 ### 3.5 Permissions
 

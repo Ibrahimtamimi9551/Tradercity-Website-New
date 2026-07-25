@@ -1,11 +1,11 @@
 ﻿# Analyst Ecosystem Architecture
 
-**Version:** 1.4.0  
+**Version:** 1.5.0  
 **Status:** Active (canonical Analyst architecture)  
 **Authority:** `docs/Analyst/02_Product_Architecture/`  
 **Audience:** Product · Backend · Frontend · AI agents  
 **Terminology:** [`docs/00_Project_Governance/PLATFORM_TERMINOLOGY.md`](../../00_Project_Governance/PLATFORM_TERMINOLOGY.md)  
-**Last Updated:** July 24, 2026
+**Last Updated:** July 26, 2026
 
 **Index:** [`../00_Overview/ANALYST_DOCUMENTATION_INDEX.md`](../00_Overview/ANALYST_DOCUMENTATION_INDEX.md)
 
@@ -234,15 +234,20 @@ src/types/analysts/**
 
 **Do not** nest Analyst UI under `admin/modules/` or inside `members/`.
 
-### Public surfaces (deferred)
+### Public surfaces (approved flow — not yet built)
 
 | Route | Role |
 |-------|------|
-| `/analysts` | Landing |
-| `/analysts/apply` | Application |
-| Partner dashboard | Self-serve (future) |
+| `/analysts` | Landing — **required** before apply (all entry points) |
+| `/analysts/apply` | Application form (auth; `returnUrl` preserves intent) |
+| Confirmation | Success after submit → Return to Member Dashboard |
+| Partner dashboard | Self-serve ops — `/analyst/dashboard` (foundation shipped) |
 
-Build public surfaces after the Analyst Platform Admin foundation is stable.
+**Locked journey:** Homepage or Member Dashboard → Landing → Apply → (auth if needed, back to form) → Submit → Confirmation → Member Dashboard tracking.  
+Never send apply-intent users to Free/VIP dashboard immediately after login.  
+Canonical: [`../03_Frontend/APPLICATION_FLOW.md`](../03_Frontend/APPLICATION_FLOW.md).
+
+Build public landing + apply after Admin foundation is stable (Stage 1 Admin complete at mock maturity).
 
 ---
 
@@ -265,8 +270,9 @@ Marketing Homepage “Analyst Team” remains presentation-only until wired here
 | 04 | Architecture refinement + implementation plan | Complete (docs) |
 | 05 / Wave A | Analyst Control Center | **Complete (mock)** — [`ANALYST_CONTROL_CENTER_IMPLEMENTATION.md`](../06_Implementation/ANALYST_CONTROL_CENTER_IMPLEMENTATION.md) |
 | Stage 1 Waves B–F | Applications → Discord → Onboarding → Referrals → Commission | **Complete (mock)** — see [`IMPLEMENTATION_ROADMAP.md`](../06_Implementation/IMPLEMENTATION_ROADMAP.md) |
-| Stage 2 Waves F–I | Activity · Status · Ops Intelligence · BI | After Stage 1 operational |
-| Public | Landing · Apply · Partner dashboard | Pending |
+| Stage 2 Waves G–J | Contribution · Status · Ops Intelligence · BI | After Stage 1 operational |
+| Partner Analyst Dashboard | Foundation (docs + purple shell + mock projection) | **In progress** — [`../07_Partner_Dashboard/`](../07_Partner_Dashboard/) |
+| Public | Landing · Apply · member tracking | **Phase 1 mock shell** — [`ANALYST_PUBLIC_APPLICATION_JOURNEY_IMPLEMENTATION.md`](../06_Implementation/ANALYST_PUBLIC_APPLICATION_JOURNEY_IMPLEMENTATION.md) |
 | Backend | Replace mocks | Pending |
 
 ---
@@ -293,7 +299,10 @@ Marketing Homepage “Analyst Team” remains presentation-only until wired here
 | Activity Status | Stage 2 — independent of Lifecycle; not Stage 1 |
 | Stage 1 vs Stage 2 | Program (Applicant → Active) before Intelligence |
 | Identity migration | **Future edge case** — merge existing Discord / VIP / referral identities only in final Analyst Management phase |
-| Partner Analyst Dashboard | Design **after** Stage 1 foundation + docs bridge (Activity · Working Status · Data Contracts · Backend Sync) |
+| Partner Analyst Dashboard | Consumer of Management via Dashboard Projection Layer — [`../07_Partner_Dashboard/`](../07_Partner_Dashboard/); no duplicate SoT |
+| Public apply intent | Never interrupt — post-auth returns to `/analysts/apply`, not Member Dashboard |
+| Analyst Landing | Required for Homepage **and** Free/VIP dashboard entry before Apply |
+| Post-submit tracking | Member Dashboard card + progress projection; Admin owns evaluation SoT |
 | Automated alerts | Deferred until Discord, Reports, Publishing, Commission, Performance, Content mature |
 | Admin Dashboard | Evolve naturally as modules ship — no artificial expansion |
 
@@ -321,12 +330,16 @@ Applications no longer own the analyst after this point.
 An applicant may already exist in the TraderCity ecosystem (Discord member, Free/VIP member, referral participant).  
 Reuse vs merge of identities, Discord IDs, and permissions must be designed holistically when Applications, Discord, Referrals, and Control Center all exist — not guessed during Wave C.
 
-### Future Partner Dashboard sequencing
+### Partner Dashboard sequencing
 
 ```text
-Complete Analyst Management (Applications → Discord → Onboarding → Referrals)
-→ THEN design Analyst Dashboard as a reflection of domain outputs
+Stage 1 Management complete (Applications → … → Commission)
+→ Docs bridge + Foundation scaffold (PO override)
+→ Approved UI design → phased module depth
+→ NestJS projection APIs → multi-consumer reuse
 ```
+
+Rule: **Analyst Management manages. Analyst Dashboard visualizes.**
 
 ---
 

@@ -93,6 +93,7 @@ If unsure whether a bug is release-blocking, **ask** — default to no change.
 | `docs/Development/Stabilization/UI_STABILIZATION_SPRINT_REPORT.md` | Validation evidence + READY/NOT READY |
 | `ENGINEERING_PLATFORM_V2.md` | Migration after baseline |
 | `PROJECT_ROADMAP.md` | Features resume after freeze ends |
+| [`ENGINEERING_FREEZE_OVERRIDE_ANALYST_FOUNDATION.md`](./ENGINEERING_FREEZE_OVERRIDE_ANALYST_FOUNDATION.md) | Temporary PO override — Analyst foundation UX (scoped) |
 
 ---
 

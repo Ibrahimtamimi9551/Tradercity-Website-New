@@ -280,9 +280,23 @@ Categories: `financial` · `payout` · `administrative`
 
 ---
 
+## Partner Analyst Dashboard projection (reserved)
+
+Foundation UI mocks via `src/analyst/dashboard/services/analyst-dashboard.service.ts`. NestJS owns real auth-scoped projection.
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `GET` | `/analyst/dashboard` | Full display-ready projection for authenticated analyst |
+| `GET` | `/analyst/dashboard/overview` | Overview slice |
+| `GET` | `/analyst/dashboard/payout` | Payout slice |
+| `POST` | `/analyst/dashboard/payout/request` | Request payout — eligibility server-side |
+| `PATCH` | `/analyst/dashboard/wallet` | Update wallet |
+
+Contracts: [`../07_Partner_Dashboard/05_Synchronization_and_Data_Contracts.md`](../07_Partner_Dashboard/05_Synchronization_and_Data_Contracts.md)
+
 ## Future endpoints (not mocked yet)
 
-Automated alerts · Analyst Activity Timeline · partner Analyst Dashboard aggregation APIs
+Automated alerts · Analyst Contribution Timeline · multi-consumer projection (Mobile · Telegram · Analyst API)
 
 ---
 

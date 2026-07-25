@@ -12,6 +12,7 @@ import {
   computeApplicationDashboardStats,
   getMockApplication,
   listMockApplications,
+  subscribeApplicationStore,
 } from "@/lib/analysts/mock/applications";
 import {
   buildSystemProvisioning,
@@ -188,6 +189,8 @@ export function useAnalystApplications() {
     setSelectedIdState(params.get("application"));
     lastWrittenKeyRef.current = searchKey;
   }, [searchKey]);
+
+  useEffect(() => subscribeApplicationStore(() => setRevision((n) => n + 1)), []);
 
   const writeUrl = useCallback(
     (

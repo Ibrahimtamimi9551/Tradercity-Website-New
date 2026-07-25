@@ -352,7 +352,7 @@ Commission
 
 Only after Stage 1 (through Wave F Commission) is complete.
 
-**Before coding the partner Analyst Dashboard:** document Activity Tracking, Working Status, Dashboard Data Contracts, and Backend Sync Strategy.
+**Docs bridge (partner dashboard):** Contribution Flow · Working Status · Dashboard Data Contracts · Backend Sync — see [`../07_Partner_Dashboard/05_Synchronization_and_Data_Contracts.md`](../07_Partner_Dashboard/05_Synchronization_and_Data_Contracts.md). Foundation UI scaffold proceeds under scoped PO override; NestJS and Contribution engines remain deferred.
 
 This stage optimizes **active** partnerships rather than creating them.
 
@@ -438,9 +438,12 @@ Stage 2 — Analyst Intelligence
 5. ~~Begin **Stage 1 Wave E — Referrals**~~ → **Complete** ([`ANALYST_REFERRALS_IMPLEMENTATION.md`](./ANALYST_REFERRALS_IMPLEMENTATION.md))  
 6. ~~Begin **Stage 1 Wave F — Commission**~~ → **Complete** ([`ANALYST_COMMISSION_IMPLEMENTATION.md`](./ANALYST_COMMISSION_IMPLEMENTATION.md))  
 7. Keep [`DOCUMENTATION_SYNC_RULE.md`](./DOCUMENTATION_SYNC_RULE.md) mandatory after each wave  
-8. **Docs bridge** — Activity Tracking · Working Status · Dashboard Data Contracts · Backend Sync (before partner Analyst Dashboard coding)  
-9. Do **not** start Stage 2 Intelligence coding until the docs bridge is accepted unless product-owner explicitly overrides.  
-10. Partner Analyst Dashboard aggregates completed domains — it must not own commission/referral business logic.
+8. **Docs bridge** — Contribution / Working Status · Dashboard Data Contracts · Backend Sync — **started** under [`../07_Partner_Dashboard/`](../07_Partner_Dashboard/)  
+9. **Partner Analyst Dashboard Foundation** — Complete (docs · scaffold · Provider · Service · mock projection).  
+10. **Partner Analyst Dashboard UI Refinement** — Complete (VIP-quality UI + Phase 3 mock wallet/payout/breakdown/invoice). See [`ANALYST_PARTNER_DASHBOARD_UI_REFINEMENT_IMPLEMENTATION.md`](./ANALYST_PARTNER_DASHBOARD_UI_REFINEMENT_IMPLEMENTATION.md).  
+11. Do **not** start Stage 2 Intelligence *engines* until product accepts Contribution contracts; partner dashboard remains a consumer only.  
+12. Next partner-dashboard track: NestJS projection APIs + auth (deferred).  
+13. Partner Analyst Dashboard aggregates completed domains — it must not own commission/referral business logic.
 
 ---
 

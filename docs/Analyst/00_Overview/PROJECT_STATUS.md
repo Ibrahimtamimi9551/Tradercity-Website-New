@@ -1,6 +1,6 @@
 ﻿# Analyst Platform — Project Status
 
-**Last Updated:** July 25, 2026  
+**Last Updated:** July 26, 2026  
 
 **Documentation root:** [`docs/Analyst/`](../)  
 
@@ -90,15 +90,15 @@ Disputes
 
 | Workstream | Notes |
 |------------|-------|
-| Activity Tracking | Stage 2 Intelligence — deferred until docs bridge |
-| Working Status | Stage 2 Intelligence — deferred until docs bridge |
-| Analyst Dashboard (partner-facing) | After docs bridge (Activity · Status · Data Contracts · Backend Sync) |
+| Contribution / Activity Tracking | Stage 2 Intelligence — contracts in Partner Dashboard docs bridge; engines deferred |
+| Working Status | Stage 2 Intelligence — contracts documented; engines deferred |
+| Analyst Dashboard (partner-facing) | **v1 complete** (foundation + UI polish + Phase 3 mocks) — [`../07_Partner_Dashboard/`](../07_Partner_Dashboard/) · `/analyst/dashboard` |
 | Backend Integration | NestJS — not started |
 | API Contracts | Reserved in [`API_EXPECTATIONS.md`](../05_Backend/API_EXPECTATIONS.md) |
 | Production Data | Replace mock stores |
 | Disputes | Future financial / partnership edge cases |
 | Automated Alerts | Deferred |
-| Public landing + apply | Not started |
+| Public landing + apply | **Phase 1 functional mock shell shipped** — [`APPLICATION_FLOW.md`](../03_Frontend/APPLICATION_FLOW.md) · [`ANALYST_PUBLIC_APPLICATION_JOURNEY_IMPLEMENTATION.md`](../06_Implementation/ANALYST_PUBLIC_APPLICATION_JOURNEY_IMPLEMENTATION.md) |
 | Identity migration / merge | Future edge case |
 
 ---
@@ -155,9 +155,20 @@ src/app/admin/analysts/**
 src/components/analysts/sections/{dashboard,directory,control-center,applications,discord,referrals,commissions}/
 src/lib/analysts/{mock,hooks}/
 src/types/analysts/
+
+# Public apply journey (Phase 1 mock)
+src/app/analysts/**
+src/app/dashboard/application/**
+src/components/analysts/public/**
+src/components/home/become-analyst/**
+
+# Partner Analyst Dashboard (foundation)
+src/app/analyst/dashboard/**
+src/analyst/dashboard/**
 ```
 
-Shared Admin shell (not Analyst-owned): `src/components/admin/**`
+Shared Admin shell (not Analyst-owned): `src/components/admin/**`  
+Partner dashboard must not import Admin UI — consumes Management via Dashboard Projection Layer.
 
 ---
 
@@ -178,6 +189,8 @@ Historical phase records (project evolution — not module navigation):
 
 Stage 1 module delivery and the roadmap restructure proceeded under **explicit product-owner override** of Engineering Freeze as mock-first / architecture preparation.
 
+Partner Analyst Dashboard Foundation proceeds under a **second, scoped PO override** (architecture · docs · scaffold · purple UI · mock projection only — no NestJS / calculation engines).
+
 ---
 
 ## Verify locally
@@ -185,10 +198,13 @@ Stage 1 module delivery and the roadmap restructure proceeded under **explicit p
 ```text
 npm run dev
 
+/
+/analysts
+/analysts/apply
+/dashboard/free
+/dashboard/application
+/admin/analysts/applications?view=queue&status=new
+
+/analyst/dashboard
 /admin/analysts/commissions
-/admin/analysts/commissions?commission=acom-a-002
-/admin/analysts/commissions?view=directory&status=approved
-/admin/analysts/commissions?view=payouts
-/admin/analysts/commissions?view=history
-/admin/analysts/a-002?tab=commissions
 ```

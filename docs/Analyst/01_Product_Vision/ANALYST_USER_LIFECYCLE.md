@@ -1,11 +1,13 @@
 # Analyst User Lifecycle
 
-**Version:** 1.2  
+**Version:** 1.3  
 **Status:** Active  
 **Authority:** `docs/Analyst/01_Product_Vision/`  
-**Last Updated:** July 24, 2026
+**Last Updated:** July 26, 2026
 
 Every backend entity, Admin queue, and UI should map to these stages.
+
+**Public apply principle:** Never interrupt the user's intent. Auth during apply returns directly to `/analysts/apply` — not the Member Dashboard. Canonical journey: [`../03_Frontend/APPLICATION_FLOW.md`](../03_Frontend/APPLICATION_FLOW.md).
 
 ---
 
@@ -14,15 +16,17 @@ Every backend entity, Admin queue, and UI should map to these stages.
 | Stage | Meaning | Typical surface |
 |-------|---------|-----------------|
 | Visitor | No analyst record | Marketing / community |
-| Interested | Considering partnership | Public `/analysts` (future) |
-| Application Submitted | Evaluation intake | Public `/analysts/apply` (future) |
-| Under Review | Admin structured evaluation | Admin Applications (Dashboard / Review Queue) |
+| Interested | Considering partnership | Public `/analysts` landing (required before apply) |
+| Authenticating for apply | Login/register with `returnUrl=/analysts/apply` | `/login` — then **back to form** |
+| Application in progress | Filling evaluation form | Public `/analysts/apply` |
+| Application Submitted | Evaluation intake | Confirmation page → Member Dashboard tracking card |
+| Under Review | Admin structured evaluation | Admin Applications · member progress projection |
 | Verification | Confirm genuine identity/intent (not KYC; text channels) | Admin Applications → Review Queue |
 | Partnership Discussion | Mutual fit (not employment interview) | Admin Applications → Review Queue (interview notes) |
 | Approved | Partnership activation — Analyst identity · Directory · Discord · Referral reserved | Admin Applications + Discord · Directory · Control Center |
 | Partnership Agreement | Commission, standards, ethics, termination | Admin / future e-sign |
 | Onboarding | Education + wallet collection | Admin Onboarding / Control Center |
-| Active Analyst | Publishing + commissions live · Discord Analyst role assigned | Dashboards · Discord · Referrals |
+| Active Analyst | Publishing + commissions live · Discord Analyst role assigned | Partner Analyst Dashboard · Discord · Referrals |
 | Growing Analyst | Continuous performance; merit featuring | Admin + Homepage (**Stage 2**) |
 | Top Partner | Strategic future tier | Future |
 | Suspension | Warning → Review → Suspended → Reactivate **or** Closed | Control Center Administration |
@@ -145,10 +149,21 @@ Identity · Experience · Education · Specialization · Research · Trading Sty
 
 Wallet info is **not** required at application — collect at onboarding.
 
+### Member-facing progress (after submit)
+
+Projected on Free/VIP Member Dashboard (not Admin scores):
+
+```text
+Submitted → Verification → Evaluation → Interview → Decision → Onboarding
+```
+
+Card states: **Become an Analyst** (no application) → **Analyst Application · Status · View Progress** (submitted+).
+
 ---
 
 ## Related
 
 - Vision: [`ANALYST_PRODUCT_VISION.md`](./ANALYST_PRODUCT_VISION.md)  
+- Public apply flow: [`../03_Frontend/APPLICATION_FLOW.md`](../03_Frontend/APPLICATION_FLOW.md)  
 - Admin approval path: [`../04_Admin/APPROVAL_WORKFLOW.md`](../04_Admin/APPROVAL_WORKFLOW.md)  
 - Ecosystem architecture: [`../02_Product_Architecture/ANALYST_ECOSYSTEM_ARCHITECTURE.md`](../02_Product_Architecture/ANALYST_ECOSYSTEM_ARCHITECTURE.md)

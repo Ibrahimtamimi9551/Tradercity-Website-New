@@ -1,9 +1,9 @@
 ﻿# Analyst Documentation Index
 
-**Version:** 1.4  
+**Version:** 1.6  
 **Status:** Active  
 **Authority:** Analyst documentation subsystem (`docs/Analyst/`)  
-**Last Updated:** July 25, 2026
+**Last Updated:** July 26, 2026
 
 This is the **single entry point** for all Analyst Platform documentation.
 
@@ -29,7 +29,7 @@ Agents and backend developers should load this index first, then only the Analys
 8. Onboarding / System Provisioning (shipped): [`../03_Frontend/ONBOARDING_MODULE_ARCHITECTURE.md`](../03_Frontend/ONBOARDING_MODULE_ARCHITECTURE.md)  
 9. Referrals (shipped): [`../03_Frontend/REFERRALS_MODULE_ARCHITECTURE.md`](../03_Frontend/REFERRALS_MODULE_ARCHITECTURE.md)  
 10. Commission Financial Ops (shipped): [`../03_Frontend/COMMISSIONS_MODULE_ARCHITECTURE.md`](../03_Frontend/COMMISSIONS_MODULE_ARCHITECTURE.md)  
-11. Next: **Docs bridge** (Activity · Working Status · Dashboard contracts · Backend sync) — before partner Analyst Dashboard  
+11. Partner Analyst Dashboard: [`../07_Partner_Dashboard/README.md`](../07_Partner_Dashboard/README.md) (docs bridge + foundation)  
 12. For API work: [`../05_Backend/API_EXPECTATIONS.md`](../05_Backend/API_EXPECTATIONS.md)
 
 ---
@@ -76,8 +76,8 @@ Agents and backend developers should load this index first, then only the Analys
 | [COMMISSIONS_MODULE_ARCHITECTURE.md](../03_Frontend/COMMISSIONS_MODULE_ARCHITECTURE.md) | Active | Commission Financial Operations — Dashboard · Directory · Payouts · History |
 | [COMPONENT_HIERARCHY.md](../03_Frontend/COMPONENT_HIERARCHY.md) | Active | Source tree & composition |
 | [RESPONSIVE_STRATEGY.md](../03_Frontend/RESPONSIVE_STRATEGY.md) | Active | Desktop/mobile Admin patterns |
-| [LANDING_PAGE_ARCHITECTURE.md](../03_Frontend/LANDING_PAGE_ARCHITECTURE.md) | Planned | Public `/analysts` |
-| [APPLICATION_FLOW.md](../03_Frontend/APPLICATION_FLOW.md) | Planned | Public `/analysts/apply` |
+| [LANDING_PAGE_ARCHITECTURE.md](../03_Frontend/LANDING_PAGE_ARCHITECTURE.md) | Approved · Phase 1 shell | Public `/analysts` — required before apply (all entries) |
+| [APPLICATION_FLOW.md](../03_Frontend/APPLICATION_FLOW.md) | Approved · Phase 1 shell | Public apply — never interrupt intent; member tracking after submit |
 
 ### 04 — Admin
 
@@ -118,6 +118,24 @@ Agents and backend developers should load this index first, then only the Analys
 | [ANALYST_ONBOARDING_IMPLEMENTATION.md](../06_Implementation/ANALYST_ONBOARDING_IMPLEMENTATION.md) | Complete | Onboarding / System Provisioning module report |
 | [ANALYST_REFERRALS_IMPLEMENTATION.md](../06_Implementation/ANALYST_REFERRALS_IMPLEMENTATION.md) | Complete | Referrals module report |
 | [ANALYST_COMMISSION_IMPLEMENTATION.md](../06_Implementation/ANALYST_COMMISSION_IMPLEMENTATION.md) | Complete | Commission Financial Operations module report |
+| [ANALYST_PARTNER_DASHBOARD_FOUNDATION_IMPLEMENTATION.md](../06_Implementation/ANALYST_PARTNER_DASHBOARD_FOUNDATION_IMPLEMENTATION.md) | Complete | Partner Analyst Dashboard foundation (PO freeze override) |
+| [ANALYST_PARTNER_DASHBOARD_UI_REFINEMENT_IMPLEMENTATION.md](../06_Implementation/ANALYST_PARTNER_DASHBOARD_UI_REFINEMENT_IMPLEMENTATION.md) | Complete | Phase 2 UI polish + Phase 3 mock interactions |
+| [ANALYST_PUBLIC_APPLICATION_JOURNEY_IMPLEMENTATION.md](../06_Implementation/ANALYST_PUBLIC_APPLICATION_JOURNEY_IMPLEMENTATION.md) | Complete | Phase 1 functional mock — landing · apply · success · member tracking · Admin queue inject |
+
+### 07 — Partner Dashboard
+
+| Document | Status | Role |
+|----------|--------|------|
+| [README.md](../07_Partner_Dashboard/README.md) | Active | Partner dashboard entry + freeze-override scope |
+| [00_Dashboard_Philosophy.md](../07_Partner_Dashboard/00_Dashboard_Philosophy.md) | Active | Admin ops vs partner business center vs VIP learning |
+| [01_Architecture.md](../07_Partner_Dashboard/01_Architecture.md) | Active | Projection layer · provider · purple VIP-language shell |
+| [02_Project_Structure.md](../07_Partner_Dashboard/02_Project_Structure.md) | Active | `src/analyst/dashboard/**` tree |
+| [03_Module_Specification.md](../07_Partner_Dashboard/03_Module_Specification.md) | Active | Module display fields |
+| [04_Component_Map.md](../07_Partner_Dashboard/04_Component_Map.md) | Active | Registry · context · theme |
+| [05_Synchronization_and_Data_Contracts.md](../07_Partner_Dashboard/05_Synchronization_and_Data_Contracts.md) | Active | Docs bridge · Contribution · APIs · multi-consumer |
+| [06_Implementation_Status.md](../07_Partner_Dashboard/06_Implementation_Status.md) | Active | v1–v5 ladder + foundation checklist |
+| [07_Future_Roadmap.md](../07_Partner_Dashboard/07_Future_Roadmap.md) | Draft | Delivery phases (finalize after design) |
+| [08_Module_Ownership.md](../07_Partner_Dashboard/08_Module_Ownership.md) | Active | Module × owner × editable-by matrix |
 
 ### Assets
 

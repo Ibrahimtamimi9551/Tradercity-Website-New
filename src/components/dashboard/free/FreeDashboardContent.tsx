@@ -25,6 +25,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import TraderCityLogo from "@/components/home/navigation/TraderCityLogo";
+import MockSignOutButton from "@/components/login/MockSignOutButton";
 import { MEMBERSHIP_PLANS } from "@/lib/membership/plans";
 import {
   MONTHLY_WELCOME_UPGRADE_CTA,
@@ -35,6 +36,7 @@ import {
   freeInsetSurface,
   freeWellSurface,
 } from "./free-surfaces";
+import { MemberAnalystApplicationCard } from "@/components/analysts/public";
 
 // --- MOCK DATA ---
 const mockUser = { name: "Ibrahim", avatar: "I", notifications: 2 };
@@ -115,6 +117,8 @@ function DashboardHeader() {
             {mockUser.notifications}
           </span>
         </div>
+        {/* DEV MOCK: exercise clear-session without redesigning frozen chrome */}
+        <MockSignOutButton className="hidden items-center gap-1.5 rounded-lg border border-[#2d1b4e] px-2.5 py-1.5 text-[11px] font-semibold text-[#94A3B8] transition-colors hover:border-purple-500/40 hover:text-white sm:inline-flex" />
         <div className="flex cursor-pointer items-center gap-3 rounded-full border border-[#2d1b4e] bg-[#110a1a] p-1 pr-4 transition-colors hover:bg-[#1a0f2e]">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700 font-bold text-white">
             {mockUser.avatar}
@@ -919,6 +923,9 @@ export default function FreeDashboardContent() {
           <FreeHeroSection />
           <AccessComparisonSection />
           <JourneySection />
+          <div className="mb-8">
+            <MemberAnalystApplicationCard tone="free" />
+          </div>
           <ReferralCentre />
           <UpgradeCTASection />
           <PricingPlansSection />

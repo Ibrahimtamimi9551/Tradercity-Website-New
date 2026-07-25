@@ -501,20 +501,138 @@ function cloneApp(app: AnalystApplication): AnalystApplication {
   };
 }
 
+const PUBLIC_APPS_STORAGE_KEY = "tc.dev.publicAnalystApplications";
+
+function readPersistedPublicApps(): AnalystApplication[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(PUBLIC_APPS_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as AnalystApplication[];
+    return Array.isArray(parsed) ? parsed.map(cloneApp) : [];
+  } catch {
+    return [];
+  }
+}
+
+function persistPublicApps(store: AnalystApplication[]): void {
+  if (typeof window === "undefined") return;
+  const publicApps = store.filter((app) => app.id.startsWith("app-public-"));
+  window.localStorage.setItem(PUBLIC_APPS_STORAGE_KEY, JSON.stringify(publicApps));
+}
+
+function buildInitialStore(): AnalystApplication[] {
+  const seed = MOCK_ANALYST_APPLICATIONS.map(cloneApp);
+  const persisted = readPersistedPublicApps();
+  const seedIds = new Set(seed.map((a) => a.id));
+  const extras = persisted.filter((a) => !seedIds.has(a.id));
+  return [...extras, ...seed];
+}
+
 /** Mutable working copy for mock decisions / evaluation edits in-session. */
-let applicationStore: AnalystApplication[] = MOCK_ANALYST_APPLICATIONS.map(cloneApp);
+let applicationStore: AnalystApplication[] = buildInitialStore();
+let hydratedFromStorage = typeof window !== "undefined";
+
+/** Re-merge localStorage public apps after SSR-created empty store (client only). */
+function ensureClientHydration(): void {
+  if (hydratedFromStorage || typeof window === "undefined") return;
+  applicationStore = buildInitialStore();
+  hydratedFromStorage = true;
+}
+
+type StoreListener = () => void;
+const storeListeners = new Set<StoreListener>();
+
+function notifyApplicationStore(): void {
+  storeListeners.forEach((listener) => listener());
+}
+
+/** Subscribe to in-memory mock store mutations (create / replace). */
+export function subscribeApplicationStore(listener: StoreListener): () => void {
+  storeListeners.add(listener);
+  return () => {
+    storeListeners.delete(listener);
+  };
+}
 
 export function listMockApplications(): AnalystApplication[] {
+  ensureClientHydration();
   return applicationStore;
 }
 
 export function getMockApplication(id: string): AnalystApplication | null {
+  ensureClientHydration();
   return applicationStore.find((app) => app.id === id) ?? null;
 }
 
 export function replaceMockApplication(next: AnalystApplication): AnalystApplication {
+  ensureClientHydration();
   applicationStore = applicationStore.map((app) => (app.id === next.id ? next : app));
+  persistPublicApps(applicationStore);
+  notifyApplicationStore();
   return next;
+}
+
+export type CreateMockApplicationInput = Omit<
+  AnalystApplication,
+  | "id"
+  | "appliedAt"
+  | "status"
+  | "archived"
+  | "overallScore"
+  | "evaluation"
+  | "verificationState"
+  | "verificationNotes"
+  | "internalNotes"
+  | "interviewNotes"
+  | "stageRating"
+  | "decisionReason"
+  | "decisionAt"
+  | "partnershipHandoff"
+  | "avatarTone"
+> & {
+  avatarTone?: AnalystApplication["avatarTone"];
+};
+
+/**
+ * Prepend a newly submitted public application into the Admin queue (status `new`).
+ * DEV MOCK ONLY — TODO(NestJS): POST /analysts/applications
+ */
+export function createMockApplication(
+  input: CreateMockApplicationInput
+): AnalystApplication {
+  ensureClientHydration();
+  const id = `app-public-${Date.now().toString(36)}`;
+  const tones: AnalystApplication["avatarTone"][] = [
+    "violet",
+    "emerald",
+    "amber",
+    "rose",
+    "sky",
+    "discord",
+  ];
+  const created: AnalystApplication = {
+    ...input,
+    id,
+    avatarTone: input.avatarTone ?? tones[applicationStore.length % tones.length]!,
+    appliedAt: new Date().toISOString(),
+    status: "new",
+    archived: false,
+    overallScore: null,
+    evaluation: emptyEvaluation(),
+    verificationState: "pending",
+    verificationNotes: "",
+    internalNotes: "",
+    interviewNotes: "",
+    stageRating: null,
+    decisionReason: null,
+    decisionAt: null,
+    partnershipHandoff: null,
+  };
+  applicationStore = [cloneApp(created), ...applicationStore];
+  persistPublicApps(applicationStore);
+  notifyApplicationStore();
+  return created;
 }
 
 export function computeApplicationDashboardStats(

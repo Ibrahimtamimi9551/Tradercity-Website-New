@@ -103,7 +103,9 @@ Until Layer 3 physical moves complete, treat these paths as owned by the domain 
 | Current paths | Domain |
 |---------------|--------|
 | Homepage analyst/research *marketing sections* | marketing (narrative only) |
-| Future `src/analyst/**` | analyst |
+| `src/app/analyst/**` | analyst (partner-facing routes) |
+| `src/analyst/**` | analyst (Partner Analyst Dashboard + future platform) |
+| Admin Analyst Management (transitional) | `src/app/admin/analysts/**` · `src/components/analysts/**` · `src/lib/analysts/**` · `src/types/analysts/**` — analyst domain under Admin shell |
 | Future `src/content/**` | content |
 
 ### Shared / root
@@ -111,6 +113,8 @@ Until Layer 3 physical moves complete, treat these paths as owned by the domain 
 | Current paths | Rules |
 |---------------|--------|
 | `src/app/layout.tsx`, `src/app/globals.css` | Cross-cutting — change only with explicit approval |
+| `src/lib/auth/**` | Shared auth primitives (currently **DEV MOCK** session) — marketing owns login UI; member/analyst consume `useAuth` / redirects |
+| `src/components/providers/**` | Root client providers (thin) |
 | `src/shared/**` (future) | Only true cross-domain primitives |
 | `public/**` | Asset ownership follows the calling domain |
 
@@ -121,9 +125,10 @@ Until Layer 3 physical moves complete, treat these paths as owned by the domain 
 1. **Marketing UI ↛ Admin UI** — never import across these products  
 2. **Admin UI ↛ Marketing UI** — never import across these products  
 3. **Member UI** does not import Admin components  
-4. **Admin** may read membership *data shapes* for ops — not marketing presentation components  
-5. **Shared** is a privilege, not a convenience dump  
-6. If a file has no clear owner, stop and assign ownership before coding
+4. **Partner Analyst Dashboard** (`src/analyst/dashboard/**`) does not import Admin UI components — it consumes Management data via the Dashboard Projection Layer  
+5. **Admin** may read membership *data shapes* for ops — not marketing presentation components  
+6. **Shared** is a privilege, not a convenience dump  
+7. If a file has no clear owner, stop and assign ownership before coding
 
 ---
 
@@ -135,6 +140,7 @@ Until Layer 3 physical moves complete, treat these paths as owned by the domain 
 | Homepage hero polish | `feature/homepage-hero` | `marketing` paths only |
 | VIP dashboard upgrade | `feature/member-vip-dashboard` | `member` paths only |
 | Analyst directory v1 | `feature/analyst-directory` | `analyst` (+ thin `app` routes) |
+| Partner Analyst Dashboard foundation | `feature/analyst-partner-dashboard` | `src/analyst/dashboard/**` · `src/app/analyst/**` · `docs/Analyst/07_Partner_Dashboard/**` |
 | Content learning v1 | `feature/content-learning` | `content` (+ thin `app` routes) |
 
 ---

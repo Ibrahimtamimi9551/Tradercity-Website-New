@@ -32,6 +32,7 @@ import {
 import { Cormorant_Garamond } from "next/font/google";
 import TraderCityLogo from "@/components/home/navigation/TraderCityLogo";
 import { MEMBERSHIP_PLANS } from "@/lib/membership/plans";
+import { MemberAnalystApplicationCard } from "@/components/analysts/public";
 
 /**
  * VIP Dashboard — presentation layer aligned to Jul 2026 design reference.
@@ -985,6 +986,10 @@ export default function VipDashboardContent() {
             <YourAccess />
             <QuickActions />
           </section>
+
+          <div className="mb-6">
+            <MemberAnalystApplicationCard tone="vip" />
+          </div>
 
           <ReferralCentre />
           <RenewalCentre />
