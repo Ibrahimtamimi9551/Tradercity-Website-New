@@ -7,6 +7,7 @@ const VIEWS: { id: ApplicationDomainView; label: string }[] = [
   { id: "dashboard", label: "Dashboard" },
   { id: "queue", label: "Review Queue" },
   { id: "onboarding", label: "Onboarding" },
+  { id: "public_profile", label: "Public Profile" },
   { id: "archive", label: "Archive" },
 ];
 

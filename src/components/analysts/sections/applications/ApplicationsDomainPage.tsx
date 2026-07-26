@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ClipboardList } from "lucide-react";
 import {
@@ -13,11 +13,16 @@ import {
   parseApplicationViewerTab,
   useAnalystApplications,
 } from "@/lib/analysts/hooks/useAnalystApplications";
+import { useAnalystPublicProfiles } from "@/lib/analysts/hooks/useAnalystPublicProfiles";
+import { listMockApplications } from "@/lib/analysts/mock/applications";
+import { ensurePublicProfileDraftFromApplication } from "@/lib/analysts/mock/public-profile-mutations";
+import { getMockPublicProfileByApplicationId } from "@/lib/analysts/mock/public-profiles";
 import type {
   AnalystApplication,
   ApplicationViewerTabId,
 } from "@/types/analysts/applications";
 import type { AnalystSystemProvisioning } from "@/types/analysts/onboarding";
+import type { PublicAnalystProfile } from "@/types/analysts/public-profile";
 import { ApplicationDashboardView } from "./ApplicationDashboardView";
 import { ApplicationQueueFiltersBar } from "./ApplicationQueueFiltersBar";
 import { ApplicationViewer } from "./ApplicationViewer";
@@ -25,6 +30,7 @@ import { ApplicationsDomainNav } from "./ApplicationsDomainNav";
 import { ApplicationsTable } from "./ApplicationsTable";
 import { OnboardingQueueTable } from "./OnboardingQueueTable";
 import { SystemProvisioningPanel } from "./SystemProvisioningPanel";
+import { PublicProfileQueueTable, PublicProfileWorkspace } from "./public-profile";
 
 /** Wider than Directory Inspector — application forms need more review room. */
 const APPLICATIONS_DETAIL_WIDTH =
@@ -62,6 +68,16 @@ function ApplicationsDomainContent() {
     threshold,
   } = useAnalystApplications();
 
+  const {
+    profiles,
+    workingProfile,
+    patchDraft,
+    saveDraft,
+    setStatus,
+    unpublish,
+    hasUnsavedChanges,
+  } = useAnalystPublicProfiles(view === "public_profile" ? selectedId : null);
+
   const [viewerTab, setViewerTab] = useState<ApplicationViewerTabId>(() =>
     parseApplicationViewerTab(searchParams.get("tab"))
   );
@@ -69,6 +85,35 @@ function ApplicationsDomainContent() {
   useEffect(() => {
     setViewerTab(parseApplicationViewerTab(searchParams.get("tab")));
   }, [searchParams]);
+
+  /** Ensure every approved + handed-off application has a Public Profile draft. */
+  useEffect(() => {
+    if (view !== "public_profile") return;
+    for (const app of listMockApplications()) {
+      if (app.status !== "approved" || !app.partnershipHandoff) continue;
+      if (getMockPublicProfileByApplicationId(app.id)) continue;
+      ensurePublicProfileDraftFromApplication(
+        app,
+        app.partnershipHandoff.analystId,
+        app.partnershipHandoff.createdAt
+      );
+    }
+  }, [view, profiles.length]);
+
+  const filteredProfiles = useMemo(() => {
+    const query = filters.search.trim().toLowerCase();
+    if (!query) return profiles;
+    return profiles.filter((p) => {
+      const haystack =
+        `${p.displayName} ${p.analystTitle} ${p.analystId} ${p.applicationId}`.toLowerCase();
+      return haystack.includes(query);
+    });
+  }, [filters.search, profiles]);
+
+  const profilePageRows = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filteredProfiles.slice(start, start + pageSize);
+  }, [filteredProfiles, page, pageSize]);
 
   const writeTab = useCallback(
     (tab: ApplicationViewerTabId) => {
@@ -113,11 +158,24 @@ function ApplicationsDomainContent() {
     [router, setSelectedId]
   );
 
+  const onSelectPublicProfile = useCallback(
+    (row: PublicAnalystProfile) => {
+      if (!isAdminDesktop()) {
+        router.push(
+          `/admin/analysts/applications/${row.applicationId}?surface=public_profile`
+        );
+        return;
+      }
+      setSelectedId(row.applicationId);
+    },
+    [router, setSelectedId]
+  );
+
   const header = (
     <div className="space-y-4 sm:space-y-5">
       <PageTitle
         title="Applications"
-        subtitle="Partnership intake — application, verification, and evaluation in one operational domain."
+        subtitle="Partnership intake — application, verification, evaluation, and public presentation."
         icon={ClipboardList}
       />
       <ApplicationsDomainNav active={view} onChange={setView} />
@@ -129,6 +187,64 @@ function ApplicationsDomainContent() {
       <div className="space-y-4 sm:space-y-6">
         {header}
         <ApplicationDashboardView stats={stats} onOpenStatus={openQueueWithStatus} />
+      </div>
+    );
+  }
+
+  if (view === "public_profile") {
+    const profileTotal = filteredProfiles.length;
+    return (
+      <div className="space-y-4 sm:space-y-6">
+        {header}
+        <p className="text-sm text-tc-muted">
+          Homepage Presentation Manager — curate Public Profiles. Soft publish marks a profile
+          homepage-eligible; the homepage only consumes Published + visible + active profiles.
+        </p>
+        <ApplicationQueueFiltersBar
+          filters={{ search: filters.search, status: "all" }}
+          hasActiveFilters={hasActiveFilters}
+          onSearchChange={(search) => setFilters({ search })}
+          onStatusChange={() => undefined}
+          onReset={resetFilters}
+          hideStatus
+          searchPlaceholder="Search public profiles…"
+        />
+        <AdminDirectoryPanel tone="purple">
+          <PublicProfileQueueTable
+            rows={profilePageRows}
+            selectedApplicationId={workingProfile?.applicationId ?? selectedId}
+            onRowSelect={onSelectPublicProfile}
+          />
+          <div className="px-1.5 sm:px-0">
+            <Pagination
+              page={page}
+              pageSize={pageSize}
+              total={profileTotal}
+              onPageChange={setPage}
+              onPageSizeChange={setPageSize}
+              itemLabel="public profiles"
+              className="max-sm:gap-2 max-sm:text-xs"
+            />
+          </div>
+        </AdminDirectoryPanel>
+        <PublicProfileWorkspace
+          profile={workingProfile}
+          onPatch={patchDraft}
+          onSaveDraft={() => {
+            saveDraft();
+          }}
+          onMarkPreview={() => {
+            setStatus("preview");
+          }}
+          onPublish={() => {
+            setStatus("published");
+          }}
+          onUnpublish={() => {
+            unpublish();
+          }}
+          hasUnsavedChanges={hasUnsavedChanges}
+          className="min-h-[36rem]"
+        />
       </div>
     );
   }

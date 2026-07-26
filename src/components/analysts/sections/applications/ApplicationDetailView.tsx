@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { LoadingState } from "@/components/admin/ui";
 import { parseApplicationViewerTab } from "@/lib/analysts/hooks/useAnalystApplications";
+import { useAnalystPublicProfiles } from "@/lib/analysts/hooks/useAnalystPublicProfiles";
 import {
   applyDecisionRecord,
   updateCategoryEvaluationRecord,
@@ -14,12 +15,15 @@ import {
 } from "@/lib/analysts/mock/application-mutations";
 import { getMockApplication } from "@/lib/analysts/mock/applications";
 import { buildSystemProvisioning } from "@/lib/analysts/mock/onboarding";
+import { ensurePublicProfileDraftFromApplication } from "@/lib/analysts/mock/public-profile-mutations";
+import { getMockPublicProfileByApplicationId } from "@/lib/analysts/mock/public-profiles";
 import {
   APPLICATION_SCORE_THRESHOLD,
   type ApplicationViewerTabId,
 } from "@/types/analysts/applications";
 import { ApplicationViewer } from "./ApplicationViewer";
 import { SystemProvisioningPanel } from "./SystemProvisioningPanel";
+import { PublicProfileWorkspace } from "./public-profile";
 
 type ApplicationDetailViewProps = {
   applicationId: string;
@@ -41,6 +45,27 @@ function ApplicationDetailContent({ applicationId }: ApplicationDetailViewProps)
     if (!application) return null;
     return buildSystemProvisioning(application);
   }, [application, revision]);
+
+  const {
+    workingProfile,
+    patchDraft,
+    saveDraft,
+    setStatus,
+    unpublish,
+    hasUnsavedChanges,
+  } = useAnalystPublicProfiles(
+    surface === "public_profile" ? applicationId : null
+  );
+
+  useEffect(() => {
+    if (surface !== "public_profile" || !application?.partnershipHandoff) return;
+    if (getMockPublicProfileByApplicationId(application.id)) return;
+    ensurePublicProfileDraftFromApplication(
+      application,
+      application.partnershipHandoff.analystId,
+      application.partnershipHandoff.createdAt
+    );
+  }, [application, surface]);
 
   const [viewerTab, setViewerTab] = useState<ApplicationViewerTabId>(() =>
     parseApplicationViewerTab(searchParams.get("tab"))
@@ -95,6 +120,39 @@ function ApplicationDetailContent({ applicationId }: ApplicationDetailViewProps)
         <SystemProvisioningPanel
           provisioning={provisioning}
           onRetry={() => setRevision((n) => n + 1)}
+          className="min-h-[70vh] flex-1"
+        />
+      </div>
+    );
+  }
+
+  if (surface === "public_profile") {
+    return (
+      <div className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-3xl flex-col gap-4">
+        <Link
+          href="/admin/analysts/applications?view=public_profile"
+          className="inline-flex w-fit items-center gap-1.5 text-sm text-violet-300 hover:text-violet-200"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden />
+          Back to Public Profile
+        </Link>
+        <PublicProfileWorkspace
+          profile={workingProfile}
+          onPatch={patchDraft}
+          onSaveDraft={() => {
+            saveDraft();
+          }}
+          onMarkPreview={() => {
+            setStatus("preview");
+          }}
+          onPublish={() => {
+            setStatus("published");
+          }}
+          onUnpublish={() => {
+            unpublish();
+          }}
+          hasUnsavedChanges={hasUnsavedChanges}
+          layout="stack"
           className="min-h-[70vh] flex-1"
         />
       </div>

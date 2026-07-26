@@ -27,6 +27,7 @@ Application → Verification → Evaluation → Decision
 Create Analyst Identity
 → Directory · Control Center · Discord · Referral reserved
 → System Provisioning (Applications → Onboarding)
+→ Public Profile Draft (Applications → Public Profile)  ← Homepage Presentation Manager
 ```
 
 One operational pipeline for intake. After Approve, Applications only record how the partner entered — operational domains own the analyst.
@@ -50,6 +51,7 @@ Applications
 ├── Application Dashboard
 ├── Review Queue / Verification
 ├── Onboarding (System Provisioning) ✅ Wave D
+├── Public Profile (Homepage Presentation Manager) ✅
 ├── Application Intelligence (future — Stage 2)
 └── Archive
 ```
@@ -59,6 +61,7 @@ Applications
 | Application Dashboard | Queue health: New · Under Review · Pending Information · Approved · Rejected |
 | Review Queue | Table + Application Viewer — verification, evaluation, notes, decisions |
 | Onboarding | Post-Approve System Provisioning verification (not analyst education) |
+| Public Profile | Curate homepage presentation · soft Draft → Preview → Published · live `PublicAnalystCard` |
 | Application Intelligence | Future Stage 2 analytics inside this domain |
 | Archive | Historical applications |
 
@@ -202,6 +205,7 @@ Internal view routing uses query params:
 | Fold Verification nav | **Done** (removed + redirect) |
 | Mobile dedicated page | **Shipped** |
 | Partnership handoff on Approve | **Shipped (mock)** — Wave C activation (Directory · Discord · referral reserved) |
+| Public Profile (Homepage Presentation Manager) | **Shipped (mock)** — draft on Approve · soft publish · `PublicAnalystCard` |
 | Application Intelligence | Stage 2 — do not stub |
 
 ---
@@ -210,4 +214,5 @@ Internal view routing uses query params:
 
 - Admin review process: [`../04_Admin/APPLICATION_REVIEW_PROCESS.md`](../04_Admin/APPLICATION_REVIEW_PROCESS.md)  
 - Approval / stage evaluation: [`../04_Admin/APPROVAL_WORKFLOW.md`](../04_Admin/APPROVAL_WORKFLOW.md)  
+- Public Profile: [`PUBLIC_PROFILE_ARCHITECTURE.md`](./PUBLIC_PROFILE_ARCHITECTURE.md)  
 - Roadmap: [`../06_Implementation/IMPLEMENTATION_ROADMAP.md`](../06_Implementation/IMPLEMENTATION_ROADMAP.md)

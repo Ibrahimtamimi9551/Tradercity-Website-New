@@ -8,7 +8,12 @@ export type ApplicationQueueStatus =
   | "approved"
   | "rejected";
 
-export type ApplicationDomainView = "dashboard" | "queue" | "onboarding" | "archive";
+export type ApplicationDomainView =
+  | "dashboard"
+  | "queue"
+  | "onboarding"
+  | "public_profile"
+  | "archive";
 
 export type ApplicationViewerTabId =
   | "application"

@@ -41,7 +41,8 @@ function parseView(value: string | null): ApplicationDomainView {
     value === "queue" ||
     value === "archive" ||
     value === "dashboard" ||
-    value === "onboarding"
+    value === "onboarding" ||
+    value === "public_profile"
   ) {
     return value;
   }
@@ -85,7 +86,7 @@ function matchesFilters(
 ): boolean {
   if (view === "archive") {
     if (!app.archived) return false;
-  } else if (view === "onboarding") {
+  } else if (view === "onboarding" || view === "public_profile") {
     if (app.status !== "approved" || !app.partnershipHandoff) return false;
   } else if (view === "queue") {
     // Rejects are archived; still visible when filtering Rejected in the queue.
@@ -100,7 +101,7 @@ function matchesFilters(
     if (!haystack.includes(query)) return false;
   }
 
-  if (view !== "onboarding" && filters.status !== "all" && app.status !== filters.status) {
+  if (view !== "onboarding" && view !== "public_profile" && filters.status !== "all" && app.status !== filters.status) {
     return false;
   }
   return true;
@@ -134,16 +135,18 @@ function serializeState(
 }
 
 /**
- * Applications domain — Dashboard / Review Queue / Onboarding / Archive.
+ * Applications domain — Dashboard / Review Queue / Onboarding / Public Profile / Archive.
  *
  * URL contract:
  *   /admin/analysts/applications
  *   /admin/analysts/applications?view=queue&status=new
  *   /admin/analysts/applications?view=queue&application=app-001
  *   /admin/analysts/applications?view=onboarding&application=app-005
+ *   /admin/analysts/applications?view=public_profile&application=app-005
  *   /admin/analysts/applications?view=archive
  *
  * Onboarding = System Provisioning verification after Approve (Wave D).
+ * Public Profile = Homepage Presentation Manager (soft publish).
  * TODO(NestJS): replace mock store with authenticated applications API.
  */
 export function useAnalystApplications() {
@@ -345,7 +348,7 @@ export function useAnalystApplications() {
 
   const hasActiveFilters =
     filters.search.trim() !== "" ||
-    (view !== "onboarding" && filters.status !== "all");
+    (view !== "onboarding" && view !== "public_profile" && filters.status !== "all");
 
   const bump = () => setRevision((n) => n + 1);
 

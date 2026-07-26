@@ -90,6 +90,8 @@ Owned by Control Center Administration:
 
 Application → Verification → Evaluation lives in **Applications Review Queue** (Wave B).  
 Post-approval provisioning lives in **Applications → Onboarding** (Wave D).  
+Homepage presentation curation lives in **Applications → Public Profile** (soft Draft → Preview → Published).  
 Legacy Verification + Partnerships routes are transitional shells to fold.
 
-Canonical sequence: [`../06_Implementation/IMPLEMENTATION_ROADMAP.md`](../06_Implementation/IMPLEMENTATION_ROADMAP.md).
+Canonical sequence: [`../06_Implementation/IMPLEMENTATION_ROADMAP.md`](../06_Implementation/IMPLEMENTATION_ROADMAP.md).  
+Public Profile architecture: [`../03_Frontend/PUBLIC_PROFILE_ARCHITECTURE.md`](../03_Frontend/PUBLIC_PROFILE_ARCHITECTURE.md).

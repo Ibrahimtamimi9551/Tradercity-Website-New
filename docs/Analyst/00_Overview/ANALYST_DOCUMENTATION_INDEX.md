@@ -27,6 +27,7 @@ Agents and backend developers should load this index first, then only the Analys
 6. Control Center (shipped): [`../03_Frontend/CONTROL_CENTER_ARCHITECTURE.md`](../03_Frontend/CONTROL_CENTER_ARCHITECTURE.md)  
 7. Applications (shipped): [`../03_Frontend/APPLICATIONS_MODULE_ARCHITECTURE.md`](../03_Frontend/APPLICATIONS_MODULE_ARCHITECTURE.md)  
 8. Onboarding / System Provisioning (shipped): [`../03_Frontend/ONBOARDING_MODULE_ARCHITECTURE.md`](../03_Frontend/ONBOARDING_MODULE_ARCHITECTURE.md)  
+8b. Public Profile / Homepage Presentation Manager + Meet the Analysts consumer (shipped): [`../03_Frontend/PUBLIC_PROFILE_ARCHITECTURE.md`](../03_Frontend/PUBLIC_PROFILE_ARCHITECTURE.md)  
 9. Referrals (shipped): [`../03_Frontend/REFERRALS_MODULE_ARCHITECTURE.md`](../03_Frontend/REFERRALS_MODULE_ARCHITECTURE.md)  
 10. Commission Financial Ops (shipped): [`../03_Frontend/COMMISSIONS_MODULE_ARCHITECTURE.md`](../03_Frontend/COMMISSIONS_MODULE_ARCHITECTURE.md)  
 11. Partner Analyst Dashboard: [`../07_Partner_Dashboard/README.md`](../07_Partner_Dashboard/README.md) (docs bridge + foundation)  
@@ -69,9 +70,10 @@ Agents and backend developers should load this index first, then only the Analys
 | [DASHBOARD_ARCHITECTURE.md](../03_Frontend/DASHBOARD_ARCHITECTURE.md) | Active | Admin Analyst Dashboard (shipped mock) |
 | [DIRECTORY_ARCHITECTURE.md](../03_Frontend/DIRECTORY_ARCHITECTURE.md) | Active | Directory roster · Inspector · Activity Status (Stage 2) |
 | [CONTROL_CENTER_ARCHITECTURE.md](../03_Frontend/CONTROL_CENTER_ARCHITECTURE.md) | Active | Per-analyst ops hub — shipped (mock) |
-| [APPLICATIONS_MODULE_ARCHITECTURE.md](../03_Frontend/APPLICATIONS_MODULE_ARCHITECTURE.md) | Active | Applications domain — Dashboard + Review Queue + Onboarding |
+| [APPLICATIONS_MODULE_ARCHITECTURE.md](../03_Frontend/APPLICATIONS_MODULE_ARCHITECTURE.md) | Active | Applications domain — Dashboard + Review Queue + Onboarding + Public Profile |
 | [DISCORD_MODULE_ARCHITECTURE.md](../03_Frontend/DISCORD_MODULE_ARCHITECTURE.md) | Active | Discord domain — Dashboard · Directory · Operations |
 | [ONBOARDING_MODULE_ARCHITECTURE.md](../03_Frontend/ONBOARDING_MODULE_ARCHITECTURE.md) | Active | System Provisioning under Applications |
+| [PUBLIC_PROFILE_ARCHITECTURE.md](../03_Frontend/PUBLIC_PROFILE_ARCHITECTURE.md) | Active | Homepage Presentation Manager · soft publish · PublicAnalystCard |
 | [REFERRALS_MODULE_ARCHITECTURE.md](../03_Frontend/REFERRALS_MODULE_ARCHITECTURE.md) | Active | Referrals domain — Dashboard · Directory · Performance · Archive |
 | [COMMISSIONS_MODULE_ARCHITECTURE.md](../03_Frontend/COMMISSIONS_MODULE_ARCHITECTURE.md) | Active | Commission Financial Operations — Dashboard · Directory · Payouts · History |
 | [COMPONENT_HIERARCHY.md](../03_Frontend/COMPONENT_HIERARCHY.md) | Active | Source tree & composition |
@@ -116,6 +118,7 @@ Agents and backend developers should load this index first, then only the Analys
 | [ANALYST_APPLICATIONS_IMPLEMENTATION.md](../06_Implementation/ANALYST_APPLICATIONS_IMPLEMENTATION.md) | Complete | Applications module report |
 | [ANALYST_DISCORD_IMPLEMENTATION.md](../06_Implementation/ANALYST_DISCORD_IMPLEMENTATION.md) | Complete | Discord module report |
 | [ANALYST_ONBOARDING_IMPLEMENTATION.md](../06_Implementation/ANALYST_ONBOARDING_IMPLEMENTATION.md) | Complete | Onboarding / System Provisioning module report |
+| [ANALYST_PUBLIC_PROFILE_IMPLEMENTATION.md](../06_Implementation/ANALYST_PUBLIC_PROFILE_IMPLEMENTATION.md) | Complete | Public Profile SoT + homepage Meet the Analysts consumer (mock) |
 | [ANALYST_REFERRALS_IMPLEMENTATION.md](../06_Implementation/ANALYST_REFERRALS_IMPLEMENTATION.md) | Complete | Referrals module report |
 | [ANALYST_COMMISSION_IMPLEMENTATION.md](../06_Implementation/ANALYST_COMMISSION_IMPLEMENTATION.md) | Complete | Commission Financial Operations module report |
 | [ANALYST_PARTNER_DASHBOARD_FOUNDATION_IMPLEMENTATION.md](../06_Implementation/ANALYST_PARTNER_DASHBOARD_FOUNDATION_IMPLEMENTATION.md) | Complete | Partner Analyst Dashboard foundation (PO freeze override) |

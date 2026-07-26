@@ -13,6 +13,7 @@ import {
   replaceMockApplication,
 } from "@/lib/analysts/mock/applications";
 import { activatePartnershipFromApplication } from "@/lib/analysts/mock/partnership-activation";
+import { ensurePublicProfileDraftFromApplication } from "@/lib/analysts/mock/public-profile-mutations";
 
 export function updateApplicationRecord(
   id: string,
@@ -142,7 +143,7 @@ export function applyDecisionRecord(
       analystId,
       now
     );
-    return updateApplicationRecord(id, {
+    const approved = updateApplicationRecord(id, {
       status: "approved",
       archived: false,
       overallScore: score,
@@ -163,6 +164,14 @@ export function applyDecisionRecord(
         referralReserved: activation.referralReserved,
       },
     });
+    if (approved) {
+      ensurePublicProfileDraftFromApplication(
+        approved,
+        activation.analystId,
+        activation.createdAt
+      );
+    }
+    return approved;
   }
 
   if (action === "reject") {
