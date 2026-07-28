@@ -59,7 +59,7 @@ function SubscriptionCell({ status }: { status: DirectoryMember["subscription"] 
 
   const map = {
     active: { label: "Active", tone: "success" as const },
-    pending_verification: { label: "Pending Verification", tone: "warning" as const },
+    pending_verification: { label: "Blockchain Verifying", tone: "info" as const },
     verification_required: { label: "Verification Required", tone: "danger" as const },
   }[status];
 

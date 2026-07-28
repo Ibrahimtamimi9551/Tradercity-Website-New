@@ -1,6 +1,6 @@
 # Subscription Payment Approval Lifecycle
 
-**Version:** 2.0  
+**Version:** 2.1  
 **Status:** Active — **canonical** Subscription → Membership activation policy  
 **Authority:** `docs/Member Management/02_Product_Architecture/`  
 **Last Updated:** July 29, 2026  
@@ -15,7 +15,7 @@ This document is the **Crypto Payment** activation path. Other sources (Manual P
 
 Automatic blockchain verification **must not** activate Membership.
 
-Successful automatic verification transitions the payment to **Awaiting Admin Approval**.
+Successful automatic verification transitions the payment to **Approval Pending**.
 
 **Membership activation always requires one final manual administrator approval** (Phase 1 operational policy).
 
@@ -51,7 +51,7 @@ Automatic Verification Engine
         ↓
 Payment Verified
         ↓
-Awaiting Admin Approval
+Approval Pending
         ↓
 Admin Opens Subscription Ticket
         ↓
@@ -68,20 +68,20 @@ Discord Synchronization
 Audit Event Recorded
 ```
 
-### Happy path (state machine)
+### Happy path (Admin display states)
 
 ```text
 Payment Submitted
         ↓
-Verifying
+Blockchain Verifying
         ↓
-Verified
-        ↓
-Awaiting Admin Approval
+Approval Pending
         ↓
 Approved
         ↓
 Membership Activated
+        ↓
+Discord Sync
 ```
 
 ### Failure / exception path
@@ -89,9 +89,11 @@ Membership Activated
 ```text
 Payment Submitted
         ↓
-Verification Failed
+Blockchain Verifying
         ↓
-Manual Review Required  (Admin display: Verification Required)
+Verification Required
+        ↓
+Manual Investigation
         ↓
 Approve / Reject
 ```
@@ -115,21 +117,32 @@ Those run **only after Admin Approve**.
 
 ## Admin display states (Subscriptions + Dashboard)
 
-| Display state | Meaning | Admin action? |
-|---------------|---------|---------------|
-| **Pending Verification** | Submitted / engine still verifying | Monitor (stuck jobs) |
-| **Awaiting Admin Approval** | Auto-verified — **primary Approve queue** | Review explorer → Approve / Reject |
-| **Verification Required** | Auto verification failed / ambiguous | Manual review → Approve / Reject |
-| **Rejected** | Admin rejected | Closed (optional reopen policies later) |
-| **Approved** / **Successful** | Admin approved; Membership activated (or activating) | View / audit |
+| Display state | Owner | Meaning | Admin action? |
+|---------------|-------|---------|---------------|
+| **Blockchain Verifying** | System | Engine validating TX (blockchain confirmation in progress) | No — monitor only |
+| **Verification Required** | Admin | Auto verification failed / ambiguous | Yes — investigate explorer → Approve / Reject |
+| **Approval Pending** | Admin | Auto-verified — **primary Approve queue** | Yes — Approve Membership / Reject Payment |
+| **Rejected** | — | Admin rejected | Closed (optional reopen policies later) |
+| **Approved** | — | Admin approved; Membership activated (or activating) | View / audit |
+
+### Operational meaning
+
+**Blockchain Verifying** — System-owned. Transaction submitted; automatic verification still running. No admin interaction required.
+
+**Verification Required** — Admin-owned investigation. Automatic verification could not confidently validate (amount mismatch, invalid TX, wrong network, duplicate, timeout, wallet mismatch, service failure). Admin reviews explorer before deciding.
+
+**Approval Pending** — Admin-owned final gate. Payment already verified successfully; waiting only for business approval before Membership activation.
 
 Verified payments remain in the Subscription queue until Approved or Rejected.
 
 Dashboard widgets should distinguish at least:
 
 ```text
-Pending Verification · Awaiting Admin Approval · Verification Required · Rejected
+Blockchain Verifying · Approval Pending · Verification Required · Rejected
 ```
+
+**URL keys:** `blockchain_verifying` · `approval_pending` · `verification_required`  
+(Legacy aliases `pending_verification` / `awaiting_admin_approval` still accepted by the FE filter parser.)
 
 ---
 
@@ -137,8 +150,8 @@ Pending Verification · Awaiting Admin Approval · Verification Required · Reje
 
 | Field | Purpose |
 |-------|---------|
-| Verification Result | Verified / Failed / … |
-| Verification Timestamp | When engine completed |
+| Verification Status | Verifying / Verified / Failed / … |
+| Verification Timestamp | When engine completed (when available) |
 | Verification Method | Automatic / Manual assist |
 | Transaction Hash | Copyable |
 | Blockchain Explorer Link | Open network explorer (e.g. BSC) |
@@ -146,7 +159,15 @@ Pending Verification · Awaiting Admin Approval · Verification Required · Reje
 | Actual Amount | Observed on-chain / received |
 | Network | e.g. BNB Smart Chain (BEP20) |
 | Wallet Address | Copyable |
-| Verification Notes | Future |
+| Verification Notes / Failure Reason | Shown especially for Verification Required |
+
+### Panel behaviour by state
+
+| State | Show Approve / Reject? | Guidance |
+|-------|------------------------|----------|
+| Blockchain Verifying | No | “Blockchain verification is in progress. No admin action is required.” |
+| Verification Required | Yes (Approve / Reject) | Failure reason + explorer — investigation state |
+| Approval Pending | Yes (Approve Membership / Reject Payment) | Verified result + completed time — final gate |
 
 ### Standard Admin workflow
 
@@ -169,9 +190,9 @@ Approve / Reject
 ### Subscription ticket timeline
 
 - Payment Submitted  
-- Verification Started  
-- Verification Completed  
-- Awaiting Admin Approval  
+- Blockchain Verifying  
+- Verification Completed *(or Verification Failed)*  
+- Approval Pending  
 - Approved *(or Rejected)*  
 - Membership Activated  
 - Discord Sync Started  
@@ -182,9 +203,9 @@ Approve / Reject
 ```text
 Payment Submitted
         ↓
-Payment Verified (Automatic)
+Blockchain Verifying
         ↓
-Awaiting Admin Approval
+Approval Pending
         ↓
 Membership Activated
         ↓
@@ -237,7 +258,7 @@ Automatic Verification
         ↓
 Risk Assessment
         ├─ Low Risk  → Automatic Approval → Membership Activated
-        └─ High Risk → Awaiting Admin Approval → Admin Approve / Reject
+        └─ High Risk → Approval Pending → Admin Approve / Reject
 ```
 
 Do **not** redesign Subscription ownership or Verification vs Approval separation when that policy arrives — only the **approval policy** changes.

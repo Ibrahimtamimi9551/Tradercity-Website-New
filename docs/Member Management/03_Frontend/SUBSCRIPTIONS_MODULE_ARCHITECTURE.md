@@ -1,7 +1,7 @@
 # Subscriptions Module Architecture
 
-**Version:** 2.0  
-**Status:** Active — **UI Shell only** (highest Member Management gap)  
+**Version:** 2.1  
+**Status:** Active — **UI complete on mocks** (Phase 4)  
 **Authority:** `docs/Member Management/03_Frontend/`  
 **Route:** `/admin/subscriptions`  
 **Phase record:** [`../06_Implementation/MEMBER_SUBSCRIPTIONS_IMPLEMENTATION.md`](../06_Implementation/MEMBER_SUBSCRIPTIONS_IMPLEMENTATION.md)  
@@ -30,6 +30,8 @@ It answers:
 
 **Verified ≠ Membership Activated.**
 
+Phase 4 implements the **Crypto Payment** workflow only. Ticket contracts include `activationSource` so Manual Payment / Referral Redeem / Admin Grant can extend later without redesign.
+
 ---
 
 ## 2. Relationship with Member Management
@@ -48,112 +50,173 @@ Control Center **Manage Subscription** deep-links:
 /admin/subscriptions?member=<id>
 ```
 
-Dashboard deep-links (preserve when building Phase 4):
+Dashboard deep-links:
 
 ```text
-/admin/subscriptions?status=pending_verification
-/admin/subscriptions?status=awaiting_admin_approval
+/admin/subscriptions?status=blockchain_verifying
+/admin/subscriptions?status=approval_pending
 /admin/subscriptions?status=verification_required
 ```
 
 ---
 
-## 3. Current implementation
+## 3. Frontend folder organization
 
 ```text
-src/app/admin/subscriptions/page.tsx
-  → ModulePlaceholder
-       title: Subscriptions
-       subtitle: Payment verification, approval, and subscription tickets.
-       phase: Phase 4
+src/types/members/subscription.ts
+src/lib/members/mock/subscriptions.ts
+src/lib/members/hooks/useSubscriptionsDirectory.ts
+src/components/members/sections/subscriptions/
+  SubscriptionsPage.tsx
+  SubscriptionsDirectoryProvider.tsx
+  SubscriptionWidgets.tsx
+  SubscriptionFiltersBar.tsx
+  SubscriptionTable.tsx
+  SubscriptionDetails.tsx
+  SubscriptionMemberDetailPage.tsx
+  SubscriptionRowActions.tsx
+  subscription-actions.ts
+  index.ts
+src/app/admin/subscriptions/
+  layout.tsx          # Suspense + DirectoryProvider
+  page.tsx
+  [id]/page.tsx       # mobile full-page detail
 ```
 
-**Not yet created:**
-
-```text
-src/components/members/sections/subscriptions/   ← planned
-src/lib/members/hooks/useSubscriptions.ts        ← planned
-src/lib/members/mock/subscriptions.ts            ← planned
-src/types/members/subscription.ts                ← planned
-```
+**Naming:** `Subscription*` only — Crypto Payment is the primary source, not a separate module.  
+**No** `/admin/payments` route or sidebar item.
 
 ---
 
-## 4. Planned UI (from product specs — not built)
+## 4. Component hierarchy
 
-Expected surfaces (inherit Dashboard design language):
+```text
+SubscriptionsPage
+├── PageTitle + Refresh
+├── SubscriptionWidgets          (stats → filtered hrefs)
+├── SubscriptionFiltersBar       (modulePanelSurface gold)
+├── AdminDirectoryPanel
+│   ├── SubscriptionTable
+│   │   └── SubscriptionRowActions
+│   └── Pagination
+└── AdminMasterDetail detail → SubscriptionDetails
+        ├── Payment Summary
+        ├── Blockchain Information
+        ├── Verification
+        ├── Approval (+ Approve / Reject when actionable)
+        ├── Membership Result (when approved)
+        └── Timeline (from ticket.timeline)
+```
 
-- Stats widgets: **Awaiting Admin Approval** · Pending Verification · Verification Required · Rejected · Approved  
-- Filterable tickets table  
-- Desktop details panel with explorer link + verification fields  
-- Mobile detail route  
-- Approve / Reject actions (mutations → NestJS)  
+Desktop: list + side panel (`?member=`).  
+Mobile: navigate to `/admin/subscriptions/[id]` (provider stays mounted in layout).
+
+---
+
+## 5. Mock data contracts
+
+Primary type: `SubscriptionTicket` in `src/types/members/subscription.ts`.
+
+| Field group | Role |
+|-------------|------|
+| Identity | `id`, `memberId`, `username`, `email` |
+| Display | `displayStatus`, `statusLabel`, `statusTone` |
+| Source | `activationSource` (Phase 4 mocks = `crypto_payment`) |
+| Payment | plan, amounts, method, submittedAt |
+| Blockchain | network, wallet, txHash, explorerUrl |
+| Verification | result, method, verifiedAt, notes |
+| Approval | decision, decidedAt, decidedBy, reason |
+| Membership result | post-approve reflection (nullable) |
+| Timeline | ordered events for `Timeline` UI |
 
 Display states:
 
 ```text
-Pending Verification
-Awaiting Admin Approval   ← primary Approve queue after auto-verify
-Verification Required
+Blockchain Verifying      ← System-owned; no admin action
+Approval Pending          ← Admin-owned; primary Approve queue after auto-verify
+Verification Required     ← Admin-owned; investigation after auto-verify failure
 Rejected
-Approved / Successful
+Approved
 ```
+
+| State | Owner | Admin action |
+|-------|-------|--------------|
+| Blockchain Verifying | System | No |
+| Verification Required | Admin | Yes — Approve / Reject |
+| Approval Pending | Admin | Yes — Approve Membership / Reject Payment |
+
+Details panel adapts by state (no Approve/Reject while Blockchain Verifying; investigation vs final-approval banners).
 
 No **Expired** state in Subscriptions — expiry belongs to Membership.
 
-### Details panel required fields
+Mock actions (`subscription-actions.ts`) are stubs (`window.alert` + NestJS path). They do **not** mutate Membership.
 
-Verification Result · Verification Timestamp · Verification Method · Transaction Hash · **Blockchain Explorer Link** · Expected Amount · Actual Amount · Network · Wallet Address · Verification Notes (future)
+---
 
-### Admin operational workflow
+## 6. URL / filter contract
+
+| Param | Meaning |
+|-------|---------|
+| `q` | Search username / email / TX / wallet |
+| `status` | Display status filter |
+| `plan` | `monthly` \| `quarterly` \| `yearly` |
+| `network` | `bep20` \| `erc20` \| `trc20` |
+| `verification` | System verification result |
+| `member` / `memberId` | Selection (Control Center deep-link) |
+| `page` / `pageSize` | Pagination |
+
+---
+
+## 7. Frontend vs backend responsibilities
+
+### Frontend (this module)
+
+- UI, filters, master-detail, timeline rendering
+- Typed mocks + URL-synced directory hook
+- Approve / Reject / Explorer interaction model
+- Backend-compatible TypeScript contracts
+
+### Backend (not implemented here)
+
+Reserved in [`../05_Backend/API_EXPECTATIONS.md`](../05_Backend/API_EXPECTATIONS.md):
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `GET` | `/admin/subscriptions` | Ticket list + stats |
+| `GET` | `/admin/subscriptions/:id` | Ticket detail |
+| `POST` | `/admin/subscriptions/:id/approve` | Membership activate gateway |
+| `POST` | `/admin/subscriptions/:id/reject` | Reject — Membership unchanged |
+
+**Contract:** auto-verify success must **not** activate Membership. Only `approve` does.
+
+Replace mock arrays/hooks with API responses without changing component hierarchy.
+
+---
+
+## 8. UI state transitions (mock representation)
 
 ```text
-Open Subscription
+Payment Submitted
         ↓
-Click Explorer
+Blockchain Verifying
         ↓
-Verify On-chain Transaction
+Verified → Approval Pending
+   or
+Verification Failed → Verification Required
         ↓
-Approve / Reject
+Approve → Approved → Membership Result (+ Discord reflect)
+   or
+Reject → Rejected
 ```
 
 ---
 
-## 5. Backend responsibilities
-
-| Concern | Owner |
-|---------|-------|
-| Quote persistence | Backend |
-| On-chain / payment verification algorithms | Backend |
-| Transition Verified → Awaiting Admin Approval | Backend |
-| **Approve → activate Membership** | Backend orchestration (**only** on Approve) |
-| Reject + reason | Backend |
-| Discord sync after Membership activation | Backend / Discord service |
-| Audit events | Backend |
-| Admin ticket list API | Backend |
-
-Frontend must not re-price against live catalog during verification. See  
-`docs/AI/Agents/Admin/08_Subscription_Pricing_and_Payment_Verification_Architecture.md`.
-
----
-
-## 6. Navigation / ownership summary
-
-| From | Behavior |
-|------|----------|
-| Sidebar Subscriptions | Opens module (placeholder today) |
-| Control Center Manage | Filtered by `member` |
-| Dashboard widgets | Filtered by `status` (incl. `awaiting_admin_approval`) |
-| Directory subscription column | Informational; management in Subscriptions |
-
----
-
-## 7. Status
+## 9. Status
 
 ```text
-UI ⏳ Placeholder
-Responsive —
-Mock Data ⏳
+UI ✔ Complete (mock)
+Responsive ✔
+Mock Data ✔
 Backend Integration ⏳
 API ⏳
 ```

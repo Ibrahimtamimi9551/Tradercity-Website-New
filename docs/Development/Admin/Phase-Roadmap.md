@@ -593,9 +593,9 @@ Update this table as phases complete. Mirror summary in [`PROJECT_STATUS.md`](PR
 | 1 | Dashboard (Operations Center) | Complete | Phase-01-Dashboard.md |
 | 2 | Members Directory | Complete | [`Phase-02-Members-Directory.md`](Phase-02-Members-Directory.md) |
 | 3 | User Profile (Control Center) | Complete | [`Phase-03-User-Profile.md`](Phase-03-User-Profile.md) |
-| 4 | Subscriptions | Not started | — |
-| 5 | Discord | Not started | — |
-| 6 | Referrals | Not started | — |
+| 4 | Subscriptions | Complete (mock) | [`Phase-04-Subscriptions.md`](Phase-04-Subscriptions.md) |
+| 5 | Discord | UI complete (mock) | Phase record pending |
+| 6 | Referrals | UI complete (mock) | Phase record pending |
 | 7 | Reports, Community, Media | **Deferred** | Website Content Management |
 | 8 | Settings | **Deferred** | Future config area |
 | 9 | Notifications, Audit Logs | **Deferred** | Future Analysts / system |

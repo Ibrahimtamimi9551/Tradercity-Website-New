@@ -1,11 +1,9 @@
-﻿import { ModulePlaceholder } from "@/components/admin/layout/ModulePlaceholder";
+﻿import { SubscriptionsPage } from "@/components/members/sections/subscriptions";
 
-export default function SubscriptionsPage() {
-  return (
-    <ModulePlaceholder
-      title="Subscriptions"
-      subtitle="Payment verification, approval, and subscription tickets."
-      phase="Phase 4"
-    />
-  );
+/**
+ * Phase 4 — Subscriptions (payment verification + Admin Approval ticket queue).
+ * Crypto payment is the primary ticket type; Membership activates only on Approve.
+ */
+export default function SubscriptionsRoutePage() {
+  return <SubscriptionsPage />;
 }

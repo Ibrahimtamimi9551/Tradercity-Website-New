@@ -193,7 +193,7 @@ function SubscriptionBadge({
   if (status === "none") return <span className="text-tc-muted">N/A</span>;
   const map = {
     active: { label: "Active", tone: "success" as const },
-    pending_verification: { label: "Pending Verification", tone: "warning" as const },
+    pending_verification: { label: "Blockchain Verifying", tone: "info" as const },
     verification_required: { label: "Verification Required", tone: "danger" as const },
   }[status];
   return <StatusBadge label={map.label} tone={map.tone} />;

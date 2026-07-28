@@ -11,17 +11,28 @@ import { DiscordIcon } from "@/components/admin/ui/icons/DiscordIcon";
 const queueItems = [
   {
     id: "1",
-    label: "Pending Subscription Verifications",
-    count: 24,
-    countLabel: "Requests",
-    oldestWaiting: "6 Hours",
-    href: "/admin/subscriptions?status=pending_verification",
-    icon: Clock,
+    label: "Approval Pending",
+    count: 3,
+    countLabel: "Tickets",
+    oldestWaiting: "2 Hours",
+    href: "/admin/subscriptions?status=approval_pending",
+    icon: CreditCard,
     iconTone: "warning" as const,
-    linkText: "Review Payments",
+    linkText: "Review Queue",
   },
   {
     id: "2",
+    label: "Blockchain Verifying",
+    count: 3,
+    countLabel: "Requests",
+    oldestWaiting: "6 Hours",
+    href: "/admin/subscriptions?status=blockchain_verifying",
+    icon: Clock,
+    iconTone: "blue" as const,
+    linkText: "Monitor Payments",
+  },
+  {
+    id: "3",
     label: "Discord Sync Issues",
     count: 7,
     countLabel: "Issues",
@@ -32,7 +43,7 @@ const queueItems = [
     linkText: "Review Issues",
   },
   {
-    id: "3",
+    id: "4",
     label: "Referral Redeem Requests",
     count: 12,
     countLabel: "Requests",
@@ -43,7 +54,7 @@ const queueItems = [
     linkText: "Review Requests",
   },
   {
-    id: "4",
+    id: "5",
     label: "Memberships Expiring Today",
     count: 8,
     countLabel: "Members",
@@ -54,9 +65,9 @@ const queueItems = [
     linkText: "View Members",
   },
   {
-    id: "5",
+    id: "6",
     label: "Verification Required",
-    count: 5,
+    count: 2,
     countLabel: "Payments",
     oldestWaiting: "1 Day",
     href: "/admin/subscriptions?status=verification_required",
@@ -70,7 +81,7 @@ export function OperationsQueueSection() {
   return (
     <OperationsQueue
       title="Operations Queue (Needs Attention)"
-      total={25}
+      total={35}
       items={queueItems}
       viewAllHref="/admin"
     />

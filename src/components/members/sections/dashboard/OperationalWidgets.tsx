@@ -22,15 +22,15 @@ export function OperationalWidgets() {
       />
 
       <WidgetCard
-        label="Pending Verification"
-        value="24"
-        hint="Subscription payments"
+        label="Approval Pending"
+        value="3"
+        hint="Verified — final admin approval"
         icon={Clock}
         accent="amber"
         priority="critical"
         compactMobile
         trend={{ value: 14.3, label: "vs 25 May - 31 May", direction: "down" }}
-        href="/admin/subscriptions?status=pending_verification"
+        href="/admin/subscriptions?status=approval_pending"
         linkText="Review now"
       />
 

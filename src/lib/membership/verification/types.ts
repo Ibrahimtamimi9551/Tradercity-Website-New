@@ -24,7 +24,7 @@ import type { PriceBreakdown } from "@/lib/membership/pricing";
  *
  * IMPORTANT (Phase 1 product policy):
  *   `verified` means the payment matched the quote — it does NOT activate Membership.
- *   Membership activates only after Admin Approve (Awaiting Admin Approval → Approved).
+ *   Membership activates only after Admin Approve (Approval Pending → Approved).
  *   See docs/Member Management/02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md
  */
 export type PaymentVerificationOutcome =
@@ -132,11 +132,11 @@ export function classifyPaymentAmountMatch(
 
 /**
  * Admin Subscriptions display states vs verification-engine outcomes.
- * Phase 1: engine `verified` / legacy `successful` → Awaiting Admin Approval (not Approved).
+ * Phase 1: engine `verified` / legacy `successful` → Approval Pending (not Approved).
  */
 export const ADMIN_DISPLAY_TO_VERIFICATION_OUTCOMES = {
-  pending_verification: ["pending", "verifying"] as const,
-  awaiting_admin_approval: ["verified", "successful"] as const,
+  blockchain_verifying: ["pending", "verifying"] as const,
+  approval_pending: ["verified", "successful"] as const,
   verification_required: [
     "underpaid",
     "overpaid",

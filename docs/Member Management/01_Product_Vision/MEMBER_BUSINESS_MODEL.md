@@ -62,10 +62,10 @@ Backend NestJS contracts may differ from marketing display prices. Document mism
 1. Member receives a **Payment Quote** (frozen expected amount).  
 2. Verification Engine compares received amount to **quote**, never live re-price.  
 3. **Verification** (system) and **Approval** (Admin) are separate stages.  
-4. Successful automatic verification → **Awaiting Admin Approval** — Membership is **not** activated yet.  
+4. Successful automatic verification → **Approval Pending** — Membership is **not** activated yet.  
 5. Admin reviews TX (explorer) → **Approve / Reject**.  
 6. **Only after Approve:** Membership activates → Discord sync → Audit.  
-7. Admin display states: Pending Verification · Awaiting Admin Approval · Verification Required · Rejected · Approved.
+7. Admin display states: Blockchain Verifying · Approval Pending · Verification Required · Rejected · Approved.
 
 Canonical: [`../02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md`](../02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md).
 

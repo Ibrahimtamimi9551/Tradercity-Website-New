@@ -35,14 +35,14 @@ export function DirectoryWidgets({ stats }: DirectoryWidgetsProps) {
         linkText="View all"
       />
       <WidgetCard
-        label="Pending Verification"
+        label="Blockchain Verifying"
         value={stats.pendingVerification.toLocaleString()}
-        hint="Subscription pending"
+        hint="System verifying payments"
         icon={Clock}
         accent="blue"
         priority="informational"
         compactMobile
-        href="/admin/subscriptions?status=pending_verification"
+        href="/admin/subscriptions?status=blockchain_verifying"
         linkText="View all"
       />
       <WidgetCard

@@ -49,7 +49,7 @@ Subscription (payment ticket)
         ↓
 Automatic Verification (system)
         ↓
-Awaiting Admin Approval
+Approval Pending
         ↓
 Admin Approve
         ↓
@@ -97,7 +97,7 @@ Admin Action (owning module)
 Payment Submitted
   → Automatic Verification Engine
   → Payment Verified
-  → Awaiting Admin Approval   ← Membership NOT updated yet
+  → Approval Pending   ← Membership NOT updated yet
   → Admin reviews Explorer → Approve
   → Membership updated (plan / status / dates / activationSource=crypto_payment)
   → Discord sync requested

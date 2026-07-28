@@ -17,7 +17,7 @@ const membershipOptions = [
 const subscriptionOptions = [
   { value: "all", label: "Subscription (All)" },
   { value: "active", label: "Active" },
-  { value: "pending_verification", label: "Pending Verification" },
+  { value: "pending_verification", label: "Blockchain Verifying" },
   { value: "verification_required", label: "Verification Required" },
   { value: "none", label: "N/A" },
 ];

@@ -1,22 +1,24 @@
 ﻿# Admin Dashboard — Project Status
 
-**Last Updated:** July 23, 2026  
+**Last Updated:** July 29, 2026  
 **Foundation Spec:** [`docs/AI/Agents/Admin/00_Admin_Dashboard_Foundation.md`](../../AI/Agents/Admin/00_Admin_Dashboard_Foundation.md)  
 **Vision (authoritative):** [`docs/AI/Agents/Admin/07_Vision_Before_Implementation.md`](../../AI/Agents/Admin/07_Vision_Before_Implementation.md)  
 **Phase Roadmap:** [`Phase-Roadmap.md`](Phase-Roadmap.md)  
 **Phase 0 record:** [`Phase-00-Admin-Foundation.md`](Phase-00-Admin-Foundation.md)  
+**Phase 4 record:** [`Phase-04-Subscriptions.md`](Phase-04-Subscriptions.md)  
 **Frontend audit:** [`TraderCity_Frontend_Engineering_Audit.md`](../TraderCity_Frontend_Engineering_Audit.md)  
 **Platform vocabulary:** [`PLATFORM_TERMINOLOGY.md`](../../00_Project_Governance/PLATFORM_TERMINOLOGY.md)
 
 ## Current Phase
 
-**Phases 0–3 complete (UI on mocks).**  
+**Phases 0–4 complete (UI on mocks).**  
 **Discord + Referrals Admin UI:** complete on mocks (ahead of formal Phase-05/06 delivery records).  
-**Subscriptions:** still a **placeholder** (Phase 4 — highest Admin UI gap).  
+**Subscriptions:** **UI complete on mocks** (Phase 4 — crypto payment ticket queue).  
 **UI Design Language:** **Frozen / approved** — see [`02_Frontend_Design_System_and_UX_Rules.md`](../../AI/Agents/Admin/02_Frontend_Design_System_and_UX_Rules.md)  
-**Next product UI:** Phase 4 — Subscriptions — inherit Dashboard visual system (no redesign).  
 **Analyst stream (freeze override, mock-only):** Section nav (Members · Analysts · Content) + Analyst Dashboard + Directory — see [`../Analyst/00_Overview/PROJECT_STATUS.md`](../Analyst/00_Overview/PROJECT_STATUS.md).  
 **Backend:** not wired (NestJS TODOs on hooks).
+
+**Note:** Phase 4 shipped under an explicit PO Engineering Freeze override (Subscriptions FE + docs only).
 
 ## Scope
 
@@ -42,7 +44,7 @@ Do **not** redesign admin interfaces. Members, User Profile, Subscriptions, Disc
 | 1 | Dashboard — Operations Center | **Complete** (mock) |
 | 2 | Members — directory + System Health | **Complete** (mock) |
 | 3 | User Profile — Control Center | **Complete** (mock) |
-| 4 | Subscriptions | **Shell** — `ModulePlaceholder` only |
+| 4 | Subscriptions | **Complete** (mock) — crypto payment tickets |
 | 5 | Discord | **UI complete** (mock); NestJS + Phase record pending |
 | 6 | Referrals (Ops + Intelligence) | **UI complete** (mock); NestJS + Phase record pending |
 | 7 | Reports, Community, Media | **Deferred** |
@@ -56,7 +58,8 @@ Do **not** redesign admin interfaces. Members, User Profile, Subscriptions, Disc
 | `/admin` | Dashboard (Phase 1) — complete UI, mock data |
 | `/admin/members` | Directory (Phase 2) — complete UI, mock data |
 | `/admin/members/[id]` | Control Center (Phase 3) — complete UI, mock data |
-| `/admin/subscriptions` | **Placeholder** → Phase 4 |
+| `/admin/subscriptions` | Subscriptions queue (Phase 4) — complete UI, mock data |
+| `/admin/subscriptions/[id]` | Subscription ticket detail (mobile) — complete UI, mock data |
 | `/admin/discord` | Discord ops — complete UI, mock data |
 | `/admin/discord/[id]` | Discord detail — complete UI, mock data |
 | `/admin/referrals` | Referral ops — complete UI, mock data |
@@ -75,7 +78,7 @@ Do **not** redesign admin interfaces. Members, User Profile, Subscriptions, Disc
 ```text
 src/components/admin/layout/ + ui/     — shared shell (Phase 0)
 src/components/members/sections/       — Member Domain (Admin UI)
-  dashboard/ directory/ profile/ discord/ referrals/
+  dashboard/ directory/ profile/ subscriptions/ discord/ referrals/
 src/components/analysts/sections/      — Analyst Domain (Admin UI)
   dashboard/ directory/
 src/types/admin/ + src/types/members/ + src/types/analysts/
@@ -86,13 +89,11 @@ src/lib/admin/ + src/lib/members/ + src/lib/analysts/   — mock data (TODO Nest
 
 ## Next Step
 
-Begin **Phase 4: Subscriptions** — `src/components/members/sections/subscriptions/`
+Write Phase-05 / Phase-06 delivery records to match Discord/Referrals UI reality, or begin NestJS wiring for Subscriptions approve/reject.
 
 Analyst follow-ups: Control Center, Applications queue, Verification — see [`../Analyst/00_Overview/PROJECT_STATUS.md`](../Analyst/00_Overview/PROJECT_STATUS.md).
 
-Also recommended: write Phase-05 / Phase-06 delivery records to match Discord/Referrals UI reality.
+Run `npm run dev` and open `/admin/subscriptions`.
 
-Run `npm run dev` and open `/admin/analysts` or `/admin/members` → any username → Control Center.
-
-**Dashboard UI Design Freeze active** — inherit `/admin` visual system for Phases 4–6+.  
+**Dashboard UI Design Freeze active** — inherit `/admin` visual system for Phases 5–6+.  
 **Homepage Freeze active** — no marketing file changes during admin implementation.

@@ -62,10 +62,10 @@ Phase 3 — Admin Platform (Member Management)
 ✔ Admin Foundation + Operations Dashboard
 ✔ Members Directory
 ✔ User Profile Control Center (Admin)
-○ Subscriptions
+✔ Subscriptions
 ○ Discord
 ○ Referrals
-○ Payments (verification depth — aligned with subscriptions architecture)
+◐ Payments (verification depth — covered by Subscriptions UI; NestJS pending)
 --------------------
 
 Phase 4 — Analyst Platform
@@ -130,10 +130,10 @@ Phase 6 — Platform Automation & Intelligence
 | Admin Foundation + Operations Dashboard | ✔ | `/admin` |
 | Members Directory | ✔ | `/admin/members` |
 | User Profile Control Center | ✔ | `/admin/members/[id]` |
-| Subscriptions | ○ | Next Admin build target; placeholder route exists |
-| Discord | ○ | Placeholder route exists |
-| Referrals | ○ | Placeholder route exists |
-| Payments verification depth | ○ | Architecture documented; implement with subscriptions stack |
+| Subscriptions | ✔ | Crypto payment ticket queue on mocks (`/admin/subscriptions`) |
+| Discord | ○ | Placeholder route exists (UI also complete on mocks — update when Phase-05 recorded) |
+| Referrals | ○ | Placeholder route exists (UI also complete on mocks — update when Phase-06 recorded) |
+| Payments verification depth | ◐ | Delivered inside Subscriptions FE; NestJS verification engine pending |
 
 **Owning domain:** Admin Platform  
 **Authoritative Admin sequence:** `docs/Development/Admin/Phase-Roadmap.md`  

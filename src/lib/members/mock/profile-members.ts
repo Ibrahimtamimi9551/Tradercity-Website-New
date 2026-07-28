@@ -165,7 +165,7 @@ function subscriptionFields(member: DirectoryMember, index: number): MemberProfi
   if (member.subscription === "pending_verification") {
     return {
       plan: vipPlanLabel,
-      statusLabel: "Pending Verification",
+      statusLabel: "Blockchain Verifying",
       statusTone: "warning",
       paymentDate: member.joinedAt,
       expiryDate: null,

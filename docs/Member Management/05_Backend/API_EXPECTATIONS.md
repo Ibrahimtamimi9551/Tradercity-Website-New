@@ -88,8 +88,8 @@ Optional later: `PATCH` account status if product confirms Admin may suspend fro
 
 | Param | Source |
 |-------|--------|
-| `status=pending_verification` | Dashboard — still verifying |
-| `status=awaiting_admin_approval` | Dashboard — **primary Approve queue** after Verified |
+| `status=blockchain_verifying` | Dashboard — still verifying |
+| `status=approval_pending` | Dashboard — **primary Approve queue** after Verified |
 | `status=verification_required` | Dashboard — verification failed |
 | `member` | Control Center Manage link |
 

@@ -27,7 +27,7 @@ One rule:
 ### Payment attention
 
 ```text
-Dashboard Awaiting Admin Approval (or Verification Required)
+Dashboard Approval Pending (or Verification Required)
   → Subscriptions queue
   → Open Explorer → review TX
   → Approve / Reject

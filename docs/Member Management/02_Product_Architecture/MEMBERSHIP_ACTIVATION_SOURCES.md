@@ -82,7 +82,7 @@ Sources **write into** Membership; they do not replace it.
 Canonical policy: [`SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md`](./SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md).
 
 ```text
-Payment Submitted → Auto Verify → Awaiting Admin Approval
+Payment Submitted → Auto Verify → Approval Pending
   → Admin Approve → Membership Activated / Extended
   → Discord → Timeline → Dashboard → Profile
 ```
