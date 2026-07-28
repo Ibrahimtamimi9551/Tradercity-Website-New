@@ -134,6 +134,11 @@ Multiple modules can **produce lifecycle events**.
 
 Only one domain **owns the resulting state**.
 
+**Canonical Activation Sources taxonomy** (Crypto Payment · Manual Payment · Referral Redeem · Admin Grant · Future Grant):  
+[`docs/Member Management/02_Product_Architecture/MEMBERSHIP_ACTIVATION_SOURCES.md`](../Member%20Management/02_Product_Architecture/MEMBERSHIP_ACTIVATION_SOURCES.md)
+
+Ops queue terminology: **Referral Redeem Requests** (not “Redemption”). Approve Redeem triggers Membership — Referrals do not own a separate activation lifecycle.
+
 ### 2.4 Membership propagates outward (readers)
 
 ```text
@@ -479,12 +484,18 @@ User Profile available (Control Center shell)
 Other domains update independently thereafter
 ```
 
-### 6.2 Subscription success → Membership → Discord → readers
+### 6.2 Subscription → Membership → Discord → readers
 
 ```text
-Subscription Success
+Payment Submitted
         ↓
-Subscription Module (payment verified)
+Automatic Verification Engine
+        ↓
+Payment Verified
+        ↓
+Awaiting Admin Approval          ← Membership NOT written yet
+        ↓
+Admin Approve (Subscriptions)
         ↓
 Membership Domain updated (plan, status, dates)
         ↓
@@ -495,7 +506,11 @@ Discord Domain updated (role / sync status)
 User Profile reflects
         ↓
 Members Table / Dashboard reflect
+        ↓
+Audit event recorded
 ```
+
+**Rule:** Automatic verification alone must never write Membership or Discord VIP entitlements. Admin Approval is the mandatory gateway (Phase 1 policy). See [`docs/Member Management/02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md`](../Member%20Management/02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md).
 
 ### 6.3 Referral completed → Membership → readers
 
@@ -553,7 +568,7 @@ Profile / Members / Dashboard reflect
 
 | Action | Admin surface | Domain written |
 |--------|---------------|----------------|
-| Approve / reject payment | Subscriptions | Subscription → then Membership |
+| Approve / reject payment | Subscriptions | Subscription → **then** Membership (**Approve only**) |
 | Sync Discord / invite | Discord | Discord |
 | Approve referral redeem | Referrals | Referral → then Membership |
 | Manual VIP grant | Defined ops flow (Subscriptions or dedicated action — **not** Profile) | Membership |

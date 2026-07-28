@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
+  CheckCircle2,
   ClipboardCopy,
   History,
   Link2,
@@ -10,6 +11,7 @@ import {
   ScrollText,
   User,
   Wallet,
+  XCircle,
 } from "lucide-react";
 import { cn } from "@/lib/admin/cn";
 import type { ReferralMember } from "@/types/members/referral";
@@ -17,6 +19,8 @@ import type { ReferralMember } from "@/types/members/referral";
 export type ReferralRowActionHandlers = {
   onCopyReferralLink: (member: ReferralMember) => void;
   onCopyReferralCode: (member: ReferralMember) => void;
+  onApproveRedeem?: (member: ReferralMember) => void;
+  onRejectRedeem?: (member: ReferralMember) => void;
 };
 
 type ReferralRowActionsProps = {
@@ -26,13 +30,16 @@ type ReferralRowActionsProps = {
 
 /**
  * Compact ⋮ menu only — row click updates the details panel.
- * Future actions stay stubbed until NestJS referral ops land.
+ * Approve / Reject Redeem appear when Waiting Admin Approval.
+ * Approve must trigger Membership lifecycle (NestJS) — not Referral-owned activation.
  */
 export function ReferralRowActions({ member, handlers }: ReferralRowActionsProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const menuId = useId();
+  const awaitingRedeem =
+    member.redeemRequestStatus === "waiting_admin_approval";
 
   useEffect(() => {
     if (!open) return;
@@ -77,6 +84,27 @@ export function ReferralRowActions({ member, handlers }: ReferralRowActionsProps
           className="admin-card-surface absolute right-0 top-full z-50 mt-1 min-w-[12rem] overflow-hidden rounded-xl border py-1"
           onClick={(e) => e.stopPropagation()}
         >
+          {awaitingRedeem ? (
+            <>
+              <MenuItem
+                icon={CheckCircle2}
+                label="Approve Redeem"
+                onSelect={() => {
+                  close();
+                  handlers.onApproveRedeem?.(member);
+                }}
+              />
+              <MenuItem
+                icon={XCircle}
+                label="Reject Redeem"
+                onSelect={() => {
+                  close();
+                  handlers.onRejectRedeem?.(member);
+                }}
+              />
+              <MenuDivider />
+            </>
+          ) : null}
           <MenuItem
             icon={Link2}
             label="Copy Referral Link"

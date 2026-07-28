@@ -61,6 +61,8 @@ function ReferralsPageContent() {
     getListHref,
     onCopyReferralLink,
     onCopyReferralCode,
+    onApproveRedeem,
+    onRejectRedeem,
   } = useReferralsDirectoryContext();
 
   useEffect(() => {
@@ -105,6 +107,8 @@ function ReferralsPageContent() {
   const actionHandlers: ReferralRowActionHandlers = {
     onCopyReferralLink,
     onCopyReferralCode,
+    onApproveRedeem,
+    onRejectRedeem,
   };
 
   const emptyTitle = hasActiveFilters

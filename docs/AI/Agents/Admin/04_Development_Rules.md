@@ -143,17 +143,27 @@ Document price mismatches in types/comments — do not silently reconcile.
 
 ### Payment Status Enums
 
-Map to backend + member `VerificationSection`:
+Map to backend + member `VerificationSection`. Prefer this vocabulary so **Verification** and **Approval** stay distinct:
 
 | Status | Meaning |
 |--------|---------|
-| PENDING | Submitted, not yet on-chain verified |
-| VERIFIED_ON_CHAIN | On-chain verified, admin sign-off pending |
-| SUCCESS | Approved — member → active VIP |
-| FAILED | On-chain or processing failure |
+| PENDING / Pending Verification | Submitted; automatic verification not finished |
+| VERIFYING | Engine validating against Payment Quote |
+| VERIFIED | Auto verification passed — **Awaiting Admin Approval** (Membership **not** active) |
+| VERIFICATION_REQUIRED | Auto verification failed / ambiguous — manual review |
+| APPROVED / SUCCESS | Admin approved — Membership activate → Discord |
 | REJECTED | Admin rejected — show reason UI |
+| FAILED | Hard verification failure (may map into Verification Required) |
 
-Admin Subscriptions module UI consolidates to four **display** states (Successful, Pending Verification, Verification Required, Rejected) while types preserve full backend enum for integration.
+> Legacy alias `VERIFIED_ON_CHAIN` = same as **VERIFIED** (awaiting Admin Approval). Do not treat it as Membership activation.
+
+Admin Subscriptions display states:
+
+```text
+Pending Verification · Awaiting Admin Approval · Verification Required · Rejected · Approved (Successful)
+```
+
+Types may preserve richer engine outcomes (`underpaid`, `overpaid`, …) for integration — see Admin `08` and `ADMIN_DISPLAY_TO_VERIFICATION_OUTCOMES`.
 
 ### Dashboard Fields Admin Must Reflect
 
@@ -298,7 +308,7 @@ Do not implement backend. Frontend types and hooks should anticipate:
 | Members | `DELETE /admin/members/:id` | Remove member |
 | Subscriptions | `GET /admin/subscriptions` | List with filters |
 | Subscriptions | `GET /admin/subscriptions/:id` | Details + timeline |
-| Subscriptions | `POST /admin/subscriptions/:id/approve` | Manual approve |
+| Subscriptions | `POST /admin/subscriptions/:id/approve` | **Mandatory** Admin Approve after Verified (Phase 1) — activates Membership |
 | Subscriptions | `POST /admin/subscriptions/:id/reject` | Reject with reason |
 | Notes | `GET/POST /admin/members/:id/notes` | Internal notes |
 | Activity | `GET /admin/members/:id/activity` | Operational timeline |

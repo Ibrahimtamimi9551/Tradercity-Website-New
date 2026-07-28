@@ -33,11 +33,11 @@ const queueItems = [
   },
   {
     id: "3",
-    label: "Referral Redemption Requests",
+    label: "Referral Redeem Requests",
     count: 12,
     countLabel: "Requests",
     oldestWaiting: "2 Hours",
-    href: "/admin/referrals?status=pending",
+    href: "/admin/referrals?progress=redeem_requests",
     icon: UserPlus,
     iconTone: "purple" as const,
     linkText: "Review Requests",

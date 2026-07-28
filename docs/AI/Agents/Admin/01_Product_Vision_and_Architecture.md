@@ -128,15 +128,24 @@ Renewed
 ```text
 Pending Verification
   ↓
+Verified → Awaiting Admin Approval
+  ↓
+Approved (Successful) / Rejected
+
+OR
+
+Pending Verification
+  ↓
 Verification Required
   ↓
-Successful
-  ↓
-Rejected
+Approved / Rejected
 ```
+
+**Verified ≠ Activated.** Membership activates only after Admin Approve.
 
 Expiry belongs to **membership lifecycle**, not payment verification. Do not conflate subscription payment status with membership expiry in the Subscriptions module.
 
+Canonical lifecycle: [`SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md`](../../Member%20Management/02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md).
 ---
 
 ## Backend Integration Philosophy
@@ -312,7 +321,7 @@ Do not include analytics such as lesson views or report downloads.
 | Internal notes | Member Control Center | Own and display notes |
 | Activity timeline | Member Control Center | Aggregate operational events |
 
-**Membership writers:** Subscriptions (payment approved), Referral (redeem approved), Manual Activation, and future grant sources. Subscriptions owns **payments**, not Membership state.
+**Membership writers:** Subscriptions (**Admin Approve** after verification — never on verify alone), Referral (redeem approved), Manual Activation, and future grant sources. Subscriptions owns **payments + approval gateway**, not Membership state itself.
 
 No module may duplicate another module's responsibility.
 

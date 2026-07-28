@@ -2,6 +2,10 @@ import { MOCK_DIRECTORY_MEMBERS } from "@/lib/members/mock/directory-members";
 import { MOCK_REFERRAL_MEMBERS } from "@/lib/members/mock/referral-members";
 import { MEMBERSHIP_PLANS } from "@/lib/membership/plans";
 import type { DirectoryMember } from "@/types/members/directory";
+import {
+  MEMBERSHIP_ACTIVATION_SOURCE_LABELS,
+  type MembershipActivationSource,
+} from "@/types/members/activation-source";
 import type { MemberProfile, ProfileTimelineItem } from "@/types/members/profile";
 
 /**
@@ -15,6 +19,29 @@ const TX_SAMPLES = [
   "0x1b4c8e2f9a0d...c7e2",
   "0x9d3a7f1e5b2c...d4a8",
 ];
+
+const EMPTY_SOURCE_FIELDS = {
+  notes: null as string | null,
+  approvedBy: null as string | null,
+  activationDate: null as string | null,
+  creditsRedeemed: null as string | null,
+};
+
+function pickActivationSource(index: number): MembershipActivationSource {
+  const cycle: MembershipActivationSource[] = [
+    "crypto_payment",
+    "crypto_payment",
+    "referral_redeem",
+    "manual_payment",
+    "admin_grant",
+    "crypto_payment",
+  ];
+  return cycle[index % cycle.length];
+}
+
+function sourceLabel(source: MembershipActivationSource | null): string | null {
+  return source ? MEMBERSHIP_ACTIVATION_SOURCE_LABELS[source] : null;
+}
 
 function formatHeaderMembership(member: DirectoryMember): MemberProfile["header"] {
   if (member.membership === "vip") {
@@ -73,15 +100,61 @@ function subscriptionFields(member: DirectoryMember, index: number): MemberProfi
   const vipPlanLabel = `VIP ${plan.label}`;
 
   if (member.subscription === "active") {
-    return {
+    const activationSource = pickActivationSource(index);
+    const base = {
       plan: vipPlanLabel,
       statusLabel: "Successful",
-      statusTone: "success",
+      statusTone: "success" as const,
       paymentDate: member.joinedAt,
       expiryDate: "2026-07-08T10:22:00",
       daysRemaining: plan.durationDays - (index % 12),
       renewalCount: 1,
-      activatedVia: "Auto Verification",
+      activatedVia: sourceLabel(activationSource),
+      activationSource,
+      ...EMPTY_SOURCE_FIELDS,
+    };
+
+    if (activationSource === "referral_redeem") {
+      return {
+        ...base,
+        transactionHash: null,
+        explorerUrl: null,
+        paymentMethod: null,
+        amountPaid: null,
+        creditsRedeemed: `$${plan.priceUsd}`,
+        approvedBy: "Admin · Ibrahim",
+        activationDate: member.joinedAt,
+      };
+    }
+
+    if (activationSource === "manual_payment") {
+      return {
+        ...base,
+        transactionHash: null,
+        explorerUrl: null,
+        paymentMethod: "Bank Transfer",
+        amountPaid: plan.amountPaidDisplay,
+        notes: "Manual payment confirmed via ops ticket",
+        approvedBy: "Admin · Ibrahim",
+        activationDate: member.joinedAt,
+      };
+    }
+
+    if (activationSource === "admin_grant" || activationSource === "future_grant") {
+      return {
+        ...base,
+        transactionHash: null,
+        explorerUrl: null,
+        paymentMethod: null,
+        amountPaid: null,
+        notes: "Complimentary VIP grant",
+        approvedBy: "Admin · Ibrahim",
+        activationDate: member.joinedAt,
+      };
+    }
+
+    return {
+      ...base,
       transactionHash: TX_SAMPLES[index % TX_SAMPLES.length],
       explorerUrl: "https://bscscan.com/",
       paymentMethod: "Crypto USDT - BEP20",
@@ -99,10 +172,12 @@ function subscriptionFields(member: DirectoryMember, index: number): MemberProfi
       daysRemaining: null,
       renewalCount: 0,
       activatedVia: null,
+      activationSource: "crypto_payment",
       transactionHash: TX_SAMPLES[index % TX_SAMPLES.length],
       explorerUrl: "https://bscscan.com/",
       paymentMethod: "Crypto USDT - BEP20",
       amountPaid: plan.amountPaidDisplay,
+      ...EMPTY_SOURCE_FIELDS,
     };
   }
 
@@ -116,10 +191,12 @@ function subscriptionFields(member: DirectoryMember, index: number): MemberProfi
       daysRemaining: null,
       renewalCount: 0,
       activatedVia: null,
+      activationSource: "crypto_payment",
       transactionHash: TX_SAMPLES[index % TX_SAMPLES.length],
       explorerUrl: "https://bscscan.com/",
       paymentMethod: "Crypto USDT - BEP20",
       amountPaid: plan.amountPaidDisplay,
+      ...EMPTY_SOURCE_FIELDS,
     };
   }
 
@@ -132,10 +209,12 @@ function subscriptionFields(member: DirectoryMember, index: number): MemberProfi
     daysRemaining: null,
     renewalCount: 0,
     activatedVia: null,
+    activationSource: null,
     transactionHash: null,
     explorerUrl: null,
     paymentMethod: null,
     amountPaid: null,
+    ...EMPTY_SOURCE_FIELDS,
   };
 }
 
@@ -153,6 +232,7 @@ function membershipFields(
       daysRemaining: sub.daysRemaining,
       renewalCount: sub.renewalCount,
       activatedVia: sub.activatedVia,
+      activationSource: sub.activationSource,
       totalDuration: "1 Month",
     };
   }
@@ -166,6 +246,7 @@ function membershipFields(
     daysRemaining: null,
     renewalCount: 0,
     activatedVia: null,
+    activationSource: null,
     totalDuration: "—",
   };
 }
@@ -318,12 +399,30 @@ function buildReferralTimeline(member: DirectoryMember): ProfileTimelineItem[] {
     );
   }
 
-  if (member.referralEligible) {
+  if (member.referralStatus === "completed") {
     events.push({
       id: `${member.id}-rt-5`,
-      title: "Credit Redeemed",
+      title: "Redeem Approved",
+      description: "Membership extended via Referral Redeem",
       timestamp: member.joinedAt,
       status: "complete",
+    });
+  } else if (member.referralStatus === "waiting_admin_approval") {
+    events.push({
+      id: `${member.id}-rt-5`,
+      title: "Redeem Request Submitted",
+      description: "Waiting Admin Approval",
+      timestamp: member.joinedAt,
+      status: "current",
+      badge: "Waiting",
+    });
+  } else if (member.referralStatus === "eligible") {
+    events.push({
+      id: `${member.id}-rt-5`,
+      title: "Eligible to Redeem",
+      timestamp: member.joinedAt,
+      status: "current",
+      badge: "Eligible",
     });
   } else if (member.referralCurrent > 0) {
     events.push({
@@ -341,14 +440,31 @@ function buildReferralTimeline(member: DirectoryMember): ProfileTimelineItem[] {
 
 function referralFields(member: DirectoryMember): MemberProfile["referral"] {
   const pending = Math.max(0, Math.min(2, member.referralTarget - member.referralCurrent));
+  const redeemLabel =
+    member.referralStatus === "completed"
+      ? "Completed"
+      : member.referralStatus === "waiting_admin_approval"
+        ? "Waiting Admin Approval"
+        : member.referralStatus === "eligible"
+          ? "Eligible"
+          : "In Progress";
+  const redeemTone =
+    member.referralStatus === "completed"
+      ? ("vip" as const)
+      : member.referralStatus === "waiting_admin_approval"
+        ? ("warning" as const)
+        : member.referralStatus === "eligible"
+          ? ("success" as const)
+          : ("warning" as const);
+
   return {
     target: member.referralTarget,
     completed: member.referralCurrent,
     pending,
     creditsEarned: member.referralCurrent * 10,
     creditPerReferral: 10,
-    redemptionLabel: member.referralEligible ? "Eligible" : "In Progress",
-    redemptionTone: member.referralEligible ? "vip" : "warning",
+    redemptionLabel: redeemLabel,
+    redemptionTone: redeemTone,
     timeline: buildReferralTimeline(member),
   };
 }
@@ -526,7 +642,8 @@ const M001_OVERRIDE: Partial<MemberProfile> = {
     expiryDate: "2026-07-08T10:22:00",
     daysRemaining: 30,
     renewalCount: 1,
-    activatedVia: "Auto Verification",
+    activatedVia: MEMBERSHIP_ACTIVATION_SOURCE_LABELS.crypto_payment,
+    activationSource: "crypto_payment",
     totalDuration: "1 Month",
   },
   subscription: {
@@ -537,11 +654,16 @@ const M001_OVERRIDE: Partial<MemberProfile> = {
     expiryDate: "2026-07-08T10:22:00",
     daysRemaining: 30,
     renewalCount: 1,
-    activatedVia: "Auto Verification",
+    activatedVia: MEMBERSHIP_ACTIVATION_SOURCE_LABELS.crypto_payment,
+    activationSource: "crypto_payment",
     transactionHash: "0x8f2a9c1d4e7b...a3f1",
     explorerUrl: "https://bscscan.com/",
     paymentMethod: "Crypto USDT - BEP20",
     amountPaid: MEMBERSHIP_PLANS.monthly.amountPaidDisplay,
+    notes: null,
+    approvedBy: null,
+    activationDate: null,
+    creditsRedeemed: null,
   },
   discord: {
     role: "VIP",

@@ -1,15 +1,10 @@
 import type { LucideIcon } from "lucide-react";
 import {
   BookOpen,
-  CandlestickChart,
   CreditCard,
-  Crown,
-  Ellipsis,
+  Handshake,
   Home,
-  Info,
   Map,
-  Settings,
-  Tag,
   Users,
   UsersRound,
 } from "lucide-react";
@@ -22,22 +17,12 @@ export type NavItemConfig = {
   showNotification?: boolean;
 };
 
-export type MoreMenuItemConfig = {
-  id: string;
-  label: string;
-  description: string;
-  href: string;
-  icon: LucideIcon;
-  badge?: string;
-  disabled?: boolean;
-};
-
 export const NAV_ITEMS: NavItemConfig[] = [
   { id: "home", label: "Home", href: "#home", icon: Home },
   { id: "journey", label: "Journey", href: "#journey", icon: Map },
   { id: "team", label: "Team", href: "#analysts", icon: Users },
   { id: "community", label: "Community", href: "#community", icon: UsersRound },
-  { id: "research", label: "Research", href: "#research", icon: BookOpen },
+  { id: "knowledge", label: "Knowledge", href: "#research", icon: BookOpen },
   {
     id: "pricing",
     label: "Pricing",
@@ -45,57 +30,26 @@ export const NAV_ITEMS: NavItemConfig[] = [
     icon: CreditCard,
     showNotification: true,
   },
-];
-
-export const MOBILE_NAV_ITEMS: NavItemConfig[] = [
-  { id: "home", label: "Home", href: "#home", icon: Home },
-  { id: "journey", label: "Journey", href: "#journey", icon: BookOpen },
-  { id: "research", label: "Research", href: "#research", icon: CandlestickChart },
-  { id: "community", label: "Community", href: "#community", icon: Users },
-  { id: "more", label: "More", href: "#more", icon: Ellipsis },
-];
-
-export const MORE_MENU_ITEMS: MoreMenuItemConfig[] = [
   {
-    id: "team",
-    label: "Team",
-    description: "Meet our analysts & contributors",
-    href: "#analysts",
-    icon: Users,
-  },
-  {
-    id: "pricing",
-    label: "Pricing",
-    description: "View membership plans",
-    href: "#pricing",
-    icon: Tag,
-  },
-  {
-    id: "login",
-    label: "Login / Dashboard",
-    description: "Access your account",
-    href: "/login",
-    icon: Crown,
-    badge: "VIP",
-  },
-  {
-    id: "about",
-    label: "About TraderCity",
-    description: "Our mission & vision",
-    href: "#home",
-    icon: Info,
-  },
-  {
-    id: "settings",
-    label: "Settings",
-    description: "Preferences & more",
-    href: "#",
-    icon: Settings,
-    disabled: true,
+    id: "partnership",
+    label: "Partnership",
+    href: "#become-analyst",
+    icon: Handshake,
   },
 ];
 
-export const SECTION_IDS = ["home", "journey", "analysts", "community", "research", "pricing"];
+/** Mobile bottom nav mirrors desktop homepage IA. */
+export const MOBILE_NAV_ITEMS: NavItemConfig[] = NAV_ITEMS;
+
+export const SECTION_IDS = [
+  "home",
+  "journey",
+  "analysts",
+  "community",
+  "research",
+  "pricing",
+  "become-analyst",
+];
 
 export const SCROLL_COMPACT_THRESHOLD = 50;
 export const NAV_TRANSITION_MS = 520;

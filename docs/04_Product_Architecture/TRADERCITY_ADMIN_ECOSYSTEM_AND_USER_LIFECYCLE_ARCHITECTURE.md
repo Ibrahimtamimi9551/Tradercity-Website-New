@@ -409,10 +409,14 @@ Frontend never invents parallel VIP / payment / role truth.
 
 ### 7.3 Core sync sequences
 
-**Payment success**
+**Payment success (after Admin Approve)**
 
 ```text
 Payment Verified (Subscription)
+        ↓
+Awaiting Admin Approval
+        ↓
+Admin Approves
         ↓
 Membership Updated
         ↓
@@ -421,7 +425,11 @@ Discord Sync Requested
 Discord Domain Updated
         ↓
 Profile / Members / Dashboard reflect
+        ↓
+Audit recorded
 ```
+
+Verified alone does **not** update Membership. Canonical: `docs/Member Management/02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md`.
 
 **Referral redeem**
 

@@ -72,7 +72,7 @@ export function ReferralCard({ profile }: ReferralCardProps) {
           <FieldRow label="Credit per Referral">
             <span className="text-emerald-300">${referral.creditPerReferral}</span>
           </FieldRow>
-          <FieldRow label="Redemption Status">
+          <FieldRow label="Redeem Status">
             <StatusBadge
               label={referral.redemptionLabel}
               tone={referral.redemptionTone}

@@ -179,9 +179,10 @@ Date & Time · Discord Username · Subscription Plan · Amount Paid · Transacti
 
 | State | Notes |
 |-------|-------|
-| Successful | Approved |
-| Pending Verification | Awaiting verification |
-| Verification Required | Auto verification failed |
+| Pending Verification | Awaiting automatic verification |
+| Awaiting Admin Approval | Auto-verified — Admin is final authority before activation |
+| Verification Required | Auto verification failed — manual review |
+| Approved / Successful | Admin approved — Membership activated |
 | Rejected | Admin rejected |
 
 **No Expired state** in Subscriptions — expiration belongs to Membership.
@@ -189,11 +190,20 @@ Date & Time · Discord Username · Subscription Plan · Amount Paid · Transacti
 ### Flow
 
 ```text
-Auto Verification → Failure → Manual Verification → Approve or Reject
-  ↓ (on approve only)
-Backend activates VIP → Discord Role updated → Profile updated → Dashboard updated
+Automatic Verification
+  ↓
+Verified → Awaiting Admin Approval → Admin Approve / Reject
+  ↓ (on Approve only)
+Backend activates VIP → Discord Role updated → Profile updated → Dashboard updated → Audit
+
+OR
+
+Verification Failed → Verification Required → Admin Approve / Reject
+  ↓ (on Approve only)
+same activation chain
 ```
 
+Canonical: [`SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md`](../../Member%20Management/02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md).
 ---
 
 ## Discord Module Philosophy

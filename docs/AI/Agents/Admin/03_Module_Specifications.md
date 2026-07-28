@@ -68,6 +68,8 @@ Revenue Overview widget: **Super Admin only** (locked/hidden for other roles).
 | Total Members | `/admin/members` |
 | VIP Members | `/admin/members?membership=vip` |
 | Pending Verification | `/admin/subscriptions?status=pending_verification` |
+| Awaiting Admin Approval | `/admin/subscriptions?status=awaiting_admin_approval` |
+| Verification Required | `/admin/subscriptions?status=verification_required` |
 | Discord Issues | `/admin/discord?sync=failed` |
 | Referral Requests | `/admin/referrals?referral=pending_approval` |
 | Membership Expiring Today | `/admin/members?expiry=today` |
@@ -76,11 +78,12 @@ Revenue Overview widget: **Super Admin only** (locked/hidden for other roles).
 ### Operations Queue Example
 
 ```text
-Needs Attention (7)
-• 3 Pending Subscription Verifications  → /admin/subscriptions?status=pending_verification
+Needs Attention (8)
+• 3 Awaiting Admin Approval             → /admin/subscriptions?status=awaiting_admin_approval
+• 1 Pending Verification (stuck)        → /admin/subscriptions?status=pending_verification
+• 1 Verification Required               → /admin/subscriptions?status=verification_required
 • 1 Discord Sync Failure                → /admin/discord?sync=failed
-• 2 Referral Redemption Requests        → /admin/referrals?referral=pending_approval
-• 1 Membership Expired Today            → /admin/members?expiry=today
+• 2 Referral Redeem Requests        → /admin/referrals?progress=redeem_requests
 ```
 
 ---
@@ -238,7 +241,7 @@ Summarize member lifecycle.
 | Expiry Date | Date |
 | Days Remaining | 30 days (color-coded) |
 | Renewal Count | 1 |
-| VIP Activated Via | Auto Verification |
+| VIP Activated Via | Admin Approval (after Auto Verification) |
 | Total Membership Duration | 1 Month |
 
 **Actions:** View Activity Log → | **Manage Subscription →** (redirects to Subscriptions module, filtered to member)
@@ -250,12 +253,12 @@ Reflect latest subscription/payment state.
 | Field | Example |
 |-------|---------|
 | Plan | VIP Monthly |
-| Status | Successful |
+| Status | Successful (Approved) |
 | Payment Date | Date |
 | Expiry Date | Date |
 | Days Remaining | 30 |
 | Renewal Count | 1 |
-| VIP Activated Via | Auto Verification |
+| VIP Activated Via | Admin Approval (after Auto Verification) |
 | Transaction Hash | With copy + blockchain explorer |
 | Payment Method | Crypto USDT - TRC20 |
 | Amount Paid | $60.00 |
@@ -330,18 +333,20 @@ Include "View All" link to Activity tab.
 
 The Subscription Module **owns**:
 
-- Payment verification
-- Subscription status
-- Membership plan assignment (via backend)
-- Activation workflow
+- Payment verification ticket lifecycle (submitted → verifying → verified → awaiting approval)
+- Subscription / payment status
+- Admin Approval / Reject (mandatory gateway before Membership activation)
+- Membership plan assignment **via backend after Approve only**
+- Activation workflow orchestration trigger (post-approval)
 - Renewal tracking
-- Manual verification when auto-verification fails
+- Manual review when auto-verification fails (`Verification Required`)
 
 ### Does Not Own
 
-- Discord roles
+- Discord roles (sync runs after Membership activation)
 - Member identity (beyond display fields)
 - Referral information
+- Membership access SoT (backend Membership domain — written only after Approve)
 
 ### Page Layout
 
@@ -365,12 +370,13 @@ Pagination
 
 | Widget | Filters Table To | Theme |
 |--------|------------------|-------|
-| Successful | Successful payments | Green |
-| Pending Verification | Pending Verification | Amber |
-| Verification Required | Verification Required | Red |
+| Awaiting Admin Approval | Auto-verified — needs Approve / Reject | Amber / Purple |
+| Pending Verification | Still verifying | Amber |
+| Verification Required | Auto verification failed — manual review | Red |
 | Rejected | Admin rejected | Rose/Grey |
+| Approved / Successful | Admin approved; Membership activated | Green |
 
-**No Expired state** — expiration belongs to the **Membership domain** (backend SoT), not Subscriptions. Subscriptions may emit Membership updates after payment approval; they do not own expiry state. See [`CROSS_MODULE_DATA_SYNCHRONIZATION_ARCHITECTURE.md`](../../04_Product_Architecture/CROSS_MODULE_DATA_SYNCHRONIZATION_ARCHITECTURE.md).
+**No Expired state** — expiration belongs to the **Membership domain** (backend SoT), not Subscriptions. Subscriptions emit Membership updates **only after Admin Approve**; they do not own expiry state. See [`CROSS_MODULE_DATA_SYNCHRONIZATION_ARCHITECTURE.md`](../../04_Product_Architecture/CROSS_MODULE_DATA_SYNCHRONIZATION_ARCHITECTURE.md) and [`SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md`](../../Member%20Management/02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md).
 
 Each widget includes count, optional trend, and "View all" action.
 
@@ -388,7 +394,7 @@ Matches member payment submission fields (`PaymentSection`).
 
 | Filter | Options |
 |--------|---------|
-| Status | Successful, Pending Verification, Verification Required, Rejected |
+| Status | Successful (Approved), Pending Verification, Awaiting Admin Approval, Verification Required, Rejected |
 | Plan | Monthly, Quarterly, Yearly, Lifetime, Custom |
 | Payment Method | Crypto USDT, Stripe, etc. |
 | Date Range | Start — End |
@@ -407,17 +413,19 @@ Matches member payment submission fields (`PaymentSection`).
 
 **Row click** opens Subscription Details panel.
 
-### Subscription Status (Operational Only)
-
-Only three operational states in this module:
+### Subscription Status (Operational)
 
 | Status | Meaning |
 |--------|---------|
-| Successful | Payment verified and membership activated |
-| Pending Verification | Submitted, awaiting automatic verification |
-| Verification Required | Auto verification failed — admin action needed |
+| Pending Verification | Submitted; automatic verification in progress |
+| Awaiting Admin Approval | Auto-verified — **primary Admin work queue**; Membership **not** yet active |
+| Verification Required | Auto verification failed / ambiguous — manual review |
+| Approved / Successful | Admin approved; Membership activated (or activating) |
+| Rejected | Admin rejected |
 
 Do **not** include "Expired" here. Expiry belongs to membership lifecycle.
+
+**Locked rule:** Verified ≠ Activated. Membership never activates on verification alone.
 
 ### Subscription Details Panel
 
@@ -431,65 +439,88 @@ Do **not** include "Expired" here. Expiry belongs to membership lifecycle.
 | Field | Notes |
 |-------|-------|
 | Subscription Plan | Badge + price |
-| Amount Paid | Currency + network |
+| Expected Amount | From Payment Quote |
+| Actual Amount | Observed / received |
 | Payment Date | Timestamp |
-| Transaction Hash | Copy + link |
+| Transaction Hash | Copy + **blockchain explorer link** (required) |
 | Wallet Address | Copy + link |
-| Payment Method | Crypto (USDT - TRC20) / Stripe |
-| Verification Method | Auto Verification / Manual |
-| Current Status | Badge |
+| Network | e.g. BNB Smart Chain (BEP20) |
+| Payment Method | Crypto (USDT - BEP20) / Stripe |
+| Verification Result | Verified / Failed / … |
+| Verification Timestamp | When engine completed |
+| Verification Method | Automatic / Manual assist |
+| Verification Notes | Future |
+| Current Status | Badge (incl. Awaiting Admin Approval) |
 
 **Timeline**
 
 ```text
 Payment Submitted
   ↓
-Auto Verification Started
+Verification Started
   ↓
-Verification Result
+Verification Completed
   ↓
-VIP Activated
+Awaiting Admin Approval
+  ↓
+Approved  (or Rejected)
+  ↓
+Membership Activated
+  ↓
+Discord Sync Started
+  ↓
+Discord Sync Completed
 ```
 
 **Footer Actions**
 
 - Open Member Profile
 - View on Blockchain Explorer
+- Approve / Reject (when status requires decision)
 
-### Payment Verification Workflow
+### Payment Verification & Approval Workflow
 
-**Happy path:**
+**Happy path (canonical):**
 
 ```text
 User submits payment
   ↓
-Automatic Verification
+Automatic Verification Engine
   ↓
-Successful
+Payment Verified
+  ↓
+Awaiting Admin Approval
+  ↓
+Admin opens ticket → Explorer → reviews TX
+  ↓
+Approve
   ↓
 Activate Membership
   ↓
 Assign Discord VIP Role (backend)
   ↓
-Update Member Profile
+Update Member Profile + Audit Event
 ```
 
-**Manual path:**
+**Failure / manual review path:**
 
 ```text
-Verification Required
+Verification Failed
   ↓
-Admin Manual Verification
+Verification Required (Manual Review Required)
   ↓
-Approve → VIP Activated
+Admin Manual Review (+ Explorer)
+  ↓
+Approve → Membership Activated → Discord
   OR
-Reject → Request Additional Proof
+Reject → Membership unchanged
 ```
 
 Approve requires confirmation modal before irreversible action.
 
 Reject includes reason field (UI shell + TODO if backend not ready).
 
+Canonical policy: [`SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md`](../../Member%20Management/02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md).
 ---
 
 ## Module 4: Discord (Phase 5)
@@ -502,7 +533,7 @@ Reject includes reason field (UI shell + TODO if backend not ready).
 Backend decides. Discord executes. TraderCity Database is source of truth.
 
 ```text
-Payment Successful → Backend updates DB → Discord Bot → VIP Role → Dashboard reflects
+Payment Approved (Admin) → Backend updates Membership → Discord Bot → VIP Role → Dashboard reflects
 ```
 
 ### Responsibility
@@ -622,7 +653,8 @@ Admin fields must mirror member-facing flows:
 |-------------|-------------|--------------|
 | Submit payment | `PaymentSection` | Subscriptions table columns |
 | Await verification | `VerificationSection` | Pending Verification widget |
-| Approve | — | Approve modal → Successful |
+| Awaiting admin approval | Member waits / status copy | **Awaiting Admin Approval** widget (primary queue) |
+| Approve | — | Approve modal → Approved → Membership Activated |
 | Access granted | `ResultSection` → VIP dashboard | Member Control Center: Active, plan, days remaining |
 | Issue | `ResultSection` issue state | Verification Required + reject UI |
 

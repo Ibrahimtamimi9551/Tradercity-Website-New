@@ -232,7 +232,7 @@ Referral Domain
 |-------|------------|
 | **Registered Referrals** | User successfully registered through a referral link |
 | **Membership In Progress** | User selected a plan or reached Membership Activation / Payment stage but is not yet an active member |
-| **Successful Memberships** | Membership payment verified, membership activated, referral reward issued |
+| **Successful Memberships** | Membership payment **Admin-approved**, membership activated, referral reward issued |
 
 **Deprecated concept for Intelligence KPIs:** “Pending Referral” as a vague bucket. Use the stages above.
 

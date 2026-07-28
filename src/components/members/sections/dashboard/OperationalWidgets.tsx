@@ -48,15 +48,15 @@ export function OperationalWidgets() {
       />
 
       <WidgetCard
-        label="Referral Requests"
+        label="Referral Redeem Requests"
         value="12"
-        hint="Pending approval"
+        hint="Waiting admin approval"
         icon={UserPlus}
         accent="purple"
         priority="important"
         compactMobile
         trend={{ value: 20.0, label: "vs 25 May - 31 May", direction: "up" }}
-        href="/admin/referrals?status=pending"
+        href="/admin/referrals?progress=redeem_requests"
         linkText="Review now"
       />
 

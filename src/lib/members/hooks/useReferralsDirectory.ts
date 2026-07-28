@@ -12,7 +12,7 @@ import type {
   ReferralFilters,
   ReferralMember,
   ReferralMembershipPlan,
-  ReferralProgressStatus,
+  ReferralProgressFilter,
   ReferralSort,
   ReferralSortKey,
 } from "@/types/members/referral";
@@ -45,7 +45,13 @@ function parseMembershipPlan(
 }
 
 function parseProgress(value: string | null): ReferralFilters["progress"] {
-  if (value === "in_progress" || value === "completed") return value;
+  if (
+    value === "in_progress" ||
+    value === "completed" ||
+    value === "redeem_requests"
+  ) {
+    return value;
+  }
   return "all";
 }
 
@@ -72,14 +78,27 @@ function parseSortDirection(value: string | null): ReferralSort["direction"] {
 
 function parseFiltersFromParams(searchParams: URLSearchParams): ReferralFilters {
   const status = searchParams.get("status");
+  /**
+   * Dashboard Operations Queue deep-link:
+   * `status=redeem_requests` (preferred) or legacy `status=pending` when paired
+   * with redeem queue intent via `progress=redeem_requests`.
+   * Pending referral invites still use `status=pending` alone.
+   */
+  const redeemFromStatus =
+    status === "redeem_requests" ||
+    searchParams.get("progress") === "redeem_requests";
+  const progress = redeemFromStatus
+    ? "redeem_requests"
+    : parseProgress(searchParams.get("progress"));
+
   return {
     search: searchParams.get("q") ?? "",
     membershipPlan: parseMembershipPlan(
       searchParams.get("plan") ?? searchParams.get("membership")
     ),
-    progress: parseProgress(searchParams.get("progress")),
+    progress,
     credit: parseCredit(searchParams.get("credit")),
-    pendingOnly: status === "pending",
+    pendingOnly: status === "pending" && progress !== "redeem_requests",
   };
 }
 
@@ -119,7 +138,16 @@ function matchesFilters(member: ReferralMember, filters: ReferralFilters): boole
     return false;
   }
 
-  if (filters.progress !== "all" && member.progressStatus !== filters.progress) {
+  if (filters.progress === "redeem_requests") {
+    // Operational queue — Waiting Admin Approval only
+    if (member.redeemRequestStatus !== "waiting_admin_approval") return false;
+  } else if (filters.progress === "completed") {
+    // Completed = redeem requested and admin already approved
+    if (member.redeemRequestStatus !== "redeemed") return false;
+  } else if (
+    filters.progress !== "all" &&
+    member.progressStatus !== filters.progress
+  ) {
     return false;
   }
 
@@ -207,7 +235,8 @@ export type UseReferralsDirectoryOptions = {
  * Referral Operations Dashboard — filters, sort, pagination, selection.
  *
  * URL contract:
- *   /admin/referrals?status=pending
+ *   /admin/referrals?progress=redeem_requests   (Referral Redeem Requests queue)
+ *   /admin/referrals?status=pending             (pending referral invites)
  *   /admin/referrals?progress=completed
  *   /admin/referrals?credit=has_credit
  *   /admin/referrals?member=<id>
@@ -215,6 +244,7 @@ export type UseReferralsDirectoryOptions = {
  *   /admin/referrals/intelligence  (Part 2 — ignored by this hook)
  *
  * TODO(NestJS): replace mock list with authenticated referrals API.
+ * Approve Redeem must trigger Membership lifecycle — not a Referral-owned activation.
  */
 export function useReferralsDirectory(options?: UseReferralsDirectoryOptions) {
   const listPathname = options?.listPathname ?? REFERRALS_LIST_PATH;
@@ -481,7 +511,12 @@ export function useReferralsDirectory(options?: UseReferralsDirectoryOptions) {
     [setFilters]
   );
   const setProgress = useCallback(
-    (progress: ReferralProgressStatus | "all") => setFilters({ progress }),
+    (progress: ReferralProgressFilter) =>
+      setFilters({
+        progress,
+        // Redeem queue is exclusive of the pending-invites deep-link.
+        pendingOnly: progress === "redeem_requests" ? false : filtersRef.current.pendingOnly,
+      }),
     [setFilters]
   );
   const setCredit = useCallback(

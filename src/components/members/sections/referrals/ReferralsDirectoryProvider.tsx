@@ -11,6 +11,8 @@ import type { ReferralMember } from "@/types/members/referral";
 type ReferralsDirectoryContextValue = ReferralsDirectoryState & {
   onCopyReferralLink: (member: ReferralMember) => void;
   onCopyReferralCode: (member: ReferralMember) => void;
+  onApproveRedeem: (member: ReferralMember) => void;
+  onRejectRedeem: (member: ReferralMember) => void;
 };
 
 const ReferralsDirectoryContext =
@@ -30,6 +32,21 @@ export function ReferralsDirectoryProvider({ children }: { children: ReactNode }
     ...directory,
     onCopyReferralLink: (member) => copyText(member.referralLink, "Referral link"),
     onCopyReferralCode: (member) => copyText(member.referralCode, "Referral code"),
+    onApproveRedeem: (member) => {
+      window.alert(
+        `Approve Redeem for ${member.displayName}\n\n` +
+          "Triggers Membership lifecycle (activate/extend) → Discord sync → " +
+          "Activity Timeline → Dashboard → User Profile.\n\n" +
+          "Wire to NestJS: POST /admin/referrals/:id/redeem/approve"
+      );
+    },
+    onRejectRedeem: (member) => {
+      window.alert(
+        `Reject Redeem for ${member.displayName}\n\n` +
+          "Referral request closed — Membership unchanged.\n\n" +
+          "Wire to NestJS: POST /admin/referrals/:id/redeem/reject"
+      );
+    },
   };
 
   return (

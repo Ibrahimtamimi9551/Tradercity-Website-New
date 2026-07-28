@@ -134,12 +134,21 @@ export function MemberDirectoryDetails({
               <div
                 className={cn(
                   "h-full rounded-full",
-                  member.referralEligible ? "bg-violet-400" : "bg-amber-400"
+                  member.referralStatus === "waiting_admin_approval"
+                    ? "bg-amber-400"
+                    : member.referralStatus === "completed" ||
+                        member.referralStatus === "eligible"
+                      ? "bg-violet-400"
+                      : "bg-amber-400"
                 )}
                 style={{ width: `${Math.min(referralPct, 100)}%` }}
               />
             </div>
-            {member.referralEligible ? (
+            {member.referralStatus === "waiting_admin_approval" ? (
+              <StatusBadge label="Waiting Admin Approval" tone="warning" dot={false} />
+            ) : member.referralStatus === "completed" ? (
+              <StatusBadge label="Completed" tone="vip" dot={false} />
+            ) : member.referralStatus === "eligible" ? (
               <StatusBadge label="Eligible" tone="success" dot={false} />
             ) : null}
           </div>

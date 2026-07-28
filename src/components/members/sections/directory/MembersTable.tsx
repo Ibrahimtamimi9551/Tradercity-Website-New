@@ -78,9 +78,27 @@ function DiscordCell({ status }: { status: DirectoryMember["discord"] }) {
 }
 
 function ReferralProgressCell({ member }: { member: DirectoryMember }) {
-  const pct = Math.round((member.referralCurrent / member.referralTarget) * 100);
+  const pct = Math.round(
+    (member.referralCurrent / Math.max(member.referralTarget, 1)) * 100
+  );
+  const status = member.referralStatus;
   const barColor =
-    pct >= 100 ? "bg-emerald-400" : pct >= 50 ? "bg-amber-400" : "bg-rose-400";
+    status === "waiting_admin_approval"
+      ? "bg-amber-400"
+      : status === "completed" || status === "eligible"
+        ? "bg-violet-400"
+        : pct >= 50
+          ? "bg-amber-400"
+          : "bg-rose-400";
+
+  const badge =
+    status === "waiting_admin_approval"
+      ? { label: "Waiting Admin Approval", tone: "warning" as const }
+      : status === "completed"
+        ? { label: "Completed", tone: "vip" as const }
+        : status === "eligible"
+          ? { label: "Eligible", tone: "success" as const }
+          : null;
 
   return (
     <div className="min-w-[8.5rem]">
@@ -88,14 +106,17 @@ function ReferralProgressCell({ member }: { member: DirectoryMember }) {
         <span className="tabular-nums text-white/80">
           {member.referralCurrent} / {member.referralTarget}
         </span>
-        <span className="tabular-nums text-tc-muted">{pct}%</span>
+        <span className="tabular-nums text-tc-muted">{Math.min(pct, 100)}%</span>
       </div>
       <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
-        <div className={cn("h-full rounded-full", barColor)} style={{ width: `${pct}%` }} />
+        <div
+          className={cn("h-full rounded-full", barColor)}
+          style={{ width: `${Math.min(pct, 100)}%` }}
+        />
       </div>
-      {member.referralEligible ? (
+      {badge ? (
         <div className="mt-1.5">
-          <StatusBadge label="Eligible" tone="success" dot={false} />
+          <StatusBadge label={badge.label} tone={badge.tone} dot={false} />
         </div>
       ) : null}
     </div>

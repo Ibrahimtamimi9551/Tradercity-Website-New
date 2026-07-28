@@ -34,6 +34,8 @@ const referralOptions = [
   { value: "all", label: "Referral (All)" },
   { value: "in_progress", label: "In Progress" },
   { value: "eligible", label: "Eligible" },
+  { value: "redeem_requests", label: "Referral Redeem Requests" },
+  { value: "completed", label: "Completed" },
 ];
 
 const healthOptions = [

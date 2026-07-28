@@ -1,4 +1,5 @@
 import type { StatusTone } from "@/types/admin/common";
+import type { MembershipActivationSource } from "@/types/members/activation-source";
 import type {
   DirectoryMember,
   DiscordStatus,
@@ -76,7 +77,9 @@ export type MemberProfile = {
     expiryDate: string | null;
     daysRemaining: number | null;
     renewalCount: number;
+    /** Display label for activation source (Membership reflection). */
     activatedVia: string | null;
+    activationSource: MembershipActivationSource | null;
     totalDuration: string;
   };
 
@@ -88,11 +91,20 @@ export type MemberProfile = {
     expiryDate: string | null;
     daysRemaining: number | null;
     renewalCount: number;
+    /** @deprecated Prefer activationSource — kept for Membership card label sync. */
     activatedVia: string | null;
+    /** How this membership period was activated / extended. */
+    activationSource: MembershipActivationSource | null;
     transactionHash: string | null;
     explorerUrl: string | null;
     paymentMethod: string | null;
     amountPaid: string | null;
+    /** Manual / grant notes (source-specific). */
+    notes: string | null;
+    approvedBy: string | null;
+    activationDate: string | null;
+    /** Referral Redeem — credits applied on approval. */
+    creditsRedeemed: string | null;
   };
 
   discord: {

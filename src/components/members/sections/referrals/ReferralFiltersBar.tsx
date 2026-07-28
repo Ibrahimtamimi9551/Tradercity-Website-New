@@ -19,6 +19,7 @@ const progressOptions = [
   { value: "all", label: "Referral Progress (All)" },
   { value: "in_progress", label: "In Progress" },
   { value: "completed", label: "Completed" },
+  { value: "redeem_requests", label: "Referral Redeem Requests" },
 ];
 
 const creditOptions = [

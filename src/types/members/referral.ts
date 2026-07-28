@@ -7,8 +7,25 @@ export type ReferralMembershipPlan =
   | "yearly"
   | "free";
 
-/** Progress bucket for filters and badges. */
+/** Progress bucket for badges / In Progress filter (target met vs not). */
 export type ReferralProgressStatus = "in_progress" | "completed";
+
+/**
+ * Progress filter options — includes the operational redeem queue.
+ * - `completed` = redeem requested and admin already approved
+ * - `redeem_requests` = Waiting Admin Approval only
+ */
+export type ReferralProgressFilter =
+  | ReferralProgressStatus
+  | "redeem_requests"
+  | "all";
+
+/** Redeem request operational status (approval queue). */
+export type ReferralRedeemRequestStatus =
+  | "none"
+  | "waiting_admin_approval"
+  | "redeemed"
+  | "rejected";
 
 /** Available-credit filter buckets (table stays amount-only). */
 export type ReferralCreditFilter = "has_credit" | "no_credit" | "all";
@@ -60,6 +77,11 @@ export type ReferralMember = {
   /** Progress denominator (e.g. 6) — display only. */
   progressTarget: number;
   progressStatus: ReferralProgressStatus;
+  /**
+   * Redeem request queue status.
+   * `waiting_admin_approval` = Referral Redeem Requests operational queue.
+   */
+  redeemRequestStatus: ReferralRedeemRequestStatus;
   availableCredit: number;
   pendingCredit: number;
   lifetimeEarned: number;
@@ -74,10 +96,12 @@ export type ReferralMember = {
 export type ReferralFilters = {
   search: string;
   membershipPlan: ReferralMembershipPlan | "all";
-  progress: ReferralProgressStatus | "all";
-  /** Dashboard queue uses `status=pending` → maps to pending progress filter. */
+  progress: ReferralProgressFilter;
   credit: ReferralCreditFilter;
-  /** When set (from `?status=pending`), show members with pending referrals. */
+  /**
+   * When set (from `?status=pending`), show members with pending referrals
+   * (invite/completion pipeline — distinct from Referral Redeem Requests).
+   */
   pendingOnly: boolean;
 };
 

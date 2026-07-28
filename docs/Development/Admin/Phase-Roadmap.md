@@ -389,26 +389,34 @@ First **ticket processor** — payment verification and VIP activation.
 
 | State | Meaning |
 |-------|---------|
-| Successful | Payment approved — VIP activated |
-| Pending Verification | Awaiting auto or manual verification |
+| Pending Verification | Automatic verification in progress |
+| Awaiting Admin Approval | Auto-verified — **primary Approve queue**; Membership not active |
 | Verification Required | Auto verification failed — admin action needed |
+| Approved / Successful | Admin approved — VIP / Membership activated |
 | Rejected | Admin rejected payment |
 
 **No Expired state** in Subscriptions — expiration belongs to Membership lifecycle.
+
+**Locked:** Verified ≠ Activated. See [`docs/Member Management/02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md`](../../Member%20Management/02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md).
 
 ### Build
 
 **Management components** (`src/components/members/sections/subscriptions/`):
 
 - `SubscriptionWidgets`, `SubscriptionFilters`, `SubscriptionTable`
-- `SubscriptionDetails` (desktop panel)
+- `SubscriptionDetails` (desktop panel) — verification fields + **explorer link**
 - `SubscriptionTimeline`, `SubscriptionActions` (Approve, Reject, Resolve Dispute)
 - Mobile: list → full-screen detail page
 
 ### Workflow loop
 
 ```text
-Dashboard (Pending: 3) → Subscriptions (filtered) → Approve → Profile shows VIP Active → Dashboard counter decreases
+Dashboard (Awaiting Admin Approval: 3)
+  → Subscriptions (filtered)
+  → Explorer review
+  → Approve
+  → Profile shows VIP Active
+  → Dashboard counter decreases
 ```
 
 ### Depends on
@@ -420,8 +428,10 @@ Phases 0–3 (shell, inbox links, return to Profile)
 - [ ] Full desktop: table + side details panel
 - [ ] Full mobile: list + detail with action buttons
 - [ ] Approve and Reject confirmation modals
+- [ ] Distinct widgets for Pending Verification vs Awaiting Admin Approval vs Verification Required
 - [ ] Open Member Profile + BSC Explorer links work
 - [ ] Matches design reference for subscriptions module
+- [ ] Docs/lifecycle assert Membership only after Approve
 
 ---
 
@@ -519,12 +529,13 @@ Apply throughout Phases 0–6 — not a separate build gate.
 
 ```text
 1. Open Dashboard           (Phase 1)
-2. See "3 Pending"          (Phase 1)
+2. See "3 Awaiting Admin Approval"
 3. Click → Subscriptions    (Phase 4)
-4. Approve payment
-5. Open Member Profile      (Phase 3)
-6. Confirm VIP Active
-7. Back to Dashboard        (Phase 1) — counter now 0
+4. Open Explorer → review TX
+5. Approve payment
+6. Open Member Profile      (Phase 3)
+7. Confirm VIP Active
+8. Back to Dashboard        (Phase 1) — counter now 0
 ```
 
 ### Lookup path (directory)
