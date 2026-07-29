@@ -11,10 +11,7 @@ import type {
   ReferralSort,
   ReferralSortKey,
 } from "@/types/members/referral";
-import {
-  ReferralRowActions,
-  type ReferralRowActionHandlers,
-} from "./ReferralRowActions";
+import { ReferralRowActions } from "./ReferralRowActions";
 
 const avatarToneStyles: Record<ReferralMember["avatarTone"], string> = {
   discord: "admin-on-accent bg-[#5865F2] text-white",
@@ -143,7 +140,6 @@ type ReferralTableProps = {
   rows: ReferralMember[];
   selectedId: string | null;
   onRowSelect: (member: ReferralMember) => void;
-  actionHandlers: ReferralRowActionHandlers;
   sort: ReferralSort;
   onSortChange: (key: ReferralSortKey) => void;
   emptyTitle?: string;
@@ -153,7 +149,6 @@ export function ReferralTable({
   rows,
   selectedId,
   onRowSelect,
-  actionHandlers,
   sort,
   onSortChange,
   emptyTitle = "No referral members found",
@@ -209,7 +204,7 @@ export function ReferralTable({
       stopRowClick: true,
       className: "w-[3.5rem] text-right",
       render: (member) => (
-        <ReferralRowActions member={member} handlers={actionHandlers} />
+        <ReferralRowActions member={member} />
       ),
     },
   ];

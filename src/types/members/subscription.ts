@@ -75,6 +75,65 @@ export type SubscriptionMembershipResult = {
   discordSyncLabel: string | null;
 };
 
+/**
+ * Why automatic verification failed — drives Payment Resolution UI.
+ * Present only when `displayStatus === "verification_required"`.
+ */
+export type PaymentFailureReason =
+  | "amount_mismatch"
+  | "invalid_transaction_hash"
+  | "wrong_network"
+  | "duplicate_transaction"
+  | "wallet_mismatch"
+  | "verification_timeout"
+  | "blockchain_verification_failed"
+  | "unknown_transaction";
+
+export type PaymentResolutionChecklistItem = {
+  id: string;
+  label: string;
+  done: boolean;
+};
+
+export type PaymentResolutionNote = {
+  id: string;
+  body: string;
+  author: string;
+  createdAt: string;
+};
+
+/**
+ * Structured investigation workspace for Verification Required tickets.
+ * Contact info reuses ticket `username` / `email` from payment activation.
+ */
+export type PaymentResolution = {
+  failureReason: PaymentFailureReason;
+  failureReasonLabel: string;
+  detectedAmount: string | null;
+  expectedAmount: string;
+  currency: string;
+  submittedWallet: string;
+  expectedWallet: string;
+  checklist: PaymentResolutionChecklistItem[];
+  /** Instructional evidence types the admin should request — no upload yet. */
+  evidenceRequests: string[];
+  notes: PaymentResolutionNote[];
+  startedAt: string | null;
+  memberContactedAt: string | null;
+};
+
+export const PAYMENT_FAILURE_REASON_LABELS: Record<PaymentFailureReason, string> =
+  {
+    amount_mismatch: "Amount Mismatch",
+    invalid_transaction_hash: "Invalid Transaction Hash",
+    wrong_network: "Wrong Network",
+    duplicate_transaction: "Duplicate Transaction",
+    wallet_mismatch: "Wallet Mismatch",
+    verification_timeout: "Verification Timeout",
+    blockchain_verification_failed: "Blockchain Verification Failed",
+    unknown_transaction: "Unknown Transaction",
+  };
+
 export type SubscriptionTicket = {
   id: string;
   /** TraderCity member id — Control Center / directory deep-links. */
@@ -102,6 +161,11 @@ export type SubscriptionTicket = {
   verification: SubscriptionVerification;
   approval: SubscriptionApproval;
   membershipResult: SubscriptionMembershipResult | null;
+  /**
+   * Payment Resolution workspace — mock-populated for Verification Required only.
+   * Hidden in UI for all other display states.
+   */
+  resolution?: PaymentResolution | null;
   timeline: SubscriptionTimelineEvent[];
 };
 

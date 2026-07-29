@@ -17,6 +17,7 @@ import {
   SubscriptionStatusBadge,
   formatSubscriptionDate,
 } from "./SubscriptionTable";
+import { PaymentResolutionCard } from "./PaymentResolutionCard";
 
 type SubscriptionDetailsProps = {
   ticket: SubscriptionTicket | null;
@@ -61,7 +62,10 @@ export function SubscriptionDetails({
   const isVerificationRequired =
     ticket.displayStatus === "verification_required";
   const isApprovalPending = ticket.displayStatus === "approval_pending";
-  const canDecide = isApprovalPending || isVerificationRequired;
+  /** Final-approval queue only — Verification Required uses Payment Resolution actions. */
+  const canDecideApprovalPending = isApprovalPending;
+  const resolution =
+    isVerificationRequired && ticket.resolution ? ticket.resolution : null;
 
   const timelineItems: TimelineItem[] = ticket.timeline.map((entry) => ({
     id: entry.id,
@@ -292,11 +296,14 @@ export function SubscriptionDetails({
           </StateBanner>
         ) : null}
 
-        {isVerificationRequired ? (
-          <StateBanner tone="danger">
-            Automatic verification could not confidently validate this
-            transaction. Review the explorer, then Approve or Reject.
-          </StateBanner>
+        {resolution ? (
+          <PaymentResolutionCard
+            ticket={ticket}
+            resolution={resolution}
+            onOpenExplorer={onOpenExplorer}
+            onApprove={onApprove}
+            onReject={onReject}
+          />
         ) : null}
 
         {isApprovalPending ? (
@@ -306,21 +313,21 @@ export function SubscriptionDetails({
           </StateBanner>
         ) : null}
 
-        {canDecide ? (
+        {canDecideApprovalPending ? (
           <div className="flex flex-col gap-2 sm:flex-row">
             <button
               type="button"
               onClick={() => onApprove(ticket)}
               className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/15 px-4 py-2.5 text-sm font-medium text-emerald-100 transition-colors hover:bg-emerald-500/25"
             >
-              {isApprovalPending ? "Approve Membership" : "Approve"}
+              Approve Membership
             </button>
             <button
               type="button"
               onClick={() => onReject(ticket)}
               className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-rose-500/40 bg-rose-500/10 px-4 py-2.5 text-sm font-medium text-rose-100 transition-colors hover:bg-rose-500/20"
             >
-              {isApprovalPending ? "Reject Payment" : "Reject"}
+              Reject Payment
             </button>
           </div>
         ) : null}

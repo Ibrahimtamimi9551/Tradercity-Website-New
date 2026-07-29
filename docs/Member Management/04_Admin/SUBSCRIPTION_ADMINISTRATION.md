@@ -1,6 +1,6 @@
 # Subscription Administration
 
-**Version:** 2.1  
+**Version:** 2.2  
 **Status:** Active — Admin UI complete on mocks  
 **Authority:** `docs/Member Management/04_Admin/`  
 **Last Updated:** July 29, 2026  
@@ -31,12 +31,13 @@ Route `/admin/subscriptions` renders the Subscriptions ticket queue (mock data).
 | Widgets | Filter by display status |
 | Table | Search / filter tickets |
 | Details panel | Payment, blockchain, verification, approval, timeline |
+| Payment Resolution | Verification Required only — contact, failure summary, checklist, notes, Approve / Reject |
 | Actions | Open Explorer · Approve · Reject · Open Profile |
 | Mobile | Full-page `/admin/subscriptions/[id]` |
 
-Deep-links from Dashboard and Control Center work against the live UI.
+Deep-links from Dashboard, Members directory (`?q=` + `?member=`), and Control Center work against the live UI.
 
-Approve / Reject are **frontend stubs** until NestJS wiring.
+Approve / Reject are **frontend stubs** until NestJS wiring. Payment Resolution does **not** invent a separate decision path — it reuses the same stubs.
 
 ---
 
@@ -45,6 +46,8 @@ Approve / Reject are **frontend stubs** until NestJS wiring.
 | Action | Frontend (now) | Backend (later) |
 |--------|----------------|-----------------|
 | Open Explorer | Opens `explorerUrl` | Same |
+| Open Discord / Send Email | Copy username · `mailto:` (mock) | Optional Discord / email integrations |
+| Add Resolution Note | Local mock notes | Persist on ticket |
 | Approve | Alert stub + NestJS path | Ticket → Approved → Membership → Discord → Audit |
 | Reject | Alert stub + NestJS path | Close ticket — Membership unchanged |
 | Open member | Navigate Control Center | Same |
@@ -56,7 +59,7 @@ Approve / Reject are **frontend stubs** until NestJS wiring.
 ```text
 Blockchain Verifying      ← System-owned; no admin action
 Approval Pending          ← Admin-owned; primary Approve queue after auto-verify
-Verification Required     ← Admin-owned; investigation after auto-verify failure
+Verification Required     ← Admin-owned; Payment Resolution workspace
 Rejected
 Approved / Successful
 ```
@@ -64,7 +67,7 @@ Approved / Successful
 | State | Owner | Admin action |
 |-------|-------|--------------|
 | Blockchain Verifying | System | No |
-| Verification Required | Admin | Yes — Approve / Reject |
+| Verification Required | Admin | Yes — Payment Resolution → Approve / Reject |
 | Approval Pending | Admin | Yes — Approve Membership / Reject Payment |
 
 ### Verification vs Approval
@@ -77,20 +80,37 @@ Approved / Successful
 | State | Actions | Guidance |
 |-------|---------|----------|
 | Blockchain Verifying | None | Verification in progress — no admin action |
-| Verification Required | Approve / Reject | Investigate failure via explorer |
+| Verification Required | Payment Resolution card | Contact member, checklist, notes, then Approve / Reject |
 | Approval Pending | Approve Membership / Reject Payment | Final gate before Membership |
+
 ---
 
 ## Standard workflow
 
+### Approval Pending
+
 ```text
-Open Subscription ticket (Approval Pending or Verification Required)
+Open Subscription ticket (Approval Pending)
         ↓
 Review Verification Result + Expected vs Actual amount
         ↓
 Click Explorer → inspect on-chain TX
         ↓
-Approve / Reject
+Approve Membership / Reject Payment
+```
+
+### Verification Required (Payment Resolution)
+
+```text
+Open Subscription ticket (Verification Required)
+        ↓
+Payment Resolution card appears
+        ↓
+Contact member (Discord / Email) using activation contact fields
+        ↓
+Follow checklist · request supporting evidence · add admin notes
+        ↓
+Approve Payment / Reject Payment  (same Membership stubs)
 ```
 
 ---

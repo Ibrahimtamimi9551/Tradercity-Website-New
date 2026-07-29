@@ -23,8 +23,9 @@ Authority: [`02_Frontend_Design_System_and_UX_Rules.md`](../../AI/Agents/Admin/0
 - `src/lib/members/hooks/useSubscriptionsDirectory.ts` — `TODO(NestJS)`
 
 ### Section UI (`src/components/members/sections/subscriptions/`)
-- Widgets · Filters · Table · Details · RowActions · Provider · Pages
+- Widgets · Filters · Table · Details · **PaymentResolutionCard** · RowActions · Provider · Pages
 - Approve / Reject / Explorer stubs citing reserved NestJS paths
+- Payment Resolution workspace for **Verification Required** (contact, checklist, notes)
 - Crypto Payment workflow only; `activationSource` extensible
 
 ### Routes
@@ -42,6 +43,7 @@ Authority: [`02_Frontend_Design_System_and_UX_Rules.md`](../../AI/Agents/Admin/0
 - [x] Ticket queue replaces `ModulePlaceholder`
 - [x] Display states: Blockchain Verifying · Approval Pending · Verification Required · Rejected · Approved
 - [x] Details show verification fields + explorer link + timeline from mock objects
+- [x] Verification Required opens Payment Resolution card (contact, failure summary, checklist, notes)
 - [x] Desktop panel + mobile detail route
 - [x] Approve / Reject stubs (no Membership mutation)
 - [x] No `/admin/payments` sidebar or route

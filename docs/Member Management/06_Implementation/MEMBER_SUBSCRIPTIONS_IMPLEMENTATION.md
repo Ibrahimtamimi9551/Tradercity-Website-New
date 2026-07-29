@@ -1,7 +1,7 @@
 # Member Subscriptions — Implementation Report
 
 **Phase:** 4  
-**Status:** UI complete on mocks  
+**Status:** UI complete on mocks (+ Payment Resolution)  
 **Last Updated:** July 29, 2026  
 **Canonical lifecycle:** [`../02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md`](../02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md)
 
@@ -16,12 +16,13 @@ Delivered under an **explicit Product Owner override** to Engineering Freeze —
 ## What shipped
 
 ### Types + mocks
-- `src/types/members/subscription.ts` — ticket, filters, stats, verification/approval shapes
-- `src/lib/members/mock/subscriptions.ts` — crypto tickets covering all display states
+- `src/types/members/subscription.ts` — ticket, filters, stats, verification/approval, **`PaymentResolution`**
+- `src/lib/members/mock/subscriptions.ts` — crypto tickets covering all display states; Verification Required tickets include resolution + timeline events
 - `src/lib/members/hooks/useSubscriptionsDirectory.ts` — URL-synced filters / pagination / selection
 
 ### Section UI (`src/components/members/sections/subscriptions/`)
 - Widgets, Filters, Table, Details, RowActions, Provider, Pages
+- **`PaymentResolutionCard`** — Verification Required workspace (contact, failure summary, checklist, evidence guidance, notes, Approve / Reject)
 - Approve / Reject / Explorer stubs (`subscription-actions.ts`)
 - Gold `modulePanelSurface` / `AdminDirectoryPanel` tone
 
@@ -34,8 +35,23 @@ Delivered under an **explicit Product Owner override** to Engineering Freeze —
 - Ops queue + operational widget deep-link `?status=approval_pending`
 - Existing `blockchain_verifying` / `verification_required` deep-links preserved
 
-### Profile
-- `SubscriptionCard` already reflects Activation Source + Manage → Subscriptions; mocks use `crypto_payment` for payment-pending members
+### Profile / Members directory
+- `SubscriptionCard` Manage → Subscriptions
+- Members ⋮ → Subscription deep-link passes `?q=` + `?member=`
+
+---
+
+## Payment Resolution (Verification Required)
+
+Frontend-only structured dispute workflow:
+
+1. Card visible only when `displayStatus === "verification_required"`
+2. Contact Member uses ticket `username` / `email` from payment activation
+3. Failure reason + amounts + wallets from `ticket.resolution` mock
+4. Checklist + evidence list are instructional (no upload)
+5. Admin notes are local mock state
+6. Approve / Reject reuse existing Membership activation stubs — no separate logic
+7. Timeline includes resolution lifecycle events
 
 ---
 
@@ -51,6 +67,7 @@ Delivered under an **explicit Product Owner override** to Engineering Freeze —
 ## What is not shipped
 
 - NestJS APIs / Prisma / blockchain verification engine
+- Evidence upload / Discord messaging integration
 - Manual Payment / Referral Redeem / Admin Grant ticket UIs
 - Standalone `/admin/payments` module (intentionally deferred)
 
@@ -59,7 +76,8 @@ Delivered under an **explicit Product Owner override** to Engineering Freeze —
 ## Backend impact
 
 APIs reserved in [`../05_Backend/API_EXPECTATIONS.md`](../05_Backend/API_EXPECTATIONS.md).  
-Frontend stubs cite `POST /admin/subscriptions/:id/approve|reject`.
+Frontend stubs cite `POST /admin/subscriptions/:id/approve|reject`.  
+Future: persist `resolution` notes / checklist on the ticket resource.
 
 ---
 

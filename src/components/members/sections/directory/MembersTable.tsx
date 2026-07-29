@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Crown, FileText, MoreVertical } from "lucide-react";
+import { Crown, FileText } from "lucide-react";
 import {
   DataTable,
   StatusBadge,
@@ -8,6 +8,7 @@ import {
 } from "@/components/admin/ui";
 import { cn } from "@/lib/admin/cn";
 import type { DirectoryMember } from "@/types/members/directory";
+import { MemberRowActions } from "./MemberRowActions";
 
 const avatarToneStyles: Record<DirectoryMember["avatarTone"], string> = {
   discord: "bg-[#5865F2] text-white",
@@ -200,16 +201,8 @@ const columns: DataTableColumn<DirectoryMember>[] = [
     key: "actions",
     header: "Actions",
     className: "w-12",
-    render: () => (
-      <button
-        type="button"
-        className="rounded-lg p-1.5 text-tc-muted transition-colors hover:bg-white/[0.06] hover:text-white"
-        aria-label="Row actions"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <MoreVertical className="h-4 w-4" />
-      </button>
-    ),
+    stopRowClick: true,
+    render: (row) => <MemberRowActions member={row} />,
   },
 ];
 

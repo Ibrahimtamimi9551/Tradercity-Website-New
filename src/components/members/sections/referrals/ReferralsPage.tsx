@@ -19,7 +19,6 @@ import type { ReferralMember } from "@/types/members/referral";
 import { ReferralDetails } from "./ReferralDetails";
 import { ReferralFiltersBar } from "./ReferralFiltersBar";
 import { ReferralModuleNav } from "./ReferralModuleNav";
-import type { ReferralRowActionHandlers } from "./ReferralRowActions";
 import { ReferralTable } from "./ReferralTable";
 import { ReferralWidgets } from "./ReferralWidgets";
 import { useReferralsDirectoryContext } from "./ReferralsDirectoryProvider";
@@ -59,10 +58,6 @@ function ReferralsPageContent() {
     uiError,
     clearError,
     getListHref,
-    onCopyReferralLink,
-    onCopyReferralCode,
-    onApproveRedeem,
-    onRejectRedeem,
   } = useReferralsDirectoryContext();
 
   useEffect(() => {
@@ -103,13 +98,6 @@ function ReferralsPageContent() {
     },
     [selectMember]
   );
-
-  const actionHandlers: ReferralRowActionHandlers = {
-    onCopyReferralLink,
-    onCopyReferralCode,
-    onApproveRedeem,
-    onRejectRedeem,
-  };
 
   const emptyTitle = hasActiveFilters
     ? "No members match your search or filters"
@@ -188,7 +176,6 @@ function ReferralsPageContent() {
               rows={rows}
               selectedId={selectedId}
               onRowSelect={onSelectMember}
-              actionHandlers={actionHandlers}
               sort={sort}
               onSortChange={setSort}
               emptyTitle={emptyTitle}

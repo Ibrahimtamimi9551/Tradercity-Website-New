@@ -1,7 +1,7 @@
 # Subscriptions Module Architecture
 
-**Version:** 2.1  
-**Status:** Active — **UI complete on mocks** (Phase 4)  
+**Version:** 2.2  
+**Status:** Active — **UI complete on mocks** (Phase 4 + Payment Resolution)  
 **Authority:** `docs/Member Management/03_Frontend/`  
 **Route:** `/admin/subscriptions`  
 **Phase record:** [`../06_Implementation/MEMBER_SUBSCRIPTIONS_IMPLEMENTATION.md`](../06_Implementation/MEMBER_SUBSCRIPTIONS_IMPLEMENTATION.md)  
@@ -73,6 +73,7 @@ src/components/members/sections/subscriptions/
   SubscriptionFiltersBar.tsx
   SubscriptionTable.tsx
   SubscriptionDetails.tsx
+  PaymentResolutionCard.tsx   # Verification Required only
   SubscriptionMemberDetailPage.tsx
   SubscriptionRowActions.tsx
   subscription-actions.ts
@@ -103,13 +104,64 @@ SubscriptionsPage
         ├── Payment Summary
         ├── Blockchain Information
         ├── Verification
-        ├── Approval (+ Approve / Reject when actionable)
+        ├── Approval (+ Approve / Reject when Approval Pending)
+        ├── Payment Resolution        ← Verification Required only
+        │     ├── Contact Member
+        │     ├── Failure Summary
+        │     ├── Transaction Information
+        │     ├── Resolution Checklist
+        │     ├── Request Supporting Evidence
+        │     ├── Admin Notes
+        │     └── Approve Payment / Reject Payment
         ├── Membership Result (when approved)
-        └── Timeline (from ticket.timeline)
+        └── Timeline (includes resolution lifecycle events)
 ```
 
-Desktop: list + side panel (`?member=`).  
+Desktop: list + side panel (`?member=` / `?q=`).  
 Mobile: navigate to `/admin/subscriptions/[id]` (provider stays mounted in layout).
+
+---
+
+## 4.1 Payment Resolution workflow
+
+**When visible:** `displayStatus === "verification_required"` and `ticket.resolution` is present.  
+**Hidden:** all other display states.
+
+Purpose: structured dispute / investigation workspace — not a messaging system. Admins contact the member using activation-form contact fields, gather evidence, then Approve / Reject via the **existing** Membership activation stubs.
+
+### Resolution lifecycle (timeline)
+
+```text
+Verification Failed
+        ↓
+Payment Resolution Started
+        ↓
+Member Contacted
+        ↓
+Supporting Evidence Requested
+        ↓
+Evidence Reviewed
+        ↓
+Payment Approved  ·or·  Payment Rejected
+```
+
+### Mock contract (`PaymentResolution`)
+
+| Field | Role |
+|-------|------|
+| `failureReason` / `failureReasonLabel` | Why auto-verify failed |
+| `detectedAmount` / `expectedAmount` | Amount mismatch display |
+| `submittedWallet` / `expectedWallet` | Wallet comparison |
+| `checklist[]` | Informational investigation steps |
+| `evidenceRequests[]` | Instructional proof types (no upload) |
+| `notes[]` | Mock admin investigation notes |
+| `startedAt` / `memberContactedAt` | Resolution timestamps |
+
+Failure reasons: Amount Mismatch · Invalid Transaction Hash · Wrong Network · Duplicate Transaction · Wallet Mismatch · Verification Timeout · Blockchain Verification Failed · Unknown Transaction.
+
+Contact actions (frontend mock): copy Discord username · `mailto:` for email.
+
+Approve / Reject call the same `subscription-actions.ts` stubs as Approval Pending — no separate business logic.
 
 ---
 
@@ -126,8 +178,9 @@ Primary type: `SubscriptionTicket` in `src/types/members/subscription.ts`.
 | Blockchain | network, wallet, txHash, explorerUrl |
 | Verification | result, method, verifiedAt, notes |
 | Approval | decision, decidedAt, decidedBy, reason |
+| Resolution | optional `PaymentResolution` — Verification Required only |
 | Membership result | post-approve reflection (nullable) |
-| Timeline | ordered events for `Timeline` UI |
+| Timeline | ordered events for `Timeline` UI (includes resolution steps) |
 
 Display states:
 
@@ -142,10 +195,10 @@ Approved
 | State | Owner | Admin action |
 |-------|-------|--------------|
 | Blockchain Verifying | System | No |
-| Verification Required | Admin | Yes — Approve / Reject |
+| Verification Required | Admin | Yes — Payment Resolution → Approve / Reject |
 | Approval Pending | Admin | Yes — Approve Membership / Reject Payment |
 
-Details panel adapts by state (no Approve/Reject while Blockchain Verifying; investigation vs final-approval banners).
+Details panel adapts by state (no Approve/Reject while Blockchain Verifying; Payment Resolution card for Verification Required; final-approval actions for Approval Pending).
 
 No **Expired** state in Subscriptions — expiry belongs to Membership.
 
@@ -202,7 +255,7 @@ Blockchain Verifying
         ↓
 Verified → Approval Pending
    or
-Verification Failed → Verification Required
+Verification Failed → Verification Required → Payment Resolution
         ↓
 Approve → Approved → Membership Result (+ Discord reflect)
    or

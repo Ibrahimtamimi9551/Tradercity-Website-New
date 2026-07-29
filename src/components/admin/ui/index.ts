@@ -3,6 +3,11 @@ export type { DataTableColumn } from "./DataTable";
 export { EmptyState, ErrorState, LoadingState } from "./States";
 export { FilterBar } from "./FilterBar";
 export { InfoCard } from "./InfoCard";
+export {
+  AdminRowActionsMenu,
+  AdminRowMenuDivider,
+  AdminRowMenuItem,
+} from "./AdminRowActionsMenu";
 export { OperationsQueue } from "./OperationsQueue";
 export type { OperationsQueueItem } from "./OperationsQueue";
 export { PageTitle, SectionHeader } from "./PageTitle";

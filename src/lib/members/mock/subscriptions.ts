@@ -4,11 +4,23 @@ import type {
   SubscriptionTimelineEvent,
 } from "@/types/members/subscription";
 import {
+  PAYMENT_FAILURE_REASON_LABELS,
   SUBSCRIPTION_DISPLAY_STATUS_LABELS,
   SUBSCRIPTION_DISPLAY_STATUS_TONES,
 } from "@/types/members/subscription";
 
 const BSC_EXPLORER = "https://bscscan.com/tx/";
+/** Mock TraderCity treasury / expected receive wallet. */
+const EXPECTED_TREASURY_WALLET = "0xTraderCityTreasury000000000000000001";
+
+const DEFAULT_EVIDENCE_REQUESTS = [
+  "Wallet screenshot",
+  "Transaction confirmation screenshot",
+  "Exchange withdrawal receipt",
+  "Transaction ID",
+  "Wallet address used",
+  "Additional explanation (if required)",
+];
 
 function timeline(
   events: Omit<SubscriptionTimelineEvent, "id">[],
@@ -157,6 +169,45 @@ export const MOCK_SUBSCRIPTION_TICKETS: SubscriptionTicket[] = [
       reason: null,
     },
     membershipResult: null,
+    resolution: {
+      failureReason: "amount_mismatch",
+      failureReasonLabel: PAYMENT_FAILURE_REASON_LABELS.amount_mismatch,
+      detectedAmount: "45.00",
+      expectedAmount: "60.00",
+      currency: "USDT",
+      submittedWallet: "0x8ba1f109551bD432803012645Ac136ddd64DBA72",
+      expectedWallet: EXPECTED_TREASURY_WALLET,
+      checklist: [
+        { id: "review_tx_hash", label: "Review transaction hash", done: true },
+        { id: "verify_amount", label: "Verify payment amount", done: true },
+        { id: "check_explorer", label: "Check blockchain explorer", done: true },
+        { id: "contact_member", label: "Contact member", done: true },
+        {
+          id: "request_evidence",
+          label: "Request supporting evidence",
+          done: true,
+        },
+        { id: "review_evidence", label: "Review submitted evidence", done: false },
+        { id: "final_decision", label: "Final decision", done: false },
+      ],
+      evidenceRequests: DEFAULT_EVIDENCE_REQUESTS,
+      notes: [
+        {
+          id: "sub-002-note-1",
+          body: "Member contacted via Discord — awaiting wallet screenshot.",
+          author: "Admin · Sara",
+          createdAt: "2026-07-20T12:15:00",
+        },
+        {
+          id: "sub-002-note-2",
+          body: "User confirmed they sent from Binance withdrawal; amount may have been fee-adjusted.",
+          author: "Admin · Sara",
+          createdAt: "2026-07-20T14:40:00",
+        },
+      ],
+      startedAt: "2026-07-20T11:10:00",
+      memberContactedAt: "2026-07-20T12:15:00",
+    },
     timeline: timeline(
       [
         {
@@ -171,15 +222,39 @@ export const MOCK_SUBSCRIPTION_TICKETS: SubscriptionTicket[] = [
         },
         {
           title: "Verification Failed",
-          description: "Underpaid — manual review required",
+          description: "Amount mismatch — underpaid",
           timestamp: "2026-07-20T11:08:00",
           status: "error",
         },
         {
-          title: "Verification Required",
-          description: "Awaiting admin manual review",
-          timestamp: "2026-07-20T11:08:00",
+          title: "Payment Resolution Started",
+          description: "Manual investigation opened",
+          timestamp: "2026-07-20T11:10:00",
+          status: "complete",
+        },
+        {
+          title: "Member Contacted",
+          description: "Reached via Discord",
+          timestamp: "2026-07-20T12:15:00",
+          status: "complete",
+        },
+        {
+          title: "Supporting Evidence Requested",
+          description: "Wallet screenshot + withdrawal receipt",
+          timestamp: "2026-07-20T12:20:00",
+          status: "complete",
+        },
+        {
+          title: "Evidence Reviewed",
+          description: "Awaiting remaining proof",
+          timestamp: "—",
           status: "current",
+        },
+        {
+          title: "Final Decision",
+          description: "Approve or Reject after review",
+          timestamp: "—",
+          status: "pending",
         },
       ],
       "sub-002"
@@ -530,6 +605,39 @@ export const MOCK_SUBSCRIPTION_TICKETS: SubscriptionTicket[] = [
       reason: null,
     },
     membershipResult: null,
+    resolution: {
+      failureReason: "unknown_transaction",
+      failureReasonLabel: PAYMENT_FAILURE_REASON_LABELS.unknown_transaction,
+      detectedAmount: "60.00",
+      expectedAmount: "60.00",
+      currency: "USDT",
+      submittedWallet: "0x1234567890abcdef1234567890abcdef12345678",
+      expectedWallet: EXPECTED_TREASURY_WALLET,
+      checklist: [
+        { id: "review_tx_hash", label: "Review transaction hash", done: true },
+        { id: "verify_amount", label: "Verify payment amount", done: false },
+        { id: "check_explorer", label: "Check blockchain explorer", done: false },
+        { id: "contact_member", label: "Contact member", done: false },
+        {
+          id: "request_evidence",
+          label: "Request supporting evidence",
+          done: false,
+        },
+        { id: "review_evidence", label: "Review submitted evidence", done: false },
+        { id: "final_decision", label: "Final decision", done: false },
+      ],
+      evidenceRequests: DEFAULT_EVIDENCE_REQUESTS,
+      notes: [
+        {
+          id: "sub-008-note-1",
+          body: "Ambiguous on-chain match — multiple transfers in the same block. Starting resolution.",
+          author: "Admin · Ibrahim",
+          createdAt: "2026-07-22T09:45:00",
+        },
+      ],
+      startedAt: "2026-07-22T09:45:00",
+      memberContactedAt: null,
+    },
     timeline: timeline(
       [
         {
@@ -544,9 +652,31 @@ export const MOCK_SUBSCRIPTION_TICKETS: SubscriptionTicket[] = [
           status: "error",
         },
         {
-          title: "Verification Required",
-          timestamp: "2026-07-22T09:40:00",
+          title: "Payment Resolution Started",
+          description: "Manual investigation opened",
+          timestamp: "2026-07-22T09:45:00",
           status: "current",
+        },
+        {
+          title: "Member Contacted",
+          timestamp: "—",
+          status: "pending",
+        },
+        {
+          title: "Supporting Evidence Requested",
+          timestamp: "—",
+          status: "pending",
+        },
+        {
+          title: "Evidence Reviewed",
+          timestamp: "—",
+          status: "pending",
+        },
+        {
+          title: "Final Decision",
+          description: "Approve or Reject after review",
+          timestamp: "—",
+          status: "pending",
         },
       ],
       "sub-008"
