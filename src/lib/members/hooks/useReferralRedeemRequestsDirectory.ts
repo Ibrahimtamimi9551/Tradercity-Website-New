@@ -5,24 +5,28 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { isAdminDesktop } from "@/lib/admin/directory/breakpoints";
 import {
   MOCK_REFERRAL_MEMBERS,
-  MOCK_REFERRAL_STATS,
+  MOCK_REFERRAL_REDEEM_STATS,
 } from "@/lib/members/mock/referral-members";
 import type {
   ReferralCreditFilter,
-  ReferralFilters,
   ReferralMember,
   ReferralMembershipPlan,
-  ReferralProgressFilter,
+  ReferralRedeemFilters,
+  ReferralRedeemRequestStatus,
+  ReferralRedeemStats,
   ReferralSort,
   ReferralSortKey,
 } from "@/types/members/referral";
+import {
+  REFERRAL_REDEEM_STATUS_LABELS,
+  REFERRAL_REDEEM_STATUS_TONES,
+} from "@/types/members/referral";
 
-const DEFAULT_FILTERS: ReferralFilters = {
+const DEFAULT_FILTERS: ReferralRedeemFilters = {
   search: "",
   membershipPlan: "all",
-  progress: "all",
   credit: "all",
-  pendingOnly: false,
+  status: "queue",
 };
 
 const DEFAULT_SORT: ReferralSort = {
@@ -30,9 +34,12 @@ const DEFAULT_SORT: ReferralSort = {
   direction: "desc",
 };
 
+export const REFERRAL_REDEEM_LIST_PATH = "/admin/subscriptions";
+export const REFERRAL_REDEEM_SOURCE = "referral_redeem";
+
 function parseMembershipPlan(
   value: string | null
-): ReferralFilters["membershipPlan"] {
+): ReferralRedeemFilters["membershipPlan"] {
   if (
     value === "monthly" ||
     value === "quarterly" ||
@@ -44,20 +51,26 @@ function parseMembershipPlan(
   return "all";
 }
 
-function parseProgress(value: string | null): ReferralFilters["progress"] {
-  if (
-    value === "in_progress" ||
-    value === "completed" ||
-    value === "redeem_requests"
-  ) {
-    return value;
-  }
-  return "all";
-}
-
 function parseCredit(value: string | null): ReferralCreditFilter {
   if (value === "has_credit" || value === "no_credit") return value;
   return "all";
+}
+
+function parseStatus(
+  value: string | null
+): ReferralRedeemFilters["status"] {
+  if (
+    value === "all" ||
+    value === "queue" ||
+    value === "waiting_admin_approval" ||
+    value === "approved" ||
+    value === "rejected" ||
+    value === "expired" ||
+    value === "cancelled"
+  ) {
+    return value;
+  }
+  return "queue";
 }
 
 function parseSortKey(value: string | null): ReferralSortKey {
@@ -76,29 +89,16 @@ function parseSortDirection(value: string | null): ReferralSort["direction"] {
   return value === "asc" ? "asc" : "desc";
 }
 
-function parseFiltersFromParams(searchParams: URLSearchParams): ReferralFilters {
-  const status = searchParams.get("status");
-  /**
-   * Dashboard Operations Queue deep-link:
-   * `status=redeem_requests` (preferred) or legacy `status=pending` when paired
-   * with redeem queue intent via `progress=redeem_requests`.
-   * Pending referral invites still use `status=pending` alone.
-   */
-  const redeemFromStatus =
-    status === "redeem_requests" ||
-    searchParams.get("progress") === "redeem_requests";
-  const progress = redeemFromStatus
-    ? "redeem_requests"
-    : parseProgress(searchParams.get("progress"));
-
+function parseFiltersFromParams(
+  searchParams: URLSearchParams
+): ReferralRedeemFilters {
   return {
     search: searchParams.get("q") ?? "",
     membershipPlan: parseMembershipPlan(
-      searchParams.get("plan") ?? searchParams.get("membership")
+      searchParams.get("plan") ?? searchParams.get("rrPlan")
     ),
-    progress,
     credit: parseCredit(searchParams.get("credit")),
-    pendingOnly: status === "pending" && progress !== "redeem_requests",
+    status: parseStatus(searchParams.get("rrStatus")),
   };
 }
 
@@ -123,7 +123,22 @@ function parseSelectedId(searchParams: URLSearchParams): string | null {
   return searchParams.get("member") ?? searchParams.get("memberId");
 }
 
-function matchesFilters(member: ReferralMember, filters: ReferralFilters): boolean {
+function matchesFilters(
+  member: ReferralMember,
+  filters: ReferralRedeemFilters
+): boolean {
+  // Activation Center only shows members who have submitted a redeem request.
+  if (member.redeemRequestStatus === "none") return false;
+
+  if (filters.status === "queue") {
+    if (member.redeemRequestStatus !== "waiting_admin_approval") return false;
+  } else if (
+    filters.status !== "all" &&
+    member.redeemRequestStatus !== filters.status
+  ) {
+    return false;
+  }
+
   const query = filters.search.trim().toLowerCase();
   if (query) {
     const haystack =
@@ -138,23 +153,12 @@ function matchesFilters(member: ReferralMember, filters: ReferralFilters): boole
     return false;
   }
 
-  if (filters.progress === "redeem_requests") {
-    // Operational queue — Waiting Admin Approval only
-    if (member.redeemRequestStatus !== "waiting_admin_approval") return false;
-  } else if (filters.progress === "completed") {
-    // Completed = redeem requested and admin already approved
-    if (member.redeemRequestStatus !== "approved") return false;
-  } else if (
-    filters.progress !== "all" &&
-    member.progressStatus !== filters.progress
-  ) {
+  if (filters.credit === "has_credit" && member.availableCredit <= 0) {
     return false;
   }
-
-  if (filters.credit === "has_credit" && member.availableCredit <= 0) return false;
-  if (filters.credit === "no_credit" && member.availableCredit > 0) return false;
-
-  if (filters.pendingOnly && member.pendingReferrals <= 0) return false;
+  if (filters.credit === "no_credit" && member.availableCredit > 0) {
+    return false;
+  }
 
   return true;
 }
@@ -180,8 +184,16 @@ function compareMembers(
     case "availableCredit":
       return (a.availableCredit - b.availableCredit) * dir;
     case "latestReferral": {
-      const at = a.latestReferralAt ? new Date(a.latestReferralAt).getTime() : 0;
-      const bt = b.latestReferralAt ? new Date(b.latestReferralAt).getTime() : 0;
+      const at = a.redeemRequestedAt
+        ? new Date(a.redeemRequestedAt).getTime()
+        : a.latestReferralAt
+          ? new Date(a.latestReferralAt).getTime()
+          : 0;
+      const bt = b.redeemRequestedAt
+        ? new Date(b.redeemRequestedAt).getTime()
+        : b.latestReferralAt
+          ? new Date(b.latestReferralAt).getTime()
+          : 0;
       return (at - bt) * dir;
     }
     default:
@@ -190,18 +202,20 @@ function compareMembers(
 }
 
 function filtersToParams(
-  filters: ReferralFilters,
+  filters: ReferralRedeemFilters,
   page: number,
   pageSize: number,
   selectedId: string | null,
   sort: ReferralSort
 ) {
   const params = new URLSearchParams();
+  params.set("source", REFERRAL_REDEEM_SOURCE);
   if (filters.search.trim()) params.set("q", filters.search.trim());
-  if (filters.membershipPlan !== "all") params.set("plan", filters.membershipPlan);
-  if (filters.progress !== "all") params.set("progress", filters.progress);
+  if (filters.membershipPlan !== "all") {
+    params.set("plan", filters.membershipPlan);
+  }
   if (filters.credit !== "all") params.set("credit", filters.credit);
-  if (filters.pendingOnly) params.set("status", "pending");
+  if (filters.status !== "queue") params.set("rrStatus", filters.status);
   if (sort.key !== DEFAULT_SORT.key || sort.direction !== DEFAULT_SORT.direction) {
     params.set("sort", sort.key);
     params.set("dir", sort.direction);
@@ -213,7 +227,7 @@ function filtersToParams(
 }
 
 function serializeState(
-  filters: ReferralFilters,
+  filters: ReferralRedeemFilters,
   page: number,
   pageSize: number,
   selectedId: string | null,
@@ -222,90 +236,158 @@ function serializeState(
   return filtersToParams(filters, page, pageSize, selectedId, sort).toString();
 }
 
-export const REFERRALS_LIST_PATH = "/admin/referrals";
+function computeStats(members: ReferralMember[]): ReferralRedeemStats {
+  return {
+    waitingApproval: members.filter(
+      (m) => m.redeemRequestStatus === "waiting_admin_approval"
+    ).length,
+    approved: members.filter((m) => m.redeemRequestStatus === "approved").length,
+    rejected: members.filter((m) => m.redeemRequestStatus === "rejected").length,
+    lastRefreshLabel: MOCK_REFERRAL_REDEEM_STATS.lastRefreshLabel,
+  };
+}
 
-/** Non-member subroutes under /admin/referrals (not Operations detail pages). */
-const REFERRAL_MODULE_SUBROUTES = new Set(["intelligence"]);
+function nowIso() {
+  return new Date().toISOString().slice(0, 19);
+}
 
-export type UseReferralsDirectoryOptions = {
+/**
+ * Approve cascade (mock):
+ * Waiting → Approved → Membership Activated → Credits Deducted →
+ * Wallet Updated → Audit / Timeline Updated
+ */
+function approveRedeemRecord(member: ReferralMember): ReferralMember {
+  const required = member.creditsRequired ?? 0;
+  const nextCredit = Math.max(0, member.availableCredit - required);
+  const stamp = nowIso();
+  const planLabel = member.requestedPlanLabel ?? "VIP";
+
+  return {
+    ...member,
+    redeemRequestStatus: "approved",
+    availableCredit: nextCredit,
+    lifetimeRedeemed: member.lifetimeRedeemed + required,
+    membershipPlan: member.requestedPlan ?? member.membershipPlan,
+    membershipPlanLabel: member.requestedPlanLabel ?? member.membershipPlanLabel,
+    membershipStatus: "active",
+    membershipStatusLabel: "Active",
+    membershipStatusTone: "success",
+    progressStatus: "completed",
+    timeline: [
+      {
+        id: `rt-approve-${stamp}`,
+        title: "Redeem Approved",
+        description: `Membership activated via Referral Redeem · ${planLabel}`,
+        timestamp: stamp,
+        status: "complete",
+      },
+      {
+        id: `rt-credits-${stamp}`,
+        title: "Credits Deducted",
+        description: `−$${required} from referral wallet`,
+        timestamp: stamp,
+        status: "complete",
+      },
+      {
+        id: `rt-wallet-${stamp}`,
+        title: "Wallet Updated",
+        description: `Available credit now $${nextCredit}`,
+        timestamp: stamp,
+        status: "complete",
+      },
+      ...member.timeline,
+    ],
+    activity: [
+      {
+        id: `ra-approve-${stamp}`,
+        title: "Redeem Approved",
+        description: "Membership activated · credits deducted",
+        timestamp: stamp,
+      },
+      ...member.activity,
+    ],
+  };
+}
+
+function rejectRedeemRecord(member: ReferralMember): ReferralMember {
+  const stamp = nowIso();
+  return {
+    ...member,
+    redeemRequestStatus: "rejected",
+    timeline: [
+      {
+        id: `rt-reject-${stamp}`,
+        title: "Redeem Rejected",
+        description: "Membership unchanged · credits retained",
+        timestamp: stamp,
+        status: "error",
+      },
+      ...member.timeline,
+    ],
+    activity: [
+      {
+        id: `ra-reject-${stamp}`,
+        title: "Redeem Rejected",
+        timestamp: stamp,
+      },
+      ...member.activity,
+    ],
+  };
+}
+
+export type UseReferralRedeemRequestsDirectoryOptions = {
   listPathname?: string;
 };
 
 /**
- * Referral Operations Dashboard — filters, sort, pagination, selection.
- *
- * Referral NEVER activates memberships. Wallet / progress / analytics only.
- * Redeem request approval lives in Membership Activation Center:
- *   /admin/subscriptions?source=referral_redeem
- *
- * Legacy redeem queue URLs redirect to Subscriptions.
+ * Membership Activation Center — Referral Redeem Requests queue.
  *
  * URL contract:
- *   /admin/referrals?status=pending             (pending referral invites)
- *   /admin/referrals?progress=completed
- *   /admin/referrals?credit=has_credit
- *   /admin/referrals?member=<id>
- *   /admin/referrals?sort=availableCredit&dir=desc
- *   /admin/referrals/intelligence  (Part 2 — ignored by this hook)
+ *   /admin/subscriptions?source=referral_redeem
+ *   /admin/subscriptions?source=referral_redeem&rrStatus=approved
+ *   /admin/subscriptions?source=referral_redeem&member=<id>
  *
- * TODO(NestJS): replace mock list with authenticated referrals API.
+ * Referral never activates membership — this Activation Center surface does.
+ * TODO(NestJS): wire approve/reject to membership + wallet + audit APIs.
  */
-export function useReferralsDirectory(options?: UseReferralsDirectoryOptions) {
-  const listPathname = options?.listPathname ?? REFERRALS_LIST_PATH;
+export function useReferralRedeemRequestsDirectory(
+  options?: UseReferralRedeemRequestsDirectoryOptions
+) {
+  const listPathname = options?.listPathname ?? REFERRAL_REDEEM_LIST_PATH;
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const searchKey = searchParams.toString();
-
-  // Legacy redeem queue → Membership Activation Center (single implementation).
-  useEffect(() => {
-    const status = searchParams.get("status");
-    const progress = searchParams.get("progress");
-    const isLegacyRedeem =
-      progress === "redeem_requests" || status === "redeem_requests";
-    if (!isLegacyRedeem) return;
-
-    const params = new URLSearchParams();
-    params.set("source", "referral_redeem");
-    const q = searchParams.get("q");
-    const member =
-      searchParams.get("member") ?? searchParams.get("memberId");
-    if (q) params.set("q", q);
-    if (member) params.set("member", member);
-    router.replace(`/admin/subscriptions?${params.toString()}`);
-  }, [router, searchParams]);
-
-  const segment = pathname.startsWith(`${listPathname}/`)
-    ? pathname.slice(listPathname.length + 1).split("/")[0] || null
-    : null;
-  const isModuleSubroute = Boolean(
-    segment && REFERRAL_MODULE_SUBROUTES.has(segment)
-  );
   const isDetailRoute =
-    pathname.startsWith(`${listPathname}/`) &&
-    pathname !== listPathname &&
-    !isModuleSubroute;
+    pathname.startsWith(`${listPathname}/`) && pathname !== listPathname;
 
   const routeMemberId = useMemo(() => {
     if (!isDetailRoute) return null;
-    return segment;
-  }, [isDetailRoute, segment]);
+    return pathname.slice(listPathname.length + 1).split("/")[0] || null;
+  }, [isDetailRoute, listPathname, pathname]);
 
-  const [filters, setFiltersState] = useState<ReferralFilters>(() =>
+  const [members, setMembers] = useState<ReferralMember[]>(() => [
+    ...MOCK_REFERRAL_MEMBERS,
+  ]);
+  const [filters, setFiltersState] = useState<ReferralRedeemFilters>(() =>
     parseFiltersFromParams(new URLSearchParams(searchKey))
   );
   const [sort, setSortState] = useState<ReferralSort>(() =>
     parseSortFromParams(new URLSearchParams(searchKey))
   );
-  const [page, setPageState] = useState(() => parsePage(new URLSearchParams(searchKey)));
+  const [page, setPageState] = useState(() =>
+    parsePage(new URLSearchParams(searchKey))
+  );
   const [pageSize, setPageSizeState] = useState(() =>
     parsePageSize(new URLSearchParams(searchKey))
   );
-  const [selectedId, setSelectedIdState] = useState<string | null>(() =>
-    routeMemberId ?? parseSelectedId(new URLSearchParams(searchKey))
+  const [selectedId, setSelectedIdState] = useState<string | null>(
+    () => routeMemberId ?? parseSelectedId(new URLSearchParams(searchKey))
   );
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [lastSyncLabel, setLastSyncLabel] = useState(MOCK_REFERRAL_STATS.lastSyncLabel);
+  const [lastRefreshLabel, setLastRefreshLabel] = useState(
+    MOCK_REFERRAL_REDEEM_STATS.lastRefreshLabel
+  );
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [uiError, setUiError] = useState<string | null>(null);
 
@@ -318,12 +400,14 @@ export function useReferralsDirectory(options?: UseReferralsDirectoryOptions) {
   const pageSizeRef = useRef(pageSize);
   const selectedIdRef = useRef(selectedId);
   const isDetailRouteRef = useRef(isDetailRoute);
+  const membersRef = useRef(members);
   filtersRef.current = filters;
   sortRef.current = sort;
   pageRef.current = page;
   pageSizeRef.current = pageSize;
   selectedIdRef.current = selectedId;
   isDetailRouteRef.current = isDetailRoute;
+  membersRef.current = members;
 
   useEffect(() => {
     if (!routeMemberId) return;
@@ -333,6 +417,7 @@ export function useReferralsDirectory(options?: UseReferralsDirectoryOptions) {
 
   useEffect(() => {
     if (searchKey === lastWrittenKeyRef.current) return;
+    if (searchParams.get("source") !== REFERRAL_REDEEM_SOURCE) return;
 
     const params = new URLSearchParams(searchKey);
     setFiltersState(parseFiltersFromParams(params));
@@ -346,11 +431,11 @@ export function useReferralsDirectory(options?: UseReferralsDirectoryOptions) {
       setSelectedIdState(null);
     }
     lastWrittenKeyRef.current = searchKey;
-  }, [searchKey]);
+  }, [searchKey, searchParams]);
 
   const writeUrl = useCallback(
     (
-      nextFilters: ReferralFilters,
+      nextFilters: ReferralRedeemFilters,
       nextPage: number,
       nextPageSize: number,
       nextSelected: string | null,
@@ -370,7 +455,9 @@ export function useReferralsDirectory(options?: UseReferralsDirectoryOptions) {
         router.replace(href, { scroll: false });
         return;
       }
-      const href = query ? `${listPathname}?${query}` : listPathname;
+      const href = query
+        ? `${listPathname}?${query}`
+        : `${listPathname}?source=${REFERRAL_REDEEM_SOURCE}`;
       router.push(href, { scroll: false });
     },
     [listPathname, pathname, router]
@@ -386,13 +473,15 @@ export function useReferralsDirectory(options?: UseReferralsDirectoryOptions) {
         member,
         sortRef.current
       );
-      return query ? `${listPathname}?${query}` : listPathname;
+      return query
+        ? `${listPathname}?${query}`
+        : `${listPathname}?source=${REFERRAL_REDEEM_SOURCE}`;
     },
     [listPathname]
   );
 
   const setFilters = useCallback(
-    (patch: Partial<ReferralFilters>) => {
+    (patch: Partial<ReferralRedeemFilters>) => {
       const next = { ...filtersRef.current, ...patch };
       setFiltersState(next);
       setPageState(1);
@@ -451,7 +540,13 @@ export function useReferralsDirectory(options?: UseReferralsDirectoryOptions) {
           : { key, direction: key === "username" ? "asc" : "desc" };
       setSortState(next);
       setPageState(1);
-      writeUrl(filtersRef.current, 1, pageSizeRef.current, selectedIdRef.current, next);
+      writeUrl(
+        filtersRef.current,
+        1,
+        pageSizeRef.current,
+        selectedIdRef.current,
+        next
+      );
     },
     [writeUrl]
   );
@@ -469,7 +564,7 @@ export function useReferralsDirectory(options?: UseReferralsDirectoryOptions) {
         );
         lastWrittenKeyRef.current = query;
         const detailPath = `${listPathname}/${id}`;
-        router.push(query ? `${detailPath}?${query}` : detailPath);
+        router.push(query ? `${detailPath}?${query}` : `${detailPath}?source=${REFERRAL_REDEEM_SOURCE}`);
         return;
       }
       if (!isDetailRouteRef.current) {
@@ -486,11 +581,9 @@ export function useReferralsDirectory(options?: UseReferralsDirectoryOptions) {
   );
 
   const filtered = useMemo(() => {
-    const rows = MOCK_REFERRAL_MEMBERS.filter((member) =>
-      matchesFilters(member, filters)
-    );
+    const rows = members.filter((member) => matchesFilters(member, filters));
     return [...rows].sort((a, b) => compareMembers(a, b, sort));
-  }, [filters, sort]);
+  }, [members, filters, sort]);
 
   const total = filtered.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -500,68 +593,77 @@ export function useReferralsDirectory(options?: UseReferralsDirectoryOptions) {
   const findMemberById = useCallback((id: string | null | undefined) => {
     if (!id) return null;
     return (
-      MOCK_REFERRAL_MEMBERS.find((m) => m.id === id || m.memberId === id) ?? null
+      membersRef.current.find((m) => m.id === id || m.memberId === id) ?? null
     );
   }, []);
 
   const selectedMember = useMemo(() => {
     if (selectedId) return findMemberById(selectedId);
-    // Desktop panel preview only — never treat as a navigation selection.
     if (isDetailRoute) return null;
     return pageRows[0] ?? filtered[0] ?? null;
   }, [selectedId, pageRows, filtered, findMemberById, isDetailRoute]);
 
-  // List route without ?member= must clear selection (provider stays mounted across
-  // list ↔ detail; otherwise Back would re-trigger mobile deep-link navigation).
   useEffect(() => {
     if (isDetailRoute) return;
+    if (searchParams.get("source") !== REFERRAL_REDEEM_SOURCE) return;
     const fromQuery = parseSelectedId(new URLSearchParams(searchKey));
     if (!fromQuery && selectedIdRef.current) {
       setSelectedIdState(null);
     }
-  }, [isDetailRoute, searchKey]);
+  }, [isDetailRoute, searchKey, searchParams]);
 
   const hasActiveFilters =
     filters.search.trim() !== "" ||
     filters.membershipPlan !== "all" ||
-    filters.progress !== "all" ||
     filters.credit !== "all" ||
-    filters.pendingOnly;
+    filters.status !== "queue";
 
   const setMembershipPlan = useCallback(
     (membershipPlan: ReferralMembershipPlan | "all") =>
       setFilters({ membershipPlan }),
     [setFilters]
   );
-  const setProgress = useCallback(
-    (progress: ReferralProgressFilter) =>
-      setFilters({
-        progress: progress === "redeem_requests" ? "all" : progress,
-        pendingOnly:
-          progress === "redeem_requests"
-            ? false
-            : filtersRef.current.pendingOnly,
-      }),
-    [setFilters]
-  );
   const setCredit = useCallback(
     (credit: ReferralCreditFilter) => setFilters({ credit }),
     [setFilters]
   );
+  const setStatus = useCallback(
+    (status: ReferralRedeemFilters["status"]) => setFilters({ status }),
+    [setFilters]
+  );
+
+  const approveRedeem = useCallback((member: ReferralMember) => {
+    if (member.redeemRequestStatus !== "waiting_admin_approval") return;
+    setMembers((prev) =>
+      prev.map((m) => (m.id === member.id ? approveRedeemRecord(m) : m))
+    );
+  }, []);
+
+  const rejectRedeem = useCallback((member: ReferralMember) => {
+    if (member.redeemRequestStatus !== "waiting_admin_approval") return;
+    setMembers((prev) =>
+      prev.map((m) => (m.id === member.id ? rejectRedeemRecord(m) : m))
+    );
+  }, []);
 
   const refresh = useCallback(() => {
     setIsRefreshing(true);
     setUiError(null);
     window.setTimeout(() => {
-      setLastSyncLabel("Just now");
+      setLastRefreshLabel("Just now");
       setIsRefreshing(false);
     }, 600);
   }, []);
 
+  const stats = useMemo(() => {
+    const base = computeStats(members);
+    return { ...base, lastRefreshLabel };
+  }, [members, lastRefreshLabel]);
+
   return {
     listPathname,
     isDetailRoute,
-    stats: { ...MOCK_REFERRAL_STATS, lastSyncLabel },
+    stats,
     filters,
     setFilters,
     resetFilters,
@@ -583,15 +685,23 @@ export function useReferralsDirectory(options?: UseReferralsDirectoryOptions) {
     selectMember,
     getListHref,
     setMembershipPlan,
-    setProgress,
     setCredit,
-    lastSyncLabel,
+    setStatus,
+    approveRedeem,
+    rejectRedeem,
+    lastRefreshLabel,
     isRefreshing,
     refresh,
     uiError,
     setUiError,
     clearError: () => setUiError(null),
+    statusLabel: (status: ReferralRedeemRequestStatus) =>
+      status === "none" ? "—" : REFERRAL_REDEEM_STATUS_LABELS[status],
+    statusTone: (status: ReferralRedeemRequestStatus) =>
+      status === "none" ? ("neutral" as const) : REFERRAL_REDEEM_STATUS_TONES[status],
   };
 }
 
-export type ReferralsDirectoryState = ReturnType<typeof useReferralsDirectory>;
+export type ReferralRedeemRequestsDirectoryState = ReturnType<
+  typeof useReferralRedeemRequestsDirectory
+>;

@@ -96,7 +96,7 @@ export function ReferralProgressCell({ member }: { member: ReferralMember }) {
   const pct = Math.round(
     (member.successfulReferrals / Math.max(member.progressTarget, 1)) * 100
   );
-  const redeemed = member.redeemRequestStatus === "redeemed";
+  const approved = member.redeemRequestStatus === "approved";
   const awaitingRedeem =
     member.redeemRequestStatus === "waiting_admin_approval";
 
@@ -114,7 +114,7 @@ export function ReferralProgressCell({ member }: { member: ReferralMember }) {
             "h-full rounded-full",
             awaitingRedeem
               ? "bg-amber-400"
-              : redeemed
+              : approved
                 ? "bg-violet-400"
                 : pct >= 50
                   ? "bg-violet-400"
@@ -127,9 +127,9 @@ export function ReferralProgressCell({ member }: { member: ReferralMember }) {
         <div className="mt-1.5">
           <StatusBadge label="Waiting Admin Approval" tone="warning" dot={false} />
         </div>
-      ) : redeemed ? (
+      ) : approved ? (
         <div className="mt-1.5">
-          <StatusBadge label="Completed" tone="vip" dot={false} />
+          <StatusBadge label="Approved" tone="success" dot={false} />
         </div>
       ) : null}
     </div>

@@ -1,11 +1,12 @@
 import { Suspense, type ReactNode } from "react";
 import { LoadingState } from "@/components/admin/ui";
 import { ManualPaymentsDirectoryProvider } from "@/components/members/sections/subscriptions/manual";
+import { ReferralRedeemRequestsDirectoryProvider } from "@/components/members/sections/subscriptions/referral-redeem";
 import { SubscriptionsDirectoryProvider } from "@/components/members/sections/subscriptions/SubscriptionsDirectoryProvider";
 
 /**
- * Keeps Crypto + Manual directory hooks mounted across list ↔ detail so
- * filters, pagination, and selection survive mobile full-page navigation.
+ * Membership Activation Center providers — Crypto, Manual, Referral Redeem
+ * stay mounted across list ↔ detail so filters/selection survive mobile nav.
  */
 export default function SubscriptionsLayout({
   children,
@@ -18,7 +19,9 @@ export default function SubscriptionsLayout({
     >
       <SubscriptionsDirectoryProvider>
         <ManualPaymentsDirectoryProvider>
-          {children}
+          <ReferralRedeemRequestsDirectoryProvider>
+            {children}
+          </ReferralRedeemRequestsDirectoryProvider>
         </ManualPaymentsDirectoryProvider>
       </SubscriptionsDirectoryProvider>
     </Suspense>

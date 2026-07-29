@@ -1,4 +1,5 @@
 import type { StatusTone } from "@/types/admin/common";
+import type { MembershipPlanId } from "@/lib/membership/plans";
 
 /** Membership plan shown on referral rows / filters. */
 export type ReferralMembershipPlan =
@@ -11,21 +12,63 @@ export type ReferralMembershipPlan =
 export type ReferralProgressStatus = "in_progress" | "completed";
 
 /**
- * Progress filter options — includes the operational redeem queue.
+ * Progress filter options for Referral Ops (non-activating).
+ * Legacy `redeem_requests` is accepted only for redirect → Subscriptions.
  * - `completed` = redeem requested and admin already approved
- * - `redeem_requests` = Waiting Admin Approval only
  */
 export type ReferralProgressFilter =
   | ReferralProgressStatus
   | "redeem_requests"
   | "all";
 
-/** Redeem request operational status (approval queue). */
+/**
+ * Standardized Referral Redeem Request statuses (Activation Center queue).
+ * `none` = no redeem request submitted.
+ */
 export type ReferralRedeemRequestStatus =
   | "none"
   | "waiting_admin_approval"
-  | "redeemed"
-  | "rejected";
+  | "approved"
+  | "rejected"
+  | "expired"
+  | "cancelled";
+
+export const REFERRAL_REDEEM_STATUS_LABELS: Record<
+  Exclude<ReferralRedeemRequestStatus, "none">,
+  string
+> = {
+  waiting_admin_approval: "Waiting Admin Approval",
+  approved: "Approved",
+  rejected: "Rejected",
+  expired: "Expired",
+  cancelled: "Cancelled",
+};
+
+export const REFERRAL_REDEEM_STATUS_TONES: Record<
+  Exclude<ReferralRedeemRequestStatus, "none">,
+  StatusTone
+> = {
+  waiting_admin_approval: "warning",
+  approved: "success",
+  rejected: "danger",
+  expired: "neutral",
+  cancelled: "neutral",
+};
+
+/** Eligibility for the pending / historical redeem request. */
+export type ReferralRedeemEligibility =
+  | "eligible"
+  | "insufficient_credit"
+  | "ineligible";
+
+export const REFERRAL_REDEEM_ELIGIBILITY_LABELS: Record<
+  ReferralRedeemEligibility,
+  string
+> = {
+  eligible: "Eligible",
+  insufficient_credit: "Insufficient Credit",
+  ineligible: "Ineligible",
+};
 
 /** Available-credit filter buckets (table stays amount-only). */
 export type ReferralCreditFilter = "has_credit" | "no_credit" | "all";
@@ -78,10 +121,20 @@ export type ReferralMember = {
   progressTarget: number;
   progressStatus: ReferralProgressStatus;
   /**
-   * Redeem request queue status.
-   * `waiting_admin_approval` = Referral Redeem Requests operational queue.
+   * Redeem request status — Activation Center processes waiting_admin_approval.
+   * Referral Ops never activates membership from this field.
    */
   redeemRequestStatus: ReferralRedeemRequestStatus;
+  /**
+   * Plan requested via credit redemption (null when no redeem request).
+   * Used by Activation Center Wallet Snapshot.
+   */
+  requestedPlan: MembershipPlanId | null;
+  requestedPlanLabel: string | null;
+  /** Catalog credits required for requestedPlan (null when none). */
+  creditsRequired: number | null;
+  redeemEligibility: ReferralRedeemEligibility | null;
+  redeemEligibilityLabel: string | null;
   availableCredit: number;
   pendingCredit: number;
   lifetimeEarned: number;
@@ -89,6 +142,8 @@ export type ReferralMember = {
   /** Revenue generated for TraderCity via successful referrals. */
   businessValueGenerated: number;
   latestReferralAt: string | null;
+  /** When the redeem request entered Waiting Admin Approval. */
+  redeemRequestedAt: string | null;
   timeline: ReferralTimelineItem[];
   activity: ReferralActivityItem[];
 };
@@ -103,6 +158,15 @@ export type ReferralFilters = {
    * (invite/completion pipeline — distinct from Referral Redeem Requests).
    */
   pendingOnly: boolean;
+};
+
+/** Filters for Activation Center redeem queue (`?source=referral_redeem`). */
+export type ReferralRedeemFilters = {
+  search: string;
+  membershipPlan: ReferralMembershipPlan | "all";
+  credit: ReferralCreditFilter;
+  /** Default queue view locks to waiting; allow review of other statuses. */
+  status: ReferralRedeemRequestStatus | "all" | "queue";
 };
 
 export type ReferralSort = {
@@ -121,3 +185,18 @@ export type ReferralStats = {
   revenueTrend: number;
   lastSyncLabel: string;
 };
+
+export type ReferralRedeemStats = {
+  waitingApproval: number;
+  approved: number;
+  rejected: number;
+  lastRefreshLabel: string;
+};
+
+export function remainingCreditsAfterRedeem(
+  availableCredit: number,
+  creditsRequired: number | null
+): number | null {
+  if (creditsRequired === null) return null;
+  return availableCredit - creditsRequired;
+}

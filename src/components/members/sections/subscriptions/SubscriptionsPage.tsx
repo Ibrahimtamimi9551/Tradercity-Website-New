@@ -17,6 +17,7 @@ import { isAdminDesktop } from "@/lib/admin/directory/breakpoints";
 import { cn } from "@/lib/admin/cn";
 import type { SubscriptionTicket } from "@/types/members/subscription";
 import { ManualPaymentsPanel } from "./manual";
+import { ReferralRedeemRequestsPanel } from "./referral-redeem";
 import { useSubscriptionsDirectoryContext } from "./SubscriptionsDirectoryProvider";
 import { SubscriptionDetails } from "./SubscriptionDetails";
 import { SubscriptionFiltersBar } from "./SubscriptionFiltersBar";
@@ -116,7 +117,7 @@ function CryptoPaymentsPanel() {
     <div className="space-y-4 sm:space-y-6">
       <PageTitle
         title="Subscriptions"
-        subtitle="Payment verification, approval, and subscription tickets."
+        subtitle="Membership Activation Center — crypto payment verification and approval."
         icon={CreditCard}
         actions={
           <div className="flex items-center gap-2">
@@ -225,10 +226,14 @@ function CryptoPaymentsPanel() {
 
 export function SubscriptionsPage() {
   const searchParams = useSearchParams();
-  const isManualSource = searchParams.get("source") === "manual";
+  const source = searchParams.get("source");
 
-  if (isManualSource) {
+  if (source === "manual") {
     return <ManualPaymentsPanel />;
+  }
+
+  if (source === "referral_redeem") {
+    return <ReferralRedeemRequestsPanel />;
   }
 
   return <CryptoPaymentsPanel />;

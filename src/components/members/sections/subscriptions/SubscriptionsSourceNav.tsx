@@ -2,9 +2,13 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Banknote, Coins } from "lucide-react";
+import { Banknote, Coins, Gift } from "lucide-react";
 import { cn } from "@/lib/admin/cn";
 
+/**
+ * Membership Activation Center — source switcher under Subscriptions.
+ * Every tab exists because it can change membership status.
+ */
 const TABS = [
   {
     id: "crypto" as const,
@@ -18,22 +22,29 @@ const TABS = [
     href: "/admin/subscriptions?source=manual",
     icon: Banknote,
   },
+  {
+    id: "referral_redeem" as const,
+    label: "Referral Redeem Requests",
+    href: "/admin/subscriptions?source=referral_redeem",
+    icon: Gift,
+  },
 ] as const;
 
-/**
- * In-module source switcher — keeps Crypto and Manual under Subscriptions
- * without adding a sidebar item.
- */
 export function SubscriptionsSourceNav() {
   const searchParams = useSearchParams();
+  const source = searchParams.get("source");
   const active =
-    searchParams.get("source") === "manual" ? "manual" : "crypto";
+    source === "manual"
+      ? "manual"
+      : source === "referral_redeem"
+        ? "referral_redeem"
+        : "crypto";
 
   return (
     <div
-      className="inline-flex w-full max-w-xl rounded-xl border border-white/10 bg-white/[0.03] p-1 sm:w-auto"
+      className="inline-flex w-full max-w-3xl flex-wrap rounded-xl border border-white/10 bg-white/[0.03] p-1 sm:w-auto sm:flex-nowrap"
       role="tablist"
-      aria-label="Subscription activation sources"
+      aria-label="Membership activation sources"
     >
       {TABS.map((tab) => {
         const isActive = active === tab.id;

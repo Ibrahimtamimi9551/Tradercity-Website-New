@@ -56,7 +56,7 @@ export function OperationalWidgets() {
         priority="important"
         compactMobile
         trend={{ value: 20.0, label: "vs 25 May - 31 May", direction: "up" }}
-        href="/admin/referrals?progress=redeem_requests"
+        href="/admin/subscriptions?source=referral_redeem"
         linkText="Review now"
       />
 

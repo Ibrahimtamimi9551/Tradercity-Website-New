@@ -1,6 +1,6 @@
 # Referral Administration (Members)
 
-**Version:** 1.1  
+**Version:** 1.2  
 **Status:** Active — UI mock shipped  
 **Authority:** `docs/Member Management/04_Admin/`  
 **Last Updated:** July 29, 2026
@@ -9,7 +9,11 @@
 
 ## Intent
 
-Operate referral progress, pending referrals, available credit, and **Referral Redeem Requests**. Use Intelligence workspace for program-level insight (mock).
+Operate referral progress, pending referrals, available credit, and wallet history.  
+Use Intelligence for program-level insight (mock).
+
+> **Referral should NEVER activate memberships.**  
+> Redeem request approval lives in Membership Activation Center (Subscriptions).
 
 ---
 
@@ -19,66 +23,51 @@ Operate referral progress, pending referrals, available credit, and **Referral R
 |-----------|-------|
 | Operations | `/admin/referrals` |
 | Intelligence | `/admin/referrals/intelligence` |
+| Redeem approval (Activation Center) | `/admin/subscriptions?source=referral_redeem` |
 
 ---
 
-## Referral Progress filter
+## Referral Progress filter (Operations)
 
 | Filter | Shows |
 |--------|-------|
 | All | All referral rows |
 | In Progress | Progress incomplete |
 | Completed | Redeem requested **and** admin already approved |
-| **Referral Redeem Requests** | **Only** members with status **Waiting Admin Approval** |
 
-Completed and Referral Redeem Requests are mutually exclusive.  
-Redeem queue excludes already-approved (Completed), non-eligible, and members who never submitted a redeem request.
+Redeem queue is **not** a Referral Ops filter. Use Subscriptions → Referral Redeem Requests.
 
-Deep-link: `/admin/referrals?progress=redeem_requests`  
-Dashboard Operations Queue uses the same label and deep-link.
+Legacy deep-link `/admin/referrals?progress=redeem_requests` redirects to Activation Center.
 
 ---
 
-## Admin workflow (UI available)
+## Admin workflow — redeem approval
 
-1. Open Operations or Dashboard **Referral Redeem Requests**  
-2. Filter Progress → **Referral Redeem Requests** (Waiting Admin Approval)  
-3. Inspect member referral context in panel / detail page  
-4. Row ⋮ menu → **Approve Redeem** or **Reject Redeem**  
-5. Navigate to Control Center for full member state  
-6. NestJS mutations — **backend pending** (UI mock stubs today)
+1. Dashboard Operations Queue → **Referral Redeem**  
+   or Subscriptions → **Referral Redeem Requests**
+2. Inspect **Wallet Snapshot** (Available / Required / Remaining credits, Requested Plan, Current Membership, Eligibility)
+3. **Approve Redeem** or **Reject Redeem**
+4. Approve cascade: Membership Activated → Credits Deducted → Wallet Updated → Audit → Timeline
+5. NestJS mutations — **backend pending** (UI mock stubs today)
 
 ---
 
 ## Approval flow → Membership
 
 ```text
-Referral Eligible
-        ↓
-Referral Redeem Request
-        ↓
 Waiting Admin Approval
         ↓
-Admin Approves
+Approve
         ↓
-Membership Activated / Extended
+Membership Activated
         ↓
-Discord Sync
+Credits Deducted
         ↓
-Activity Timeline
+Wallet Updated
         ↓
-Dashboard
+Audit Log
         ↓
-User Profile
+Timeline Updated
 ```
 
-Redeem approval is a **writer** into Membership. Referrals do **not** own a separate activation lifecycle.  
-Subscriptions remain the payment owner; Referrals do not verify payments.
-
 Canonical sources: [`../02_Product_Architecture/MEMBERSHIP_ACTIVATION_SOURCES.md`](../02_Product_Architecture/MEMBERSHIP_ACTIVATION_SOURCES.md)
-
----
-
-## Related
-
-[`../03_Frontend/REFERRALS_MODULE_ARCHITECTURE.md`](../03_Frontend/REFERRALS_MODULE_ARCHITECTURE.md)

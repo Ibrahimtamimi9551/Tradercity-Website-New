@@ -14,7 +14,8 @@ type ReferralRowActionsProps = {
 
 /**
  * Referral Operations ⋮ menu — lightweight contextual actions only.
- * Copy link/code, credit ops, and redeem decisions belong in the detail panel.
+ * Redeem approval lives in Membership Activation Center (Subscriptions).
+ * Referral never activates memberships.
  */
 export function ReferralRowActions({ member }: ReferralRowActionsProps) {
   const router = useRouter();

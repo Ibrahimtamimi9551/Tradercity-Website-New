@@ -60,7 +60,8 @@ PlatformHealth
 | Awaiting Admin Approval | `/admin/subscriptions?status=awaiting_admin_approval` |
 | Verification Required | `/admin/subscriptions?status=verification_required` |
 | Discord Issues | `/admin/discord?sync=failed` |
-| Referral Redeem Requests | `/admin/referrals?progress=redeem_requests` |
+| Referral Redeem Requests | `/admin/subscriptions?source=referral_redeem` |
+| Manual Activations | `/admin/subscriptions?source=manual` |
 
 Primary Subscription ops queue after auto-verify: **Awaiting Admin Approval**.
 

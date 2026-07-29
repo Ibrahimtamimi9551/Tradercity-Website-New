@@ -15,3 +15,8 @@ export {
   ManualPaymentDetails,
   ManualPaymentsDirectoryProvider,
 } from "./manual";
+export {
+  ReferralRedeemRequestsPanel,
+  ReferralRedeemRequestDetails,
+  ReferralRedeemRequestsDirectoryProvider,
+} from "./referral-redeem";

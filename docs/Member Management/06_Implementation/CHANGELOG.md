@@ -6,6 +6,17 @@
 
 ## 2026-07-29
 
+### Membership Activation Center — Referral Redeem relocation
+
+- Subscriptions framed as **Membership Activation Center** (Crypto · Manual · Referral Redeem).
+- Referral Redeem Requests moved to `/admin/subscriptions?source=referral_redeem`.
+- Wallet Snapshot detail (Available / Required / Remaining credits, Requested Plan, Current Membership, Eligibility).
+- Standardized statuses: Waiting Admin Approval · Approved · Rejected · Expired · Cancelled.
+- Explicit approve cascade documented + mock stubs.
+- Referral Ops no longer hosts redeem Progress filter; legacy URLs redirect.
+- Dashboard Operations Queue deep-links activation work to Subscriptions.
+- Locked: **Referral should NEVER activate memberships.**
+
 ### Membership Activation Sources + Referral Redeem Requests
 
 - Added canonical [`../02_Product_Architecture/MEMBERSHIP_ACTIVATION_SOURCES.md`](../02_Product_Architecture/MEMBERSHIP_ACTIVATION_SOURCES.md) — Crypto · Manual · Referral Redeem · Admin / Future grants converge into one Membership lifecycle.

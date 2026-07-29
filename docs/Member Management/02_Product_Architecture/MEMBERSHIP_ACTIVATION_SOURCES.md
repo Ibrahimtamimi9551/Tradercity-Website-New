@@ -1,6 +1,6 @@
 # Membership Activation Sources
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Status:** Active  
 **Authority:** `docs/Member Management/02_Product_Architecture/`  
 **Last Updated:** July 29, 2026
@@ -11,7 +11,11 @@
 
 Formalize how Membership may be **activated or extended** across TraderCity.
 
-Operational modules may own their own business logic (payment tickets, redeem requests, grants).  
+> Think **Membership Activation Center** (Subscriptions route) — not “payment tickets only.”  
+> Everything under Subscriptions exists because it ultimately changes membership status:  
+> `Inactive → VIP → Expired → Renewed` — not because of how the payment happened.
+
+Operational modules may own source-specific validation.  
 All of them must converge into **one Membership lifecycle**.
 
 > Membership remains the single Source of Truth for access state.  
@@ -25,22 +29,29 @@ Membership may be activated or extended through:
 
 | Source | Writer module | Typical trigger |
 |--------|---------------|-----------------|
-| **Crypto Payment** | Subscriptions | Admin Approve after payment verification |
-| **Manual Payment** | Subscriptions / Ops | Staff-confirmed off-platform payment |
-| **Referral Redeem** | Referrals | Admin Approve Redeem Request |
+| **Crypto Payment** | Subscriptions (Activation Center) | Admin Approve after payment verification |
+| **Manual Payment** | Subscriptions (Activation Center) | Staff-confirmed off-platform payment |
+| **Referral Redeem** | Subscriptions (Activation Center) | Admin Approve Redeem Request |
 | **Admin Grant** | Admin grant action | Explicit VIP grant (staff / founder / gift) |
 | **Future Grant** | Future modules | Campaigns, partners, coupons, integrations |
 
-### Future sources (examples)
+### Future Membership Activation Sources (docs only — no UI yet)
 
-- Promotional Campaigns  
-- Partner Campaigns  
-- Complimentary Membership  
-- Founder Grants  
-- Coupon Redemption  
-- Future integrations  
+```text
+Future Membership Activation Sources
+├── Stripe
+├── Promotional Credits
+├── Coupon Activation
+├── Gift Membership
+├── Partner Activation
+└── Admin Grant
+```
 
 These plug into the **same** Membership lifecycle — they must not invent a second activation pipeline.
+
+> **Referral should NEVER activate memberships.**  
+> Referral owns: Wallet → Progress → Analytics → Intelligence → Member Referral Profile.  
+> Activation belongs to Subscriptions (Membership Activation Center).
 
 ---
 
@@ -105,31 +116,39 @@ Profile Subscription card shows: Plan · Amount · Payment Method · Notes · Ap
 ## Source: Referral Redeem
 
 ```text
-Referral Eligible
-        ↓
-Referral Redeem Request
-        ↓
 Waiting Admin Approval
         ↓
-Admin Approves Redeem
+Approve
         ↓
-Membership Activated / Extended
+Membership Activated
         ↓
-Discord Sync
+Credits Deducted
         ↓
-Activity Timeline
+Wallet Updated
         ↓
-Dashboard
+Audit Log
         ↓
-User Profile
+Timeline Updated
 ```
 
-Referrals own progress, credits, and redeem **requests**.  
-On Approve Redeem, Referrals trigger the **Membership** lifecycle — they do not activate access themselves.
+**Canonical home:** `/admin/subscriptions?source=referral_redeem` (Membership Activation Center).  
+Legacy `/admin/referrals?progress=redeem_requests` redirects there.
+
+### Standardized statuses
+
+| Status | Meaning |
+|--------|---------|
+| Waiting Admin Approval | In Activation Center queue |
+| Approved | Membership activated; credits deducted |
+| Rejected | Membership unchanged |
+| Expired | Request no longer valid |
+| Cancelled | Request cancelled |
+
+Referrals own progress, credits, and wallet history.  
+**Referrals do not activate access.** Approve Redeem is processed only in Subscriptions.
 
 Profile Subscription card shows: Plan · Credits Redeemed · Approved By · Activation Date.  
-Ops queue / filter label: **Referral Redeem Requests**  
-Deep-link: `/admin/referrals?progress=redeem_requests`
+Dashboard Operations Queue deep-link: `/admin/subscriptions?source=referral_redeem`
 
 ---
 

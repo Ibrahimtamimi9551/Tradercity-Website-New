@@ -1,8 +1,8 @@
 ﻿import { SubscriptionsPage } from "@/components/members/sections/subscriptions";
 
 /**
- * Phase 4 — Subscriptions (payment verification + Admin Approval ticket queue).
- * Crypto payment is the primary ticket type; Membership activates only on Approve.
+ * Phase 4 — Membership Activation Center (Subscriptions route).
+ * Crypto · Manual · Referral Redeem — all activation sources that change membership status.
  */
 export default function SubscriptionsRoutePage() {
   return <SubscriptionsPage />;

@@ -1,11 +1,12 @@
 # Subscriptions Module Architecture
 
-**Version:** 2.4  
-**Status:** Active — **UI complete on mocks** (Crypto + Manual Payment sources)  
+**Version:** 2.5  
+**Status:** Active — **UI complete on mocks** (Crypto + Manual + Referral Redeem)  
 **Authority:** `docs/Member Management/03_Frontend/`  
 **Route:** `/admin/subscriptions`  
 **Phase record:** [`../06_Implementation/MEMBER_SUBSCRIPTIONS_IMPLEMENTATION.md`](../06_Implementation/MEMBER_SUBSCRIPTIONS_IMPLEMENTATION.md)  
 **Canonical lifecycle:** [`../02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md`](../02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md)  
+**Activation sources:** [`../02_Product_Architecture/MEMBERSHIP_ACTIVATION_SOURCES.md`](../02_Product_Architecture/MEMBERSHIP_ACTIVATION_SOURCES.md)  
 **Backend contracts:** [`../05_Backend/API_EXPECTATIONS.md`](../05_Backend/API_EXPECTATIONS.md)  
 **Last Updated:** July 29, 2026
 
@@ -13,23 +14,26 @@
 
 ## 1. Purpose
 
-Subscriptions is the **Membership Activation Sources** workspace under Admin.
+Subscriptions is the **Membership Activation Center** under Admin.
 
 It answers:
 
-> Which crypto payments need verification / approval, and which manual payments have been recorded for activation?
+> How did this membership become active — and what still needs admin approval?
 
-**Owns:** payment tickets (crypto + manual), source-specific validation UI, approval / activation decisions, payment timeline.  
-**Does not own:** Membership access state (activation is a backend write triggered by Admin Approve / Activate).
+Everything in this module exists because it ultimately changes **membership status** (`Inactive → VIP → Expired → Renewed`), not merely because a payment occurred.
+
+**Owns:** activation-source queues (crypto, manual, referral redeem), source-specific validation UI, approval / activation decisions, timelines.  
+**Does not own:** Membership access state persistence (backend write after Approve / Activate); Referral wallet/analytics (Referral module).
 
 ### Activation sources (independent siblings)
 
 ```text
-Crypto Payment
-        │
-Manual Payment
-        │
-Future Payment Sources
+Membership Activation Center (Subscriptions)
+
+├── Crypto Payments              (?source omitted)
+├── Manual Payments              (?source=manual)
+├── Referral Redeem Requests     (?source=referral_redeem)
+└── (Future) Stripe / Promo / Coupon / Gift / Partner / Admin Grant
         │
         ▼
 Membership Domain (Source of Truth)
@@ -37,7 +41,7 @@ Membership Domain (Source of Truth)
 Discord · Dashboard · User Profile · Analytics · Audit
 ```
 
-Manual Payment is **not** a fallback for Crypto. Each source keeps its own fields and lifecycle while sharing visual language and Membership activation architecture.
+Manual Payment is **not** a fallback for Crypto. Referral Redeem is **not** owned by the Referral module for approval. Each source keeps its own fields while sharing Activation Center chrome.
 
 ### Verification vs Approval (Crypto only)
 
@@ -58,15 +62,18 @@ Manual Payments skip verification — the administrator is the confirmation sour
 |---------|-------|
 | Crypto payment ticket lifecycle | Subscriptions (Crypto tab) |
 | Manual payment recording / activation | Subscriptions (Manual tab) |
+| Referral redeem request approval | Subscriptions (Referral Redeem tab) |
+| Referral wallet / progress / intelligence | Referrals (never activates membership) |
 | Membership plan / VIP / expiry | Membership (backend) — write after Approve / Activate |
 | Reflection of latest payment | Control Center `SubscriptionCard` |
-| Attention counts | Dashboard widgets (Crypto statuses) |
+| Attention counts | Dashboard Operations Queue |
 
 Control Center deep-links:
 
 ```text
 /admin/subscriptions?member=<id>                 ← Crypto
 /admin/subscriptions?source=manual&q=<username>  ← Manual
+/admin/subscriptions?source=referral_redeem      ← Referral Redeem
 ```
 
 ---
@@ -76,41 +83,34 @@ Control Center deep-links:
 ```text
 src/types/members/subscription.ts
 src/types/members/manual-payment.ts
+src/types/members/referral.ts          # redeem statuses + wallet decision fields
 src/lib/members/mock/subscriptions.ts
 src/lib/members/mock/manual-payments.ts
+src/lib/members/mock/referral-members.ts
 src/lib/members/hooks/useSubscriptionsDirectory.ts
 src/lib/members/hooks/useManualPaymentsDirectory.ts
+src/lib/members/hooks/useReferralRedeemRequestsDirectory.ts
 src/components/members/sections/subscriptions/
-  SubscriptionsPage.tsx              # switches Crypto / Manual by ?source=
-  SubscriptionsSourceNav.tsx         # in-module tabs
+  SubscriptionsPage.tsx              # switches Crypto / Manual / Referral Redeem by ?source=
+  SubscriptionsSourceNav.tsx         # Activation Center tabs
   SubscriptionsDirectoryProvider.tsx
-  SubscriptionDetailRouter.tsx       # mobile detail → Crypto or Manual
-  SubscriptionWidgets.tsx
-  SubscriptionFiltersBar.tsx
-  SubscriptionTable.tsx
-  SubscriptionDetails.tsx
-  PaymentResolutionCard.tsx
-  SubscriptionMemberDetailPage.tsx
-  SubscriptionRowActions.tsx
-  subscription-actions.ts
-  index.ts
+  SubscriptionDetailRouter.tsx       # mobile detail → Crypto / Manual / Referral Redeem
+  …
   manual/
-    ManualPaymentsPanel.tsx
-    ManualPaymentsDirectoryProvider.tsx
-    ManualPaymentWidgets.tsx
-    ManualPaymentFiltersBar.tsx
-    ManualPaymentTable.tsx
-    ManualPaymentDetails.tsx
-    ManualPaymentForm.tsx
-    ManualPaymentRowActions.tsx
-    ManualPaymentStatusBadge.tsx
-    ManualPaymentMemberDetailPage.tsx
-    manual-payment-actions.ts
+    …
+  referral-redeem/
+    ReferralRedeemRequestsPanel.tsx
+    ReferralRedeemRequestsDirectoryProvider.tsx
+    ReferralRedeemRequestDetails.tsx   # Wallet Snapshot + Approve / Reject
+    ReferralRedeemFiltersBar.tsx
+    ReferralRedeemWidgets.tsx
+    ReferralRedeemMemberDetailPage.tsx
+    referral-redeem-actions.ts
     index.ts
 src/app/admin/subscriptions/
-  layout.tsx          # Suspense + both DirectoryProviders
+  layout.tsx          # Suspense + Crypto + Manual + Referral Redeem providers
   page.tsx
-  [id]/page.tsx       # mobile full-page detail
+  [id]/page.tsx
 ```
 
 **No** `/admin/payments` route or sidebar item.

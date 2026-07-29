@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect } from "react";
-import { Banknote, RefreshCw } from "lucide-react";
+import { Gift, RefreshCw } from "lucide-react";
 import {
   AdminDirectoryPanel,
   AdminMasterDetail,
@@ -13,21 +13,19 @@ import {
   Pagination,
 } from "@/components/admin/ui";
 import { cn } from "@/lib/admin/cn";
-import type { ManualPayment } from "@/types/members/manual-payment";
-import {
-  confirmActivateManualPayment,
-  confirmCancelManualPayment,
-} from "./manual-payment-actions";
-import { ManualPaymentDetails } from "./ManualPaymentDetails";
-import { ManualPaymentFiltersBar } from "./ManualPaymentFiltersBar";
-import { ManualPaymentForm } from "./ManualPaymentForm";
-import type { ManualPaymentRowActionHandlers } from "./ManualPaymentRowActions";
-import { ManualPaymentTable } from "./ManualPaymentTable";
-import { ManualPaymentWidgets } from "./ManualPaymentWidgets";
-import { useManualPaymentsDirectoryContext } from "./ManualPaymentsDirectoryProvider";
+import type { ReferralMember } from "@/types/members/referral";
+import { ReferralTable } from "@/components/members/sections/referrals/ReferralTable";
 import { SubscriptionsSourceNav } from "../SubscriptionsSourceNav";
+import {
+  confirmApproveRedeem,
+  confirmRejectRedeem,
+} from "./referral-redeem-actions";
+import { ReferralRedeemFiltersBar } from "./ReferralRedeemFiltersBar";
+import { ReferralRedeemRequestDetails } from "./ReferralRedeemRequestDetails";
+import { useReferralRedeemRequestsDirectoryContext } from "./ReferralRedeemRequestsDirectoryProvider";
+import { ReferralRedeemWidgets } from "./ReferralRedeemWidgets";
 
-function ManualPaymentsPanelContent() {
+function ReferralRedeemRequestsPanelContent() {
   const {
     stats,
     filters,
@@ -42,23 +40,22 @@ function ManualPaymentsPanelContent() {
     setPage,
     setPageSize,
     selectedId,
-    selectedPayment,
-    selectPayment,
+    selectedMember,
+    selectMember,
     setFilters,
+    setMembershipPlan,
+    setCredit,
     setStatus,
-    setPlan,
-    setPaymentMethod,
+    sort,
+    setSort,
     lastRefreshLabel,
     isRefreshing,
     refresh,
     uiError,
     clearError,
-    createOpen,
-    setCreateOpen,
-    createPayment,
-    activatePayment,
-    cancelPayment,
-  } = useManualPaymentsDirectoryContext();
+    approveRedeem,
+    rejectRedeem,
+  } = useReferralRedeemRequestsDirectoryContext();
 
   useEffect(() => {
     if (hasActiveFilters) setShowAdvanced(true);
@@ -71,45 +68,39 @@ function ManualPaymentsPanelContent() {
     [setFilters]
   );
 
-  const onSelectPayment = useCallback(
-    (payment: ManualPayment) => {
-      selectPayment(payment.id);
+  const onSelectMember = useCallback(
+    (member: ReferralMember) => {
+      selectMember(member.id);
     },
-    [selectPayment]
+    [selectMember]
   );
 
-  const onActivate = useCallback(
-    (payment: ManualPayment) => {
-      if (!confirmActivateManualPayment(payment)) return;
-      activatePayment(payment);
+  const onApprove = useCallback(
+    (member: ReferralMember) => {
+      if (!confirmApproveRedeem(member)) return;
+      approveRedeem(member);
     },
-    [activatePayment]
+    [approveRedeem]
   );
 
-  const onCancel = useCallback(
-    (payment: ManualPayment) => {
-      if (!confirmCancelManualPayment(payment)) return;
-      cancelPayment(payment);
+  const onReject = useCallback(
+    (member: ReferralMember) => {
+      if (!confirmRejectRedeem(member)) return;
+      rejectRedeem(member);
     },
-    [cancelPayment]
+    [rejectRedeem]
   );
-
-  const actionHandlers: ManualPaymentRowActionHandlers = {
-    onView: onSelectPayment,
-    onActivate,
-    onCancel,
-  };
 
   const emptyTitle = hasActiveFilters
-    ? "No payments match your search or filters"
-    : "No manual payments";
+    ? "No redeem requests match your search or filters"
+    : "No referral redeem requests waiting";
 
   const listStack = (
     <div className="space-y-4 sm:space-y-6">
       <PageTitle
         title="Subscriptions"
-        subtitle="Manual payment recording — membership activation source."
-        icon={Banknote}
+        subtitle="Referral credit redemption — membership activation source."
+        icon={Gift}
         actions={
           <div className="flex items-center gap-2">
             <span className="hidden text-xs text-tc-muted sm:inline">
@@ -120,7 +111,7 @@ function ManualPaymentsPanelContent() {
               type="button"
               onClick={refresh}
               disabled={isRefreshing}
-              aria-label="Refresh manual payments"
+              aria-label="Refresh referral redeem requests"
               className="admin-ghost-btn inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 transition-colors hover:bg-white/5 disabled:opacity-50"
             >
               <RefreshCw
@@ -136,21 +127,18 @@ function ManualPaymentsPanelContent() {
 
       {uiError ? <ErrorState title={uiError} onRetry={clearError} /> : null}
 
-      <ManualPaymentWidgets stats={stats} />
+      <ReferralRedeemWidgets stats={stats} />
 
-      <ManualPaymentFiltersBar
+      <ReferralRedeemFiltersBar
         filters={filters}
         hasActiveFilters={hasActiveFilters}
         showAdvanced={showAdvanced}
         onShowAdvancedChange={setShowAdvanced}
         onSearchChange={onSearchChange}
         onStatusChange={setStatus}
-        onPlanChange={setPlan}
-        onMethodChange={setPaymentMethod}
-        onDateFromChange={(dateFrom) => setFilters({ dateFrom })}
-        onDateToChange={(dateTo) => setFilters({ dateTo })}
+        onMembershipPlanChange={setMembershipPlan}
+        onCreditChange={setCredit}
         onReset={resetFilters}
-        onCreate={() => setCreateOpen(true)}
       />
 
       <AdminDirectoryPanel tone="gold">
@@ -160,7 +148,7 @@ function ManualPaymentsPanelContent() {
             description={
               hasActiveFilters
                 ? "Try clearing filters or adjusting your search."
-                : "Create a manual payment when bank, UPI, cash, or assisted payments are confirmed."
+                : "When members submit referral credit redemption requests, they appear here for activation approval."
             }
             action={
               hasActiveFilters ? (
@@ -171,24 +159,17 @@ function ManualPaymentsPanelContent() {
                 >
                   Reset filters
                 </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setCreateOpen(true)}
-                  className="text-sm font-medium text-amber-200 hover:text-amber-100"
-                >
-                  Create Manual Payment
-                </button>
-              )
+              ) : null
             }
           />
         ) : (
           <>
-            <ManualPaymentTable
+            <ReferralTable
               rows={rows}
               selectedId={selectedId}
-              onRowSelect={onSelectPayment}
-              actionHandlers={actionHandlers}
+              onRowSelect={onSelectMember}
+              sort={sort}
+              onSortChange={setSort}
               emptyTitle={emptyTitle}
             />
             <div className="px-1.5 sm:px-0">
@@ -198,21 +179,13 @@ function ManualPaymentsPanelContent() {
                 total={total}
                 onPageChange={setPage}
                 onPageSizeChange={setPageSize}
-                itemLabel="payments"
+                itemLabel="requests"
                 className="max-sm:gap-2 max-sm:text-xs"
               />
             </div>
           </>
         )}
       </AdminDirectoryPanel>
-
-      <ManualPaymentForm
-        open={createOpen}
-        onClose={() => setCreateOpen(false)}
-        onSubmit={(input) => {
-          createPayment(input);
-        }}
-      />
     </div>
   );
 
@@ -221,10 +194,10 @@ function ManualPaymentsPanelContent() {
       layout="page"
       list={listStack}
       detail={
-        <ManualPaymentDetails
-          payment={selectedPayment}
-          onActivate={onActivate}
-          onCancel={onCancel}
+        <ReferralRedeemRequestDetails
+          member={selectedMember}
+          onApprove={onApprove}
+          onReject={onReject}
           className="h-full"
         />
       }
@@ -232,6 +205,6 @@ function ManualPaymentsPanelContent() {
   );
 }
 
-export function ManualPaymentsPanel() {
-  return <ManualPaymentsPanelContent />;
+export function ReferralRedeemRequestsPanel() {
+  return <ReferralRedeemRequestsPanelContent />;
 }

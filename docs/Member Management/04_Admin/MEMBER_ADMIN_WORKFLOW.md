@@ -52,10 +52,10 @@ Dashboard Discord Issues
 
 ```text
 Dashboard Referral Redeem Requests
-  → /admin/referrals?progress=redeem_requests
+  → /admin/subscriptions?source=referral_redeem
   → Waiting Admin Approval queue
   → Approve Redeem / Reject Redeem
-  → Approve → Membership Activated / Extended → Discord → Profile
+  → Approve → Membership Activated → Credits Deducted → Wallet → Audit → Timeline
 ```
 
 Canonical: [`../02_Product_Architecture/MEMBERSHIP_ACTIVATION_SOURCES.md`](../02_Product_Architecture/MEMBERSHIP_ACTIVATION_SOURCES.md).
