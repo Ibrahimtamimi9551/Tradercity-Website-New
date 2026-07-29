@@ -33,8 +33,14 @@ function timeline(
 }
 
 /**
- * Mock Subscription tickets — crypto payment workflow only (Phase 4).
- * Member ids align with directory / profile mocks for cross-module deep-links.
+ * Mock Subscription tickets — Crypto Payment cohort only (no Manual Payment members).
+ *
+ * Member partition (no overlap with Manual Payments):
+ *   Crypto  → m-001, m-002, m-003, m-004, m-007, m-009, m-011
+ *   Manual  → m-005, m-006, m-008, m-010, m-012
+ *
+ * Profile / Control Center resolve Activation Source via
+ * `src/lib/members/mock/activation-source.ts`.
  *
  * TODO(NestJS): replace with GET /admin/subscriptions
  */
@@ -389,131 +395,6 @@ export const MOCK_SUBSCRIPTION_TICKETS: SubscriptionTicket[] = [
     ),
   },
   {
-    id: "sub-005",
-    memberId: "m-005",
-    username: "fatima_trades",
-    email: "fatima@email.com",
-    avatarTone: "rose",
-    activationSource: "crypto_payment",
-    displayStatus: "approval_pending",
-    statusLabel: SUBSCRIPTION_DISPLAY_STATUS_LABELS.approval_pending,
-    statusTone: SUBSCRIPTION_DISPLAY_STATUS_TONES.approval_pending,
-    planKey: "monthly",
-    planLabel: "VIP Monthly",
-    network: "bep20",
-    networkLabel: "BNB Smart Chain (BEP20)",
-    walletAddress: "0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359",
-    transactionHash:
-      "0x11223344556677889900aabbccddeeff11223344556677889900aabbccddeeff",
-    explorerUrl: `${BSC_EXPLORER}0x11223344556677889900aabbccddeeff11223344556677889900aabbccddeeff`,
-    expectedAmount: "60.00",
-    actualAmount: "60.00",
-    currency: "USDT",
-    paymentMethod: "Crypto USDT - BEP20",
-    submittedAt: "2026-07-27T16:40:00",
-    verification: {
-      result: "verified",
-      resultLabel: "Verified",
-      resultTone: "success",
-      method: "automatic",
-      verifiedAt: "2026-07-27T16:48:00",
-      notes: null,
-    },
-    approval: {
-      decision: "pending",
-      decidedAt: null,
-      decidedBy: null,
-      reason: null,
-    },
-    membershipResult: null,
-    timeline: timeline(
-      [
-        {
-          title: "Payment Submitted",
-          timestamp: "2026-07-27T16:40:00",
-          status: "complete",
-        },
-        {
-          title: "Verification Completed",
-          timestamp: "2026-07-27T16:48:00",
-          status: "complete",
-        },
-        {
-          title: "Approval Pending",
-          timestamp: "2026-07-27T16:48:00",
-          status: "current",
-        },
-      ],
-      "sub-005"
-    ),
-  },
-  {
-    id: "sub-006",
-    memberId: "m-006",
-    username: "khalid_markets",
-    email: "khalid.m@email.com",
-    avatarTone: "sky",
-    activationSource: "crypto_payment",
-    displayStatus: "rejected",
-    statusLabel: SUBSCRIPTION_DISPLAY_STATUS_LABELS.rejected,
-    statusTone: SUBSCRIPTION_DISPLAY_STATUS_TONES.rejected,
-    planKey: "monthly",
-    planLabel: "VIP Monthly",
-    network: "bep20",
-    networkLabel: "BNB Smart Chain (BEP20)",
-    walletAddress: "0xdbF03B407c01E7cD3CBea99509d93f8DDDC8C6FB",
-    transactionHash:
-      "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
-    explorerUrl: `${BSC_EXPLORER}0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef`,
-    expectedAmount: "60.00",
-    actualAmount: "60.00",
-    currency: "USDT",
-    paymentMethod: "Crypto USDT - BEP20",
-    submittedAt: "2026-07-15T10:00:00",
-    verification: {
-      result: "verified",
-      resultLabel: "Verified",
-      resultTone: "success",
-      method: "automatic",
-      verifiedAt: "2026-07-15T10:10:00",
-      notes: "Duplicate payment detected against prior ticket.",
-    },
-    approval: {
-      decision: "rejected",
-      decidedAt: "2026-07-15T12:00:00",
-      decidedBy: "Admin · Sara",
-      reason: "Duplicate payment — prior ticket already approved for this period.",
-    },
-    membershipResult: null,
-    timeline: timeline(
-      [
-        {
-          title: "Payment Submitted",
-          timestamp: "2026-07-15T10:00:00",
-          status: "complete",
-        },
-        {
-          title: "Verification Completed",
-          description: "Flagged as possible duplicate",
-          timestamp: "2026-07-15T10:10:00",
-          status: "complete",
-        },
-        {
-          title: "Approval Pending",
-          timestamp: "2026-07-15T10:10:00",
-          status: "complete",
-        },
-        {
-          title: "Rejected",
-          description: "Duplicate payment",
-          timestamp: "2026-07-15T12:00:00",
-          status: "error",
-        },
-      ],
-      "sub-006"
-    ),
-  },
-  {
     id: "sub-007",
     memberId: "m-007",
     username: "nora_signals",
@@ -565,121 +446,6 @@ export const MOCK_SUBSCRIPTION_TICKETS: SubscriptionTicket[] = [
         },
       ],
       "sub-007"
-    ),
-  },
-  {
-    id: "sub-008",
-    memberId: "m-008",
-    username: "omar_charts",
-    email: "omar.c@email.com",
-    avatarTone: "emerald",
-    activationSource: "crypto_payment",
-    displayStatus: "verification_required",
-    statusLabel: SUBSCRIPTION_DISPLAY_STATUS_LABELS.verification_required,
-    statusTone: SUBSCRIPTION_DISPLAY_STATUS_TONES.verification_required,
-    planKey: "monthly",
-    planLabel: "VIP Monthly",
-    network: "bep20",
-    networkLabel: "BNB Smart Chain (BEP20)",
-    walletAddress: "0x1234567890abcdef1234567890abcdef12345678",
-    transactionHash:
-      "0x99887766554433221100ffeeddccbbaa99887766554433221100ffeeddccbbaa",
-    explorerUrl: `${BSC_EXPLORER}0x99887766554433221100ffeeddccbbaa99887766554433221100ffeeddccbbaa`,
-    expectedAmount: "60.00",
-    actualAmount: "60.00",
-    currency: "USDT",
-    paymentMethod: "Crypto USDT - BEP20",
-    submittedAt: "2026-07-22T09:30:00",
-    verification: {
-      result: "ambiguous",
-      resultLabel: "Ambiguous",
-      resultTone: "warning",
-      method: "automatic",
-      verifiedAt: "2026-07-22T09:40:00",
-      notes: "Multiple matching transfers in the same block — manual confirm required.",
-    },
-    approval: {
-      decision: "pending",
-      decidedAt: null,
-      decidedBy: null,
-      reason: null,
-    },
-    membershipResult: null,
-    resolution: {
-      failureReason: "unknown_transaction",
-      failureReasonLabel: PAYMENT_FAILURE_REASON_LABELS.unknown_transaction,
-      detectedAmount: "60.00",
-      expectedAmount: "60.00",
-      currency: "USDT",
-      submittedWallet: "0x1234567890abcdef1234567890abcdef12345678",
-      expectedWallet: EXPECTED_TREASURY_WALLET,
-      checklist: [
-        { id: "review_tx_hash", label: "Review transaction hash", done: true },
-        { id: "verify_amount", label: "Verify payment amount", done: false },
-        { id: "check_explorer", label: "Check blockchain explorer", done: false },
-        { id: "contact_member", label: "Contact member", done: false },
-        {
-          id: "request_evidence",
-          label: "Request supporting evidence",
-          done: false,
-        },
-        { id: "review_evidence", label: "Review submitted evidence", done: false },
-        { id: "final_decision", label: "Final decision", done: false },
-      ],
-      evidenceRequests: DEFAULT_EVIDENCE_REQUESTS,
-      notes: [
-        {
-          id: "sub-008-note-1",
-          body: "Ambiguous on-chain match — multiple transfers in the same block. Starting resolution.",
-          author: "Admin · Ibrahim",
-          createdAt: "2026-07-22T09:45:00",
-        },
-      ],
-      startedAt: "2026-07-22T09:45:00",
-      memberContactedAt: null,
-    },
-    timeline: timeline(
-      [
-        {
-          title: "Payment Submitted",
-          timestamp: "2026-07-22T09:30:00",
-          status: "complete",
-        },
-        {
-          title: "Verification Failed",
-          description: "Ambiguous on-chain match",
-          timestamp: "2026-07-22T09:40:00",
-          status: "error",
-        },
-        {
-          title: "Payment Resolution Started",
-          description: "Manual investigation opened",
-          timestamp: "2026-07-22T09:45:00",
-          status: "current",
-        },
-        {
-          title: "Member Contacted",
-          timestamp: "—",
-          status: "pending",
-        },
-        {
-          title: "Supporting Evidence Requested",
-          timestamp: "—",
-          status: "pending",
-        },
-        {
-          title: "Evidence Reviewed",
-          timestamp: "—",
-          status: "pending",
-        },
-        {
-          title: "Final Decision",
-          description: "Approve or Reject after review",
-          timestamp: "—",
-          status: "pending",
-        },
-      ],
-      "sub-008"
     ),
   },
   {
@@ -742,82 +508,6 @@ export const MOCK_SUBSCRIPTION_TICKETS: SubscriptionTicket[] = [
     ),
   },
   {
-    id: "sub-010",
-    memberId: "m-010",
-    username: "hassan_pro",
-    email: "hassan@email.com",
-    avatarTone: "rose",
-    activationSource: "crypto_payment",
-    displayStatus: "approved",
-    statusLabel: SUBSCRIPTION_DISPLAY_STATUS_LABELS.approved,
-    statusTone: SUBSCRIPTION_DISPLAY_STATUS_TONES.approved,
-    planKey: "quarterly",
-    planLabel: "VIP Quarterly",
-    network: "bep20",
-    networkLabel: "BNB Smart Chain (BEP20)",
-    walletAddress: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
-    transactionHash:
-      "0xbbbbccccddddeeeeffff0000111122223333444455556666777788889999aaaa",
-    explorerUrl: `${BSC_EXPLORER}0xbbbbccccddddeeeeffff0000111122223333444455556666777788889999aaaa`,
-    expectedAmount: "150.00",
-    actualAmount: "150.00",
-    currency: "USDT",
-    paymentMethod: "Crypto USDT - BEP20",
-    submittedAt: "2026-07-01T08:00:00",
-    verification: {
-      result: "verified",
-      resultLabel: "Verified",
-      resultTone: "success",
-      method: "automatic",
-      verifiedAt: "2026-07-01T08:10:00",
-      notes: null,
-    },
-    approval: {
-      decision: "approved",
-      decidedAt: "2026-07-01T09:00:00",
-      decidedBy: "Admin · Ibrahim",
-      reason: null,
-    },
-    membershipResult: {
-      plan: "VIP Quarterly",
-      statusLabel: "Active",
-      statusTone: "success",
-      activatedAt: "2026-07-01T09:00:00",
-      expiryAt: "2026-10-01T09:00:00",
-      discordSyncLabel: "VIP role assigned",
-    },
-    timeline: timeline(
-      [
-        {
-          title: "Payment Submitted",
-          timestamp: "2026-07-01T08:00:00",
-          status: "complete",
-        },
-        {
-          title: "Verification Completed",
-          timestamp: "2026-07-01T08:10:00",
-          status: "complete",
-        },
-        {
-          title: "Approved",
-          timestamp: "2026-07-01T09:00:00",
-          status: "complete",
-        },
-        {
-          title: "Membership Activated",
-          timestamp: "2026-07-01T09:00:00",
-          status: "complete",
-        },
-        {
-          title: "Discord Sync Completed",
-          timestamp: "2026-07-01T09:05:00",
-          status: "complete",
-        },
-      ],
-      "sub-010"
-    ),
-  },
-  {
     id: "sub-011",
     memberId: "m-011",
     username: "layla_vip",
@@ -877,60 +567,6 @@ export const MOCK_SUBSCRIPTION_TICKETS: SubscriptionTicket[] = [
       "sub-011"
     ),
   },
-  {
-    id: "sub-012",
-    memberId: "m-012",
-    username: "yusuf_desk",
-    email: "yusuf@email.com",
-    avatarTone: "discord",
-    activationSource: "crypto_payment",
-    displayStatus: "blockchain_verifying",
-    statusLabel: SUBSCRIPTION_DISPLAY_STATUS_LABELS.blockchain_verifying,
-    statusTone: SUBSCRIPTION_DISPLAY_STATUS_TONES.blockchain_verifying,
-    planKey: "monthly",
-    planLabel: "VIP Monthly",
-    network: "bep20",
-    networkLabel: "BNB Smart Chain (BEP20)",
-    walletAddress: "0x2222222222222222222222222222222222222222",
-    transactionHash:
-      "0xddddeeeeffff0000111122223333444455556666777788889999aaaabbbbcccc",
-    explorerUrl: `${BSC_EXPLORER}0xddddeeeeffff0000111122223333444455556666777788889999aaaabbbbcccc`,
-    expectedAmount: "60.00",
-    actualAmount: null,
-    currency: "USDT",
-    paymentMethod: "Crypto USDT - BEP20",
-    submittedAt: "2026-07-29T02:45:00",
-    verification: {
-      result: "verifying",
-      resultLabel: "Verifying",
-      resultTone: "info",
-      method: "automatic",
-      verifiedAt: null,
-      notes: null,
-    },
-    approval: {
-      decision: "pending",
-      decidedAt: null,
-      decidedBy: null,
-      reason: null,
-    },
-    membershipResult: null,
-    timeline: timeline(
-      [
-        {
-          title: "Payment Submitted",
-          timestamp: "2026-07-29T02:45:00",
-          status: "complete",
-        },
-        {
-          title: "Blockchain Verifying",
-          timestamp: "2026-07-29T02:46:00",
-          status: "current",
-        },
-      ],
-      "sub-012"
-    ),
-  },
 ];
 
 export const MOCK_SUBSCRIPTION_STATS: SubscriptionStats = {
@@ -949,3 +585,4 @@ export const MOCK_SUBSCRIPTION_STATS: SubscriptionStats = {
     .length,
   lastRefreshLabel: "2 min ago",
 };
+

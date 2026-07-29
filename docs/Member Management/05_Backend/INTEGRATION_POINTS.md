@@ -1,9 +1,9 @@
 # Member Management — Integration Points
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Status:** Draft  
 **Authority:** `docs/Member Management/05_Backend/`  
-**Last Updated:** July 28, 2026
+**Last Updated:** July 29, 2026
 
 ---
 
@@ -12,10 +12,11 @@
 | System | Member Management use |
 |--------|----------------------|
 | Auth / JWT / RBAC | Admin access |
-| Membership domain service | Access SoT writes |
-| Payments (Stripe + Crypto USDT BEP20) | Subscription tickets |
-| Pricing / Quote engine | Verification expected amount |
-| Discord Integration Service | Role mirror / invites |
+| Membership domain service | Access SoT writes (`activationSource`: crypto_payment · manual_payment · …) |
+| Payments (Crypto USDT BEP20) | Crypto Subscription tickets + verification |
+| Manual Payment ops | Offline / assisted receipts → Activate gateway (no blockchain) |
+| Pricing / Quote engine | Crypto verification expected amount |
+| Discord Integration Service | Role mirror / invites · optional future username resolution |
 | Referral engine | Credits / redeem |
 | Member product dashboards | Read projections (`/dashboard/*`) — separate from Admin UI |
 

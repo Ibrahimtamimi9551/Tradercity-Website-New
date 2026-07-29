@@ -1,9 +1,10 @@
-# Phase 4 — Subscriptions (Crypto Payment Tickets)
+# Phase 4 — Subscriptions (Crypto + Manual Payment Sources)
 
 **Status:** Complete (UI on mocks)  
 **Date:** July 29, 2026  
 **Route:** `/admin/subscriptions`  
-**Freeze:** Explicit PO override — Subscriptions frontend + related docs only
+**Freeze:** Explicit PO override — Subscriptions frontend + related docs only  
+**Backend contracts:** [`../../Member Management/05_Backend/API_EXPECTATIONS.md`](../../Member%20Management/05_Backend/API_EXPECTATIONS.md)
 
 ## Design
 
@@ -11,45 +12,50 @@ Subscriptions **inherits** the Admin Dashboard design language — no redesign.
 
 - Template: Discord ops module (provider layout, URL-synced directory, master-detail)
 - Tone: `gold` (`modulePanelSurface` / `AdminDirectoryPanel`)
-- Shared: `PageTitle`, `WidgetCard`, `StatusBadge`, `Timeline`, `AdminMasterDetail`
+- Shared: `PageTitle`, `WidgetCard`, `StatusBadge`, `Timeline`, `AdminMasterDetail`, **`DateTimePicker`**
+- Source tabs: **Crypto Payments** · **Manual Payments** (no new sidebar item)
 
 Authority: [`02_Frontend_Design_System_and_UX_Rules.md`](../../AI/Agents/Admin/02_Frontend_Design_System_and_UX_Rules.md)
 
 ## Delivered
 
-### Types + mock data
+### Crypto Payments
 - `src/types/members/subscription.ts`
-- `src/lib/members/mock/subscriptions.ts` — all display states; `memberId` aligned with directory
-- `src/lib/members/hooks/useSubscriptionsDirectory.ts` — `TODO(NestJS)`
+- `src/lib/members/mock/subscriptions.ts` — Crypto cohort only
+- `src/lib/members/hooks/useSubscriptionsDirectory.ts`
+- Section UI: Widgets · Filters · Table · Details · PaymentResolutionCard · RowActions
 
-### Section UI (`src/components/members/sections/subscriptions/`)
-- Widgets · Filters · Table · Details · **PaymentResolutionCard** · RowActions · Provider · Pages
-- Approve / Reject / Explorer stubs citing reserved NestJS paths
-- Payment Resolution workspace for **Verification Required** (contact, checklist, notes)
-- Crypto Payment workflow only; `activationSource` extensible
+### Manual Payments (second activation source)
+- `src/types/members/manual-payment.ts`
+- `src/lib/members/mock/manual-payments.ts` — Manual cohort only
+- `src/lib/members/mock/activation-source.ts` — member → one Activation Source SSOT
+- `src/lib/members/ist-datetime.ts` — IST helpers
+- `src/lib/members/hooks/useManualPaymentsDirectory.ts`
+- Section UI under `subscriptions/manual/`
+- Create form: **free-text Discord username** · **DateTimePicker (IST default)** · review → Pending
+- Lifecycle: Create → Record → Review → Activate → Discord Sync (no blockchain)
+- Statuses: `pending` · `activated` · `cancelled`
+- Mock mutations: create / activate / cancel (local state)
 
 ### Routes
-- `/admin/subscriptions` — list + desktop panel
-- `/admin/subscriptions/[id]` — mobile detail
-- Layout: Suspense + `SubscriptionsDirectoryProvider`
+- `/admin/subscriptions` — Crypto list + desktop panel (default)
+- `/admin/subscriptions?source=manual` — Manual Payments tab
+- `/admin/subscriptions/[id]` — mobile detail (Crypto `sub-*` or Manual `mp-*`)
 
 ### Cross-module
-- Dashboard: `approval_pending` deep-link (+ `blockchain_verifying` / `verification_required`)
-- Profile: Manage Subscription → `?member=<id>` (existing `SubscriptionCard`)
-- Terminology: Blockchain Verifying · Approval Pending · Verification Required (owner-aware labels)
+- Profile `SubscriptionCard` driven by owning payment record
+- Dashboard deep-links for Crypto statuses unchanged
 
 ## Exit criteria
 
-- [x] Ticket queue replaces `ModulePlaceholder`
-- [x] Display states: Blockchain Verifying · Approval Pending · Verification Required · Rejected · Approved
-- [x] Details show verification fields + explorer link + timeline from mock objects
-- [x] Verification Required opens Payment Resolution card (contact, failure summary, checklist, notes)
-- [x] Desktop panel + mobile detail route
-- [x] Approve / Reject stubs (no Membership mutation)
-- [x] No `/admin/payments` sidebar or route
-- [x] Design language inherited (no redesign)
-- [x] Frontend docs updated
+- [x] Crypto ticket queue + Payment Resolution
+- [x] Manual Payments tab (no separate nav item)
+- [x] Manual table / filters / create form / details / timeline
+- [x] Free-text username + IST DateTimePicker
+- [x] Non-overlapping Crypto / Manual member mocks + profile SSOT
+- [x] Activate / Cancel stubs with mock state transitions
+- [x] Frontend + backend expectation docs updated
 
 ## Next Step
 
-Wire NestJS `GET/POST /admin/subscriptions…` per [`API_EXPECTATIONS.md`](../../Member%20Management/05_Backend/API_EXPECTATIONS.md) without changing component hierarchy.
+Wire NestJS Crypto + Manual Payment endpoints per [`API_EXPECTATIONS.md`](../../Member%20Management/05_Backend/API_EXPECTATIONS.md) without changing component hierarchy. Backend must support nullable `memberId`, free-text username, and IST `receivedAt`.

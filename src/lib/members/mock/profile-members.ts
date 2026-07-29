@@ -1,5 +1,6 @@
 import { MOCK_DIRECTORY_MEMBERS } from "@/lib/members/mock/directory-members";
 import { MOCK_REFERRAL_MEMBERS } from "@/lib/members/mock/referral-members";
+import { buildSubscriptionFromActivation } from "@/lib/members/mock/activation-source";
 import { MEMBERSHIP_PLANS } from "@/lib/membership/plans";
 import type { DirectoryMember } from "@/types/members/directory";
 import {
@@ -11,30 +12,35 @@ import type { MemberProfile, ProfileTimelineItem } from "@/types/members/profile
 /**
  * Mock Control Center aggregates — UI-only until NestJS GET /admin/members/:id.
  * Identity/status seeded from directory rows; Overview fields match Phase 3 specs.
+ * Subscription reflection resolves from Crypto / Manual payment mocks (SSOT).
  * Plan amounts use official membership pricing (src/lib/membership/plans.ts).
  */
-
-const TX_SAMPLES = [
-  "0x8f2a9c1d4e7b...a3f1",
-  "0x1b4c8e2f9a0d...c7e2",
-  "0x9d3a7f1e5b2c...d4a8",
-];
 
 const EMPTY_SOURCE_FIELDS = {
   notes: null as string | null,
   approvedBy: null as string | null,
   activationDate: null as string | null,
   creditsRedeemed: null as string | null,
+  referenceNumber: null as string | null,
+  receivedDate: null as string | null,
+  receivedBy: null as string | null,
+  reason: null as string | null,
+  networkLabel: null as string | null,
+  verificationLabel: null as string | null,
+  verificationTone: null as MemberProfile["subscription"]["verificationTone"],
+  approvalLabel: null as string | null,
 };
 
-function pickActivationSource(index: number): MembershipActivationSource {
+/** VIP members without a Crypto/Manual payment record — demo other sources. */
+function fallbackActivationSource(
+  memberId: string,
+  index: number
+): MembershipActivationSource {
+  void memberId;
   const cycle: MembershipActivationSource[] = [
-    "crypto_payment",
-    "crypto_payment",
     "referral_redeem",
-    "manual_payment",
     "admin_grant",
-    "crypto_payment",
+    "referral_redeem",
   ];
   return cycle[index % cycle.length];
 }
@@ -90,6 +96,10 @@ function formatHeaderMembership(member: DirectoryMember): MemberProfile["header"
 }
 
 function subscriptionFields(member: DirectoryMember, index: number): MemberProfile["subscription"] {
+  // Prefer payment-table SSOT (Crypto ticket or Manual Payment) when present.
+  const fromPayment = buildSubscriptionFromActivation(member.id);
+  if (fromPayment) return fromPayment;
+
   // Cycle official paid plans so admin UIs show Monthly $60 / Quarterly $150 / Yearly $500
   const paidPlans = [
     MEMBERSHIP_PLANS.monthly,
@@ -100,7 +110,7 @@ function subscriptionFields(member: DirectoryMember, index: number): MemberProfi
   const vipPlanLabel = `VIP ${plan.label}`;
 
   if (member.subscription === "active") {
-    const activationSource = pickActivationSource(index);
+    const activationSource = fallbackActivationSource(member.id, index);
     const base = {
       plan: vipPlanLabel,
       statusLabel: "Successful",
@@ -111,43 +121,17 @@ function subscriptionFields(member: DirectoryMember, index: number): MemberProfi
       renewalCount: 1,
       activatedVia: sourceLabel(activationSource),
       activationSource,
+      transactionHash: null as string | null,
+      explorerUrl: null as string | null,
+      paymentMethod: null as string | null,
+      amountPaid: null as string | null,
       ...EMPTY_SOURCE_FIELDS,
     };
 
     if (activationSource === "referral_redeem") {
       return {
         ...base,
-        transactionHash: null,
-        explorerUrl: null,
-        paymentMethod: null,
-        amountPaid: null,
         creditsRedeemed: `$${plan.priceUsd}`,
-        approvedBy: "Admin · Ibrahim",
-        activationDate: member.joinedAt,
-      };
-    }
-
-    if (activationSource === "manual_payment") {
-      return {
-        ...base,
-        transactionHash: null,
-        explorerUrl: null,
-        paymentMethod: "Bank Transfer",
-        amountPaid: plan.amountPaidDisplay,
-        notes: "Manual payment confirmed via ops ticket",
-        approvedBy: "Admin · Ibrahim",
-        activationDate: member.joinedAt,
-      };
-    }
-
-    if (activationSource === "admin_grant" || activationSource === "future_grant") {
-      return {
-        ...base,
-        transactionHash: null,
-        explorerUrl: null,
-        paymentMethod: null,
-        amountPaid: null,
-        notes: "Complimentary VIP grant",
         approvedBy: "Admin · Ibrahim",
         activationDate: member.joinedAt,
       };
@@ -155,48 +139,9 @@ function subscriptionFields(member: DirectoryMember, index: number): MemberProfi
 
     return {
       ...base,
-      transactionHash: TX_SAMPLES[index % TX_SAMPLES.length],
-      explorerUrl: "https://bscscan.com/",
-      paymentMethod: "Crypto USDT - BEP20",
-      amountPaid: plan.amountPaidDisplay,
-    };
-  }
-
-  if (member.subscription === "pending_verification") {
-    return {
-      plan: vipPlanLabel,
-      statusLabel: "Blockchain Verifying",
-      statusTone: "warning",
-      paymentDate: member.joinedAt,
-      expiryDate: null,
-      daysRemaining: null,
-      renewalCount: 0,
-      activatedVia: null,
-      activationSource: "crypto_payment",
-      transactionHash: TX_SAMPLES[index % TX_SAMPLES.length],
-      explorerUrl: "https://bscscan.com/",
-      paymentMethod: "Crypto USDT - BEP20",
-      amountPaid: plan.amountPaidDisplay,
-      ...EMPTY_SOURCE_FIELDS,
-    };
-  }
-
-  if (member.subscription === "verification_required") {
-    return {
-      plan: vipPlanLabel,
-      statusLabel: "Verification Required",
-      statusTone: "danger",
-      paymentDate: member.joinedAt,
-      expiryDate: null,
-      daysRemaining: null,
-      renewalCount: 0,
-      activatedVia: null,
-      activationSource: "crypto_payment",
-      transactionHash: TX_SAMPLES[index % TX_SAMPLES.length],
-      explorerUrl: "https://bscscan.com/",
-      paymentMethod: "Crypto USDT - BEP20",
-      amountPaid: plan.amountPaidDisplay,
-      ...EMPTY_SOURCE_FIELDS,
+      notes: "Complimentary VIP grant",
+      approvedBy: "Admin · Ibrahim",
+      activationDate: member.joinedAt,
     };
   }
 
@@ -634,37 +579,7 @@ function buildProfile(member: DirectoryMember, index: number): MemberProfile {
 /** Rich override matching Control Center reference for m-001 */
 const M001_OVERRIDE: Partial<MemberProfile> = {
   email: "ibrahim@example.com",
-  membership: {
-    currentPlan: `VIP ${MEMBERSHIP_PLANS.monthly.label}`,
-    statusLabel: "Active",
-    statusTone: "success",
-    planStartedOn: "2026-06-08T10:22:00",
-    expiryDate: "2026-07-08T10:22:00",
-    daysRemaining: 30,
-    renewalCount: 1,
-    activatedVia: MEMBERSHIP_ACTIVATION_SOURCE_LABELS.crypto_payment,
-    activationSource: "crypto_payment",
-    totalDuration: "1 Month",
-  },
-  subscription: {
-    plan: `VIP ${MEMBERSHIP_PLANS.monthly.label}`,
-    statusLabel: "Successful",
-    statusTone: "success",
-    paymentDate: "2026-06-08T10:22:00",
-    expiryDate: "2026-07-08T10:22:00",
-    daysRemaining: 30,
-    renewalCount: 1,
-    activatedVia: MEMBERSHIP_ACTIVATION_SOURCE_LABELS.crypto_payment,
-    activationSource: "crypto_payment",
-    transactionHash: "0x8f2a9c1d4e7b...a3f1",
-    explorerUrl: "https://bscscan.com/",
-    paymentMethod: "Crypto USDT - BEP20",
-    amountPaid: MEMBERSHIP_PLANS.monthly.amountPaidDisplay,
-    notes: null,
-    approvedBy: null,
-    activationDate: null,
-    creditsRedeemed: null,
-  },
+  // membership + subscription come from Crypto ticket SSOT (sub-001)
   discord: {
     role: "VIP",
     connectionLabel: "Connected",

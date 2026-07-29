@@ -37,6 +37,12 @@ function manageHref(
       label: "Manage Referral",
     };
   }
+  if (source === "manual_payment") {
+    return {
+      href: `/admin/subscriptions?source=manual&q=${encodeURIComponent(profile.username)}`,
+      label: "Manage Subscription",
+    };
+  }
   return {
     href: `/admin/subscriptions?member=${profile.id}`,
     label: "Manage Subscription",
@@ -45,8 +51,7 @@ function manageHref(
 
 /**
  * Subscription reflection card — fields adapt by Membership Activation Source.
- * Crypto Payment keeps the existing payment-ticket layout; other sources show
- * source-specific fields. New sources extend the switch below.
+ * Data is resolved from Crypto / Manual payment mocks (single source of truth).
  */
 export function SubscriptionCard({ profile }: SubscriptionCardProps) {
   const { subscription } = profile;
@@ -94,12 +99,14 @@ export function SubscriptionCard({ profile }: SubscriptionCardProps) {
           <ReferralRedeemFields subscription={subscription} />
         ) : source === "admin_grant" || source === "future_grant" ? (
           <GrantFields subscription={subscription} />
-        ) : (
+        ) : source === "crypto_payment" || subscription.transactionHash ? (
           <CryptoPaymentFields
             subscription={subscription}
             copied={copied}
             onCopyHash={copyHash}
           />
+        ) : (
+          <EmptySourceFields subscription={subscription} />
         )}
       </div>
     </ReflectionCard>
@@ -125,22 +132,16 @@ function CryptoPaymentFields({
       <FieldRow label="Status">
         <StatusText tone={subscription.statusTone} label={subscription.statusLabel} />
       </FieldRow>
-      <FieldRow label="Payment Date">
-        {formatProfileDateTime(subscription.paymentDate)}
-      </FieldRow>
-      <FieldRow label="Expiry Date">
-        {formatProfileDateTime(subscription.expiryDate)}
-      </FieldRow>
-      <FieldRow label="Days Remaining">
-        <span className={daysRemainingClass(subscription.daysRemaining)}>
-          {formatDaysRemaining(subscription.daysRemaining)}
-        </span>
+      <FieldRow label="Network">{subscription.networkLabel ?? "—"}</FieldRow>
+      <FieldRow label="Payment Method">{subscription.paymentMethod ?? "—"}</FieldRow>
+      <FieldRow label="Amount Paid">
+        <span className="tabular-nums">{subscription.amountPaid ?? "—"}</span>
       </FieldRow>
       <FieldRow label="Transaction Hash">
         {subscription.transactionHash ? (
           <span className="inline-flex items-center gap-1.5">
             <span className="font-mono text-xs text-white/80">
-              {subscription.transactionHash}
+              {shortenHash(subscription.transactionHash)}
             </span>
             <button
               type="button"
@@ -170,9 +171,20 @@ function CryptoPaymentFields({
           "—"
         )}
       </FieldRow>
-      <FieldRow label="Payment Method">{subscription.paymentMethod ?? "—"}</FieldRow>
-      <FieldRow label="Amount Paid">
-        <span className="tabular-nums">{subscription.amountPaid ?? "—"}</span>
+      <FieldRow label="Verification Status">
+        {subscription.verificationLabel ?? "—"}
+      </FieldRow>
+      <FieldRow label="Approval">{subscription.approvalLabel ?? "—"}</FieldRow>
+      <FieldRow label="Payment Date">
+        {formatProfileDateTime(subscription.paymentDate)}
+      </FieldRow>
+      <FieldRow label="Expiry Date">
+        {formatProfileDateTime(subscription.expiryDate)}
+      </FieldRow>
+      <FieldRow label="Days Remaining">
+        <span className={daysRemainingClass(subscription.daysRemaining)}>
+          {formatDaysRemaining(subscription.daysRemaining)}
+        </span>
       </FieldRow>
     </>
   );
@@ -184,12 +196,24 @@ function ManualPaymentFields({ subscription }: { subscription: Sub }) {
       <FieldRow label="Plan">
         <span className="text-violet-300">{subscription.plan}</span>
       </FieldRow>
+      <FieldRow label="Payment Method">
+        {subscription.paymentMethod ?? "—"}
+      </FieldRow>
       <FieldRow label="Amount">
         <span className="tabular-nums">{subscription.amountPaid ?? "—"}</span>
       </FieldRow>
-      <FieldRow label="Payment Method">{subscription.paymentMethod ?? "—"}</FieldRow>
+      <FieldRow label="Reference Number">
+        {subscription.referenceNumber ?? "—"}
+      </FieldRow>
+      <FieldRow label="Received By">{subscription.receivedBy ?? "—"}</FieldRow>
+      <FieldRow label="Reason">{subscription.reason ?? "—"}</FieldRow>
       <FieldRow label="Notes">{subscription.notes ?? "—"}</FieldRow>
-      <FieldRow label="Approved By">{subscription.approvedBy ?? "—"}</FieldRow>
+      <FieldRow label="Received Date">
+        {formatProfileDateTime(
+          subscription.receivedDate ?? subscription.paymentDate
+        )}
+      </FieldRow>
+      <FieldRow label="Activated By">{subscription.approvedBy ?? "—"}</FieldRow>
       <FieldRow label="Activation Date">
         {formatProfileDateTime(subscription.activationDate)}
       </FieldRow>
@@ -229,6 +253,24 @@ function GrantFields({ subscription }: { subscription: Sub }) {
       </FieldRow>
     </>
   );
+}
+
+function EmptySourceFields({ subscription }: { subscription: Sub }) {
+  return (
+    <>
+      <FieldRow label="Plan">
+        <span className="text-violet-300">{subscription.plan}</span>
+      </FieldRow>
+      <FieldRow label="Status">
+        <StatusText tone={subscription.statusTone} label={subscription.statusLabel} />
+      </FieldRow>
+    </>
+  );
+}
+
+function shortenHash(hash: string): string {
+  if (hash.length <= 18) return hash;
+  return `${hash.slice(0, 10)}…${hash.slice(-6)}`;
 }
 
 function StatusText({

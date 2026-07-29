@@ -1,5 +1,6 @@
 ﻿export { DataTable } from "./DataTable";
 export type { DataTableColumn } from "./DataTable";
+export { DateTimePicker } from "./DateTimePicker";
 export { EmptyState, ErrorState, LoadingState } from "./States";
 export { FilterBar } from "./FilterBar";
 export { InfoCard } from "./InfoCard";

@@ -1,8 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { CreditCard, RefreshCw } from "lucide-react";
+import { useCallback, useEffect } from "react";
+import { Banknote, RefreshCw } from "lucide-react";
 import {
   AdminDirectoryPanel,
   AdminMasterDetail,
@@ -13,26 +12,23 @@ import {
   PageTitle,
   Pagination,
 } from "@/components/admin/ui";
-import { isAdminDesktop } from "@/lib/admin/directory/breakpoints";
 import { cn } from "@/lib/admin/cn";
-import type { SubscriptionTicket } from "@/types/members/subscription";
-import { ManualPaymentsPanel } from "./manual";
-import { useSubscriptionsDirectoryContext } from "./SubscriptionsDirectoryProvider";
-import { SubscriptionDetails } from "./SubscriptionDetails";
-import { SubscriptionFiltersBar } from "./SubscriptionFiltersBar";
-import type { SubscriptionRowActionHandlers } from "./SubscriptionRowActions";
-import { SubscriptionTable } from "./SubscriptionTable";
-import { SubscriptionWidgets } from "./SubscriptionWidgets";
-import { SubscriptionsSourceNav } from "./SubscriptionsSourceNav";
+import type { ManualPayment } from "@/types/members/manual-payment";
+import {
+  confirmActivateManualPayment,
+  confirmCancelManualPayment,
+} from "./manual-payment-actions";
+import { ManualPaymentDetails } from "./ManualPaymentDetails";
+import { ManualPaymentFiltersBar } from "./ManualPaymentFiltersBar";
+import { ManualPaymentForm } from "./ManualPaymentForm";
+import type { ManualPaymentRowActionHandlers } from "./ManualPaymentRowActions";
+import { ManualPaymentTable } from "./ManualPaymentTable";
+import { ManualPaymentWidgets } from "./ManualPaymentWidgets";
+import { useManualPaymentsDirectoryContext } from "./ManualPaymentsDirectoryProvider";
+import { SubscriptionsSourceNav } from "../SubscriptionsSourceNav";
 
-function CryptoPaymentsPanel() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const deepLinkHandled = useRef(false);
-
+function ManualPaymentsPanelContent() {
   const {
-    listPathname,
     stats,
     filters,
     resetFilters,
@@ -46,46 +42,27 @@ function CryptoPaymentsPanel() {
     setPage,
     setPageSize,
     selectedId,
-    selectedTicket,
-    selectTicket,
+    selectedPayment,
+    selectPayment,
     setFilters,
     setStatus,
     setPlan,
-    setNetwork,
-    setVerification,
+    setPaymentMethod,
     lastRefreshLabel,
     isRefreshing,
     refresh,
     uiError,
     clearError,
-    getListHref,
-    onOpenExplorer,
-    onApprove,
-    onReject,
-  } = useSubscriptionsDirectoryContext();
+    createOpen,
+    setCreateOpen,
+    createPayment,
+    activatePayment,
+    cancelPayment,
+  } = useManualPaymentsDirectoryContext();
 
   useEffect(() => {
     if (hasActiveFilters) setShowAdvanced(true);
   }, [hasActiveFilters, setShowAdvanced]);
-
-  useEffect(() => {
-    if (deepLinkHandled.current) return;
-    if (pathname !== listPathname) return;
-    if (isAdminDesktop()) return;
-
-    const deepLinkMember =
-      searchParams.get("member") ?? searchParams.get("memberId");
-    if (!deepLinkMember) return;
-
-    deepLinkHandled.current = true;
-    const href = getListHref({ includeMember: false });
-    const query = href.includes("?") ? href.slice(href.indexOf("?") + 1) : "";
-    router.replace(
-      query
-        ? `${listPathname}/${deepLinkMember}?${query}`
-        : `${listPathname}/${deepLinkMember}`
-    );
-  }, [getListHref, listPathname, pathname, router, searchParams]);
 
   const onSearchChange = useCallback(
     (search: string) => {
@@ -94,30 +71,45 @@ function CryptoPaymentsPanel() {
     [setFilters]
   );
 
-  const onSelectTicket = useCallback(
-    (ticket: SubscriptionTicket) => {
-      selectTicket(ticket.id);
+  const onSelectPayment = useCallback(
+    (payment: ManualPayment) => {
+      selectPayment(payment.id);
     },
-    [selectTicket]
+    [selectPayment]
   );
 
-  const actionHandlers: SubscriptionRowActionHandlers = {
-    onView: onSelectTicket,
-    onOpenExplorer,
-    onApprove,
-    onReject,
+  const onActivate = useCallback(
+    (payment: ManualPayment) => {
+      if (!confirmActivateManualPayment(payment)) return;
+      activatePayment(payment);
+    },
+    [activatePayment]
+  );
+
+  const onCancel = useCallback(
+    (payment: ManualPayment) => {
+      if (!confirmCancelManualPayment(payment)) return;
+      cancelPayment(payment);
+    },
+    [cancelPayment]
+  );
+
+  const actionHandlers: ManualPaymentRowActionHandlers = {
+    onView: onSelectPayment,
+    onActivate,
+    onCancel,
   };
 
   const emptyTitle = hasActiveFilters
-    ? "No tickets match your search or filters"
-    : "No subscription tickets";
+    ? "No payments match your search or filters"
+    : "No manual payments";
 
   const listStack = (
     <div className="space-y-4 sm:space-y-6">
       <PageTitle
         title="Subscriptions"
-        subtitle="Payment verification, approval, and subscription tickets."
-        icon={CreditCard}
+        subtitle="Manual payment recording and membership activation."
+        icon={Banknote}
         actions={
           <div className="flex items-center gap-2">
             <span className="hidden text-xs text-tc-muted sm:inline">
@@ -128,7 +120,7 @@ function CryptoPaymentsPanel() {
               type="button"
               onClick={refresh}
               disabled={isRefreshing}
-              aria-label="Refresh subscription tickets"
+              aria-label="Refresh manual payments"
               className="admin-ghost-btn inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 transition-colors hover:bg-white/5 disabled:opacity-50"
             >
               <RefreshCw
@@ -144,9 +136,9 @@ function CryptoPaymentsPanel() {
 
       {uiError ? <ErrorState title={uiError} onRetry={clearError} /> : null}
 
-      <SubscriptionWidgets stats={stats} />
+      <ManualPaymentWidgets stats={stats} />
 
-      <SubscriptionFiltersBar
+      <ManualPaymentFiltersBar
         filters={filters}
         hasActiveFilters={hasActiveFilters}
         showAdvanced={showAdvanced}
@@ -154,9 +146,11 @@ function CryptoPaymentsPanel() {
         onSearchChange={onSearchChange}
         onStatusChange={setStatus}
         onPlanChange={setPlan}
-        onNetworkChange={setNetwork}
-        onVerificationChange={setVerification}
+        onMethodChange={setPaymentMethod}
+        onDateFromChange={(dateFrom) => setFilters({ dateFrom })}
+        onDateToChange={(dateTo) => setFilters({ dateTo })}
         onReset={resetFilters}
+        onCreate={() => setCreateOpen(true)}
       />
 
       <AdminDirectoryPanel tone="gold">
@@ -166,7 +160,7 @@ function CryptoPaymentsPanel() {
             description={
               hasActiveFilters
                 ? "Try clearing filters or adjusting your search."
-                : "Subscription payment tickets will appear here once members submit crypto payments."
+                : "Create a manual payment when bank, UPI, cash, or assisted payments are confirmed."
             }
             action={
               hasActiveFilters ? (
@@ -177,15 +171,23 @@ function CryptoPaymentsPanel() {
                 >
                   Reset filters
                 </button>
-              ) : null
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setCreateOpen(true)}
+                  className="text-sm font-medium text-amber-200 hover:text-amber-100"
+                >
+                  Create Manual Payment
+                </button>
+              )
             }
           />
         ) : (
           <>
-            <SubscriptionTable
+            <ManualPaymentTable
               rows={rows}
               selectedId={selectedId}
-              onRowSelect={onSelectTicket}
+              onRowSelect={onSelectPayment}
               actionHandlers={actionHandlers}
               emptyTitle={emptyTitle}
             />
@@ -196,13 +198,21 @@ function CryptoPaymentsPanel() {
                 total={total}
                 onPageChange={setPage}
                 onPageSizeChange={setPageSize}
-                itemLabel="tickets"
+                itemLabel="payments"
                 className="max-sm:gap-2 max-sm:text-xs"
               />
             </div>
           </>
         )}
       </AdminDirectoryPanel>
+
+      <ManualPaymentForm
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        onSubmit={(input) => {
+          createPayment(input);
+        }}
+      />
     </div>
   );
 
@@ -211,11 +221,10 @@ function CryptoPaymentsPanel() {
       layout="page"
       list={listStack}
       detail={
-        <SubscriptionDetails
-          ticket={selectedTicket}
-          onOpenExplorer={onOpenExplorer}
-          onApprove={onApprove}
-          onReject={onReject}
+        <ManualPaymentDetails
+          payment={selectedPayment}
+          onActivate={onActivate}
+          onCancel={onCancel}
           className="h-full"
         />
       }
@@ -223,13 +232,6 @@ function CryptoPaymentsPanel() {
   );
 }
 
-export function SubscriptionsPage() {
-  const searchParams = useSearchParams();
-  const isManualSource = searchParams.get("source") === "manual";
-
-  if (isManualSource) {
-    return <ManualPaymentsPanel />;
-  }
-
-  return <CryptoPaymentsPanel />;
+export function ManualPaymentsPanel() {
+  return <ManualPaymentsPanelContent />;
 }

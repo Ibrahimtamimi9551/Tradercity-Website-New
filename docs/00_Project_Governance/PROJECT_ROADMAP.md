@@ -130,7 +130,7 @@ Phase 6 — Platform Automation & Intelligence
 | Admin Foundation + Operations Dashboard | ✔ | `/admin` |
 | Members Directory | ✔ | `/admin/members` |
 | User Profile Control Center | ✔ | `/admin/members/[id]` |
-| Subscriptions | ✔ | Crypto payment ticket queue on mocks (`/admin/subscriptions`) |
+| Subscriptions | ✔ | Crypto + Manual Payment sources on mocks (`/admin/subscriptions`) |
 | Discord | ○ | Placeholder route exists (UI also complete on mocks — update when Phase-05 recorded) |
 | Referrals | ○ | Placeholder route exists (UI also complete on mocks — update when Phase-06 recorded) |
 | Payments verification depth | ◐ | Delivered inside Subscriptions FE; NestJS verification engine pending |

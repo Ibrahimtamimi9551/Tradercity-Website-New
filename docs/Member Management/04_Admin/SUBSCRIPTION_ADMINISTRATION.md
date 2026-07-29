@@ -1,10 +1,11 @@
 # Subscription Administration
 
-**Version:** 2.2  
-**Status:** Active — Admin UI complete on mocks  
+**Version:** 2.4  
+**Status:** Active — Admin UI complete on mocks (Crypto + Manual)  
 **Authority:** `docs/Member Management/04_Admin/`  
 **Last Updated:** July 29, 2026  
-**Canonical lifecycle:** [`../02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md`](../02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md)
+**Canonical lifecycle:** [`../02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md`](../02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md)  
+**Backend contracts:** [`../05_Backend/API_EXPECTATIONS.md`](../05_Backend/API_EXPECTATIONS.md)
 
 ---
 
@@ -12,111 +13,106 @@
 
 Administrators are the **final operational authority** before Membership activation.
 
-Operate Subscription tickets to:
+Operate Subscription sources to:
 
-- Monitor payments still **Blockchain Verifying**
-- Process **Approval Pending** (auto-verified — primary queue)
-- Manually review **Verification Required** failures
-- **Approve** or **Reject** after inspecting the blockchain explorer
-- Never treat automatic verification as activation
+- **Crypto:** Monitor Blockchain Verifying · process Approval Pending · review Verification Required · Approve / Reject
+- **Manual:** Record offline / assisted payments · Review · Activate Membership · Cancel
+
+Never treat automatic crypto verification as activation. Manual payments have no blockchain lifecycle — the administrator confirms receipt.
 
 ---
 
 ## Current Admin capability
 
-Route `/admin/subscriptions` renders the Subscriptions ticket queue (mock data).
+Route `/admin/subscriptions` with in-module tabs:
+
+| Tab | Route |
+|-----|-------|
+| Crypto Payments | `/admin/subscriptions` |
+| Manual Payments | `/admin/subscriptions?source=manual` |
+
+### Crypto
 
 | Surface | Capability |
 |---------|------------|
 | Widgets | Filter by display status |
 | Table | Search / filter tickets |
 | Details panel | Payment, blockchain, verification, approval, timeline |
-| Payment Resolution | Verification Required only — contact, failure summary, checklist, notes, Approve / Reject |
+| Payment Resolution | Verification Required only |
 | Actions | Open Explorer · Approve · Reject · Open Profile |
 | Mobile | Full-page `/admin/subscriptions/[id]` |
 
-Deep-links from Dashboard, Members directory (`?q=` + `?member=`), and Control Center work against the live UI.
+### Manual
 
-Approve / Reject are **frontend stubs** until NestJS wiring. Payment Resolution does **not** invent a separate decision path — it reuses the same stubs.
+| Surface | Capability |
+|---------|------------|
+| Widgets | Pending · Activated · Cancelled |
+| Table | Member · Plan · Method · Amount · Received · Activated By · Status |
+| Filters | Search · Plan · Method · Status · Date range |
+| Create | Modal: free-text Discord username · DateTimePicker (IST) · review step → Pending |
+| Details | Summary · Payment Information · Review · Membership Result · Timeline |
+| Actions | Activate Membership · Cancel · Open Profile (when `memberId` linked) |
+| Mobile | Full-page `/admin/subscriptions/mp-*` |
+
+Approve / Activate / Cancel are **frontend stubs** (Crypto alerts; Manual local mock state) until NestJS wiring.
+
+---
+
+## Create Manual Payment (ops notes for backend)
+
+| Field | Ops behaviour |
+|-------|----------------|
+| Discord Username | Free text — payment may arrive before registration |
+| Payment Date | Calendar + time picker; default current IST; set to **actual receipt** time |
+| Activate | Separate step after create — writing Membership is not implicit |
+
+Backend must accept create without a resolved Member ID and link later.
 
 ---
 
 ## Admin actions
 
-| Action | Frontend (now) | Backend (later) |
-|--------|----------------|-----------------|
-| Open Explorer | Opens `explorerUrl` | Same |
-| Open Discord / Send Email | Copy username · `mailto:` (mock) | Optional Discord / email integrations |
-| Add Resolution Note | Local mock notes | Persist on ticket |
-| Approve | Alert stub + NestJS path | Ticket → Approved → Membership → Discord → Audit |
-| Reject | Alert stub + NestJS path | Close ticket — Membership unchanged |
-| Open member | Navigate Control Center | Same |
+| Action | Source | Frontend (now) | Backend (later) |
+|--------|--------|----------------|-----------------|
+| Open Explorer | Crypto | Opens `explorerUrl` | Same |
+| Approve | Crypto | Alert stub | Ticket → Approved → Membership → Discord → Audit |
+| Reject | Crypto | Alert stub | Close ticket — Membership unchanged |
+| Create Manual Payment | Manual | Mock state append | Persist Manual Payment (`username`, IST `receivedAt`) |
+| Activate Membership | Manual | Mock state → Activated | Membership (`activationSource=manual_payment`) → Discord → Audit |
+| Cancel | Manual | Mock state → Cancelled | Close — Membership unchanged |
+| Open member | Both | Control Center when `memberId` present | Same · resolve username when missing |
 
 ---
 
 ## Display states
 
+### Crypto
+
 ```text
-Blockchain Verifying      ← System-owned; no admin action
-Approval Pending          ← Admin-owned; primary Approve queue after auto-verify
-Verification Required     ← Admin-owned; Payment Resolution workspace
-Rejected
-Approved / Successful
+Blockchain Verifying · Approval Pending · Verification Required · Rejected · Approved
 ```
 
-| State | Owner | Admin action |
-|-------|-------|--------------|
-| Blockchain Verifying | System | No |
-| Verification Required | Admin | Yes — Payment Resolution → Approve / Reject |
-| Approval Pending | Admin | Yes — Approve Membership / Reject Payment |
+### Manual
 
-### Verification vs Approval
+```text
+Pending · Activated · Cancelled
+```
+
+### Verification vs Approval (Crypto)
 
 - **Verification** (system): payment validity  
 - **Approval** (admin): authorization to activate Membership  
 
-### Details panel behaviour
+### Manual confirmation
 
-| State | Actions | Guidance |
-|-------|---------|----------|
-| Blockchain Verifying | None | Verification in progress — no admin action |
-| Verification Required | Payment Resolution card | Contact member, checklist, notes, then Approve / Reject |
-| Approval Pending | Approve Membership / Reject Payment | Final gate before Membership |
-
----
-
-## Standard workflow
-
-### Approval Pending
-
-```text
-Open Subscription ticket (Approval Pending)
-        ↓
-Review Verification Result + Expected vs Actual amount
-        ↓
-Click Explorer → inspect on-chain TX
-        ↓
-Approve Membership / Reject Payment
-```
-
-### Verification Required (Payment Resolution)
-
-```text
-Open Subscription ticket (Verification Required)
-        ↓
-Payment Resolution card appears
-        ↓
-Contact member (Discord / Email) using activation contact fields
-        ↓
-Follow checklist · request supporting evidence · add admin notes
-        ↓
-Approve Payment / Reject Payment  (same Membership stubs)
-```
+- Administrator records payment → Pending  
+- Activate Membership → Membership Result + Discord Sync timeline  
 
 ---
 
 ## Related
 
-- Frontend: [`../03_Frontend/SUBSCRIPTIONS_MODULE_ARCHITECTURE.md`](../03_Frontend/SUBSCRIPTIONS_MODULE_ARCHITECTURE.md)  
-- API: [`../05_Backend/API_EXPECTATIONS.md`](../05_Backend/API_EXPECTATIONS.md)  
-- Admin `08`: pricing / verification stack  
+Architecture: [`../03_Frontend/SUBSCRIPTIONS_MODULE_ARCHITECTURE.md`](../03_Frontend/SUBSCRIPTIONS_MODULE_ARCHITECTURE.md)  
+Implementation: [`../06_Implementation/MEMBER_SUBSCRIPTIONS_IMPLEMENTATION.md`](../06_Implementation/MEMBER_SUBSCRIPTIONS_IMPLEMENTATION.md)  
+API expectations: [`../05_Backend/API_EXPECTATIONS.md`](../05_Backend/API_EXPECTATIONS.md)  
+Phase record: [`../../Development/Admin/Phase-04-Subscriptions.md`](../../Development/Admin/Phase-04-Subscriptions.md)

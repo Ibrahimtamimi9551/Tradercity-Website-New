@@ -103,8 +103,23 @@ export type MemberProfile = {
     notes: string | null;
     approvedBy: string | null;
     activationDate: string | null;
+    /** Manual Payment — bank/UPI/cash reference when available. */
+    referenceNumber: string | null;
+    /** Manual Payment — when funds were received (may differ from activation). */
+    receivedDate: string | null;
+    /** Manual Payment — administrator who recorded receipt. */
+    receivedBy: string | null;
+    /** Manual Payment — business reason label. */
+    reason: string | null;
     /** Referral Redeem — credits applied on approval. */
     creditsRedeemed: string | null;
+    /** Crypto — network display label. */
+    networkLabel: string | null;
+    /** Crypto — verification result label. */
+    verificationLabel: string | null;
+    verificationTone: StatusTone | null;
+    /** Crypto — approval decision label. */
+    approvalLabel: string | null;
   };
 
   discord: {

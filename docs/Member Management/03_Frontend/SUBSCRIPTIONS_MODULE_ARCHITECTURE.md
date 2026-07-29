@@ -1,27 +1,45 @@
 # Subscriptions Module Architecture
 
-**Version:** 2.2  
-**Status:** Active — **UI complete on mocks** (Phase 4 + Payment Resolution)  
+**Version:** 2.4  
+**Status:** Active — **UI complete on mocks** (Crypto + Manual Payment sources)  
 **Authority:** `docs/Member Management/03_Frontend/`  
 **Route:** `/admin/subscriptions`  
 **Phase record:** [`../06_Implementation/MEMBER_SUBSCRIPTIONS_IMPLEMENTATION.md`](../06_Implementation/MEMBER_SUBSCRIPTIONS_IMPLEMENTATION.md)  
 **Canonical lifecycle:** [`../02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md`](../02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md)  
+**Backend contracts:** [`../05_Backend/API_EXPECTATIONS.md`](../05_Backend/API_EXPECTATIONS.md)  
 **Last Updated:** July 29, 2026
 
 ---
 
 ## 1. Purpose
 
-Subscriptions is the **payment verification + Admin Approval ticket queue**.
+Subscriptions is the **Membership Activation Sources** workspace under Admin.
 
 It answers:
 
-> Which payments are verifying, which are verified and waiting for Admin Approval, and which need manual review?
+> Which crypto payments need verification / approval, and which manual payments have been recorded for activation?
 
-**Owns:** payments, transaction hash, wallet, verification status, **approval decision**, payment timeline, disputes.  
-**Does not own:** Membership access state (activation is a backend write triggered **only by Admin Approve**).
+**Owns:** payment tickets (crypto + manual), source-specific validation UI, approval / activation decisions, payment timeline.  
+**Does not own:** Membership access state (activation is a backend write triggered by Admin Approve / Activate).
 
-### Verification vs Approval
+### Activation sources (independent siblings)
+
+```text
+Crypto Payment
+        │
+Manual Payment
+        │
+Future Payment Sources
+        │
+        ▼
+Membership Domain (Source of Truth)
+        ▼
+Discord · Dashboard · User Profile · Analytics · Audit
+```
+
+Manual Payment is **not** a fallback for Crypto. Each source keeps its own fields and lifecycle while sharing visual language and Membership activation architecture.
+
+### Verification vs Approval (Crypto only)
 
 | Stage | Owner | Result |
 |-------|-------|--------|
@@ -30,7 +48,7 @@ It answers:
 
 **Verified ≠ Membership Activated.**
 
-Phase 4 implements the **Crypto Payment** workflow only. Ticket contracts include `activationSource` so Manual Payment / Referral Redeem / Admin Grant can extend later without redesign.
+Manual Payments skip verification — the administrator is the confirmation source.
 
 ---
 
@@ -38,24 +56,17 @@ Phase 4 implements the **Crypto Payment** workflow only. Ticket contracts includ
 
 | Concern | Owner |
 |---------|-------|
-| Payment ticket lifecycle | Subscriptions |
-| Admin Approval gateway | Subscriptions (Phase 1 mandatory) |
-| Membership plan / VIP / expiry | Membership (backend) — write **after Approve** |
+| Crypto payment ticket lifecycle | Subscriptions (Crypto tab) |
+| Manual payment recording / activation | Subscriptions (Manual tab) |
+| Membership plan / VIP / expiry | Membership (backend) — write after Approve / Activate |
 | Reflection of latest payment | Control Center `SubscriptionCard` |
-| Attention counts | Dashboard widgets |
+| Attention counts | Dashboard widgets (Crypto statuses) |
 
-Control Center **Manage Subscription** deep-links:
-
-```text
-/admin/subscriptions?member=<id>
-```
-
-Dashboard deep-links:
+Control Center deep-links:
 
 ```text
-/admin/subscriptions?status=blockchain_verifying
-/admin/subscriptions?status=approval_pending
-/admin/subscriptions?status=verification_required
+/admin/subscriptions?member=<id>                 ← Crypto
+/admin/subscriptions?source=manual&q=<username>  ← Manual
 ```
 
 ---
@@ -64,159 +75,206 @@ Dashboard deep-links:
 
 ```text
 src/types/members/subscription.ts
+src/types/members/manual-payment.ts
 src/lib/members/mock/subscriptions.ts
+src/lib/members/mock/manual-payments.ts
 src/lib/members/hooks/useSubscriptionsDirectory.ts
+src/lib/members/hooks/useManualPaymentsDirectory.ts
 src/components/members/sections/subscriptions/
-  SubscriptionsPage.tsx
+  SubscriptionsPage.tsx              # switches Crypto / Manual by ?source=
+  SubscriptionsSourceNav.tsx         # in-module tabs
   SubscriptionsDirectoryProvider.tsx
+  SubscriptionDetailRouter.tsx       # mobile detail → Crypto or Manual
   SubscriptionWidgets.tsx
   SubscriptionFiltersBar.tsx
   SubscriptionTable.tsx
   SubscriptionDetails.tsx
-  PaymentResolutionCard.tsx   # Verification Required only
+  PaymentResolutionCard.tsx
   SubscriptionMemberDetailPage.tsx
   SubscriptionRowActions.tsx
   subscription-actions.ts
   index.ts
+  manual/
+    ManualPaymentsPanel.tsx
+    ManualPaymentsDirectoryProvider.tsx
+    ManualPaymentWidgets.tsx
+    ManualPaymentFiltersBar.tsx
+    ManualPaymentTable.tsx
+    ManualPaymentDetails.tsx
+    ManualPaymentForm.tsx
+    ManualPaymentRowActions.tsx
+    ManualPaymentStatusBadge.tsx
+    ManualPaymentMemberDetailPage.tsx
+    manual-payment-actions.ts
+    index.ts
 src/app/admin/subscriptions/
-  layout.tsx          # Suspense + DirectoryProvider
+  layout.tsx          # Suspense + both DirectoryProviders
   page.tsx
   [id]/page.tsx       # mobile full-page detail
 ```
 
-**Naming:** `Subscription*` only — Crypto Payment is the primary source, not a separate module.  
 **No** `/admin/payments` route or sidebar item.
 
 ---
 
 ## 4. Component hierarchy
 
+### Crypto Payments (default)
+
 ```text
-SubscriptionsPage
+SubscriptionsPage → CryptoPaymentsPanel
 ├── PageTitle + Refresh
-├── SubscriptionWidgets          (stats → filtered hrefs)
-├── SubscriptionFiltersBar       (modulePanelSurface gold)
+├── SubscriptionsSourceNav
+├── SubscriptionWidgets
+├── SubscriptionFiltersBar
 ├── AdminDirectoryPanel
 │   ├── SubscriptionTable
-│   │   └── SubscriptionRowActions
 │   └── Pagination
-└── AdminMasterDetail detail → SubscriptionDetails
-        ├── Payment Summary
-        ├── Blockchain Information
-        ├── Verification
-        ├── Approval (+ Approve / Reject when Approval Pending)
-        ├── Payment Resolution        ← Verification Required only
-        │     ├── Contact Member
-        │     ├── Failure Summary
-        │     ├── Transaction Information
-        │     ├── Resolution Checklist
-        │     ├── Request Supporting Evidence
-        │     ├── Admin Notes
-        │     └── Approve Payment / Reject Payment
-        ├── Membership Result (when approved)
-        └── Timeline (includes resolution lifecycle events)
+└── AdminMasterDetail → SubscriptionDetails
+        ├── Payment Summary · Blockchain · Verification · Approval
+        ├── Payment Resolution (Verification Required)
+        ├── Membership Result
+        └── Timeline
 ```
 
-Desktop: list + side panel (`?member=` / `?q=`).  
-Mobile: navigate to `/admin/subscriptions/[id]` (provider stays mounted in layout).
+### Manual Payments (`?source=manual`)
+
+```text
+SubscriptionsPage → ManualPaymentsPanel
+├── PageTitle + Refresh
+├── SubscriptionsSourceNav
+├── ManualPaymentWidgets
+├── ManualPaymentFiltersBar (+ Create Manual Payment)
+├── AdminDirectoryPanel
+│   ├── ManualPaymentTable
+│   └── Pagination
+├── ManualPaymentForm (create + review modal)
+└── AdminMasterDetail → ManualPaymentDetails
+        ├── Payment Summary
+        ├── Payment Information
+        ├── Review — Confirm Activation (Pending)
+        ├── Membership Result (Activated)
+        └── Timeline
+```
+
+Desktop: list + side panel.  
+Mobile: `/admin/subscriptions/[id]` (`mp-*` → Manual, else Crypto).
 
 ---
 
-## 4.1 Payment Resolution workflow
+## 4.1 Payment Resolution workflow (Crypto only)
 
 **When visible:** `displayStatus === "verification_required"` and `ticket.resolution` is present.  
-**Hidden:** all other display states.
+**Hidden:** all other Crypto states · all Manual Payments.
 
-Purpose: structured dispute / investigation workspace — not a messaging system. Admins contact the member using activation-form contact fields, gather evidence, then Approve / Reject via the **existing** Membership activation stubs.
+Purpose: structured dispute / investigation workspace for failed automatic verification.
 
-### Resolution lifecycle (timeline)
+---
+
+## 4.2 Manual Payment workflow
 
 ```text
-Verification Failed
+Create Manual Payment
         ↓
-Payment Resolution Started
+Enter Payment Information
+  · Discord username (free text — member may not exist yet)
+  · Plan / amount / method
+  · Payment Date via DateTimePicker (IST default, editable)
+  · Received By / Reason / Notes
         ↓
-Member Contacted
+Review
         ↓
-Supporting Evidence Requested
+Create → Pending  (memberId may be null)
         ↓
-Evidence Reviewed
-        ↓
-Payment Approved  ·or·  Payment Rejected
+Activate Membership → Activated (+ Discord Sync)
+   or
+Cancel → Cancelled
 ```
 
-### Mock contract (`PaymentResolution`)
+| Status | Admin action |
+|--------|--------------|
+| Pending | Activate Membership · Cancel |
+| Activated | Read-only reflection |
+| Cancelled | Read-only |
 
-| Field | Role |
-|-------|------|
-| `failureReason` / `failureReasonLabel` | Why auto-verify failed |
-| `detectedAmount` / `expectedAmount` | Amount mismatch display |
-| `submittedWallet` / `expectedWallet` | Wallet comparison |
-| `checklist[]` | Informational investigation steps |
-| `evidenceRequests[]` | Instructional proof types (no upload) |
-| `notes[]` | Mock admin investigation notes |
-| `startedAt` / `memberContactedAt` | Resolution timestamps |
+**Do not display** Network · Wallet · TX Hash · Explorer · Verification Status on Manual records.
 
-Failure reasons: Amount Mismatch · Invalid Transaction Hash · Wrong Network · Duplicate Transaction · Wallet Mismatch · Verification Timeout · Blockchain Verification Failed · Unknown Transaction.
+### Create form UX (frontend)
 
-Contact actions (frontend mock): copy Discord username · `mailto:` for email.
+| Control | Implementation |
+|---------|----------------|
+| Discord Username | Free-text input — type / paste; `@` optional |
+| Payment Date | `DateTimePicker` (`src/components/admin/ui/DateTimePicker.tsx`) — calendar popup + hour/minute/AM·PM |
+| Timezone | Default + display: **IST (`Asia/Kolkata`)** via `src/lib/members/ist-datetime.ts` |
+| Review | Shows formatted IST receipt timestamp before create |
 
-Approve / Reject call the same `subscription-actions.ts` stubs as Approval Pending — no separate business logic.
+Date and time edit independently. Changing date does not reset time (and vice versa). `receivedAt` is the **actual receipt time**, not create-time.
 
 ---
 
 ## 5. Mock data contracts
 
-Primary type: `SubscriptionTicket` in `src/types/members/subscription.ts`.
+### Crypto — `SubscriptionTicket`
 
 | Field group | Role |
 |-------------|------|
 | Identity | `id`, `memberId`, `username`, `email` |
 | Display | `displayStatus`, `statusLabel`, `statusTone` |
-| Source | `activationSource` (Phase 4 mocks = `crypto_payment`) |
+| Source | `activationSource` = `crypto_payment` |
 | Payment | plan, amounts, method, submittedAt |
 | Blockchain | network, wallet, txHash, explorerUrl |
-| Verification | result, method, verifiedAt, notes |
-| Approval | decision, decidedAt, decidedBy, reason |
-| Resolution | optional `PaymentResolution` — Verification Required only |
-| Membership result | post-approve reflection (nullable) |
-| Timeline | ordered events for `Timeline` UI (includes resolution steps) |
+| Verification / Approval / Resolution | Crypto-only |
+| Timeline | ordered events |
 
-Display states:
+### Manual — `ManualPayment`
 
-```text
-Blockchain Verifying      ← System-owned; no admin action
-Approval Pending          ← Admin-owned; primary Approve queue after auto-verify
-Verification Required     ← Admin-owned; investigation after auto-verify failure
-Rejected
-Approved
-```
+| Field group | Role |
+|-------------|------|
+| Identity | `id`, `memberId` (**nullable**), `username` (required), `email` (nullable) |
+| Plan | `planKey`, `planLabel` |
+| Payment | method, amount, currency, **`receivedAt` (IST / +05:30)**, referenceNumber |
+| Administration | receivedBy, reason, notes |
+| Status | `pending` \| `activated` \| `cancelled` |
+| Membership result | post-activate reflection (nullable) |
+| Timeline | Created → Recorded → Activated → Discord Sync |
 
-| State | Owner | Admin action |
-|-------|-------|--------------|
-| Blockchain Verifying | System | No |
-| Verification Required | Admin | Yes — Payment Resolution → Approve / Reject |
-| Approval Pending | Admin | Yes — Approve Membership / Reject Payment |
+**Create input** (`ManualPaymentCreateInput`): free-text `username` (not `memberId`); backend resolves Member ID later.
 
-Details panel adapts by state (no Approve/Reject while Blockchain Verifying; Payment Resolution card for Verification Required; final-approval actions for Approval Pending).
+**Member partition (no overlap):** Crypto `m-001…004, m-007, m-009, m-011` · Manual `m-005, m-006, m-008, m-010, m-012`.  
+Profile / Control Center resolve Activation Source via `src/lib/members/mock/activation-source.ts` from the owning payment record — one member → one source.
 
-No **Expired** state in Subscriptions — expiry belongs to Membership.
+Extensible enums: `ManualPaymentMethod`, `ManualPaymentReason`, `ManualPaymentCurrency`.
 
-Mock actions (`subscription-actions.ts`) are stubs (`window.alert` + NestJS path). They do **not** mutate Membership.
+Mock mutations in `useManualPaymentsDirectory`: `createPayment` · `activatePayment` · `cancelPayment` (local state until NestJS).
 
 ---
 
 ## 6. URL / filter contract
 
+### Shared
+
 | Param | Meaning |
 |-------|---------|
-| `q` | Search username / email / TX / wallet |
-| `status` | Display status filter |
-| `plan` | `monthly` \| `quarterly` \| `yearly` |
-| `network` | `bep20` \| `erc20` \| `trc20` |
-| `verification` | System verification result |
-| `member` / `memberId` | Selection (Control Center deep-link) |
+| `source` | omit / `crypto` (default) · `manual` |
+| `q` | Search |
 | `page` / `pageSize` | Pagination |
+
+### Crypto
+
+| Param | Meaning |
+|-------|---------|
+| `status` | Display status filter |
+| `plan` / `network` / `verification` | Filters |
+| `member` / `memberId` | Selection |
+
+### Manual
+
+| Param | Meaning |
+|-------|---------|
+| `mpStatus` | `pending` \| `activated` \| `cancelled` |
+| `mpPlan` / `mpMethod` | Plan / payment method |
+| `mpFrom` / `mpTo` | Received date range |
+| `payment` | Selected Manual Payment id |
 
 ---
 
@@ -225,8 +283,8 @@ Mock actions (`subscription-actions.ts`) are stubs (`window.alert` + NestJS path
 ### Frontend (this module)
 
 - UI, filters, master-detail, timeline rendering
-- Typed mocks + URL-synced directory hook
-- Approve / Reject / Explorer interaction model
+- Typed mocks + URL-synced directory hooks
+- Create / Activate / Cancel / Approve / Reject interaction model
 - Backend-compatible TypeScript contracts
 
 ### Backend (not implemented here)
@@ -235,31 +293,37 @@ Reserved in [`../05_Backend/API_EXPECTATIONS.md`](../05_Backend/API_EXPECTATIONS
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| `GET` | `/admin/subscriptions` | Ticket list + stats |
-| `GET` | `/admin/subscriptions/:id` | Ticket detail |
-| `POST` | `/admin/subscriptions/:id/approve` | Membership activate gateway |
+| `GET` | `/admin/subscriptions` | Crypto ticket list + stats |
+| `POST` | `/admin/subscriptions/:id/approve` | Crypto → Membership activate |
 | `POST` | `/admin/subscriptions/:id/reject` | Reject — Membership unchanged |
+| `GET` | `/admin/subscriptions/manual-payments` | Manual list + stats |
+| `POST` | `/admin/subscriptions/manual-payments` | Create Manual Payment (`username` + IST `receivedAt`) |
+| `POST` | `/admin/subscriptions/manual-payments/:id/activate` | Manual → Membership activate |
+| `POST` | `/admin/subscriptions/manual-payments/:id/cancel` | Cancel — Membership unchanged |
 
-**Contract:** auto-verify success must **not** activate Membership. Only `approve` does.
+**Backend must support:** nullable `memberId`, free-text username, IST receipt timestamps, Activate ≠ Create.
 
 Replace mock arrays/hooks with API responses without changing component hierarchy.
 
 ---
 
-## 8. UI state transitions (mock representation)
+## 8. UI state transitions
+
+### Crypto
 
 ```text
-Payment Submitted
+Payment Submitted → Blockchain Verifying
         ↓
-Blockchain Verifying
-        ↓
-Verified → Approval Pending
+Verified → Approval Pending → Approve / Reject
    or
 Verification Failed → Verification Required → Payment Resolution
-        ↓
-Approve → Approved → Membership Result (+ Discord reflect)
-   or
-Reject → Rejected
+```
+
+### Manual
+
+```text
+Created (Pending) → Activate → Activated (+ Discord)
+                 → Cancel → Cancelled
 ```
 
 ---
@@ -267,7 +331,8 @@ Reject → Rejected
 ## 9. Status
 
 ```text
-UI ✔ Complete (mock)
+Crypto UI ✔ Complete (mock)
+Manual UI ✔ Complete (mock)
 Responsive ✔
 Mock Data ✔
 Backend Integration ⏳
