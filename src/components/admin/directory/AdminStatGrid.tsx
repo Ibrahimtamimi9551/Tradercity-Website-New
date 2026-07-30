@@ -52,7 +52,7 @@ export function AdminStatGrid({
   return (
     <div
       className={cn(
-        "grid gap-1.5 md:gap-4",
+        "grid gap-2 md:gap-3 lg:gap-4",
         mobileColClass[mobileCols],
         mdColClass[mdCols],
         xlColClass[xlCols],

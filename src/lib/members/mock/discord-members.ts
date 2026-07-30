@@ -145,14 +145,14 @@ export const MOCK_DISCORD_MEMBERS: DiscordMember[] = [
       {
         id: "ev-002-2",
         title: "Role Updated",
-        description: "Public → VIP (pending verification)",
+        description: "Public → VIP (Blockchain Verifying)",
         timestamp: "2026-06-07T14:16:00",
       },
     ],
     syncLog: [
       {
         id: "sl-002-1",
-        title: "Membership Pending Verification",
+        title: "Membership Blockchain Verifying",
         timestamp: "2026-06-07T14:14:00",
         status: "complete",
       },
@@ -250,7 +250,7 @@ export const MOCK_DISCORD_MEMBERS: DiscordMember[] = [
     linkedMembership: {
       plan: "VIP Quarterly",
       status: "pending",
-      statusLabel: "Pending Verification",
+      statusLabel: "Blockchain Verifying",
       statusTone: "warning",
       expiryAt: null,
     },

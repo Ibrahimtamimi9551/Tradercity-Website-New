@@ -1,291 +1,393 @@
-﻿'use client';
+﻿"use client";
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import {
-  Users,
-  ShieldCheck,
-  Check,
-  Layers,
-  Target,
-  Send,
-  ChevronLeft,
-  ChevronRight
-} from 'lucide-react';
-import SectionEyebrow from '../shared/SectionEyebrow';
-import GradientText from '../shared/GradientText';
-import { GLASS_CARD_CLASSES } from '../shared/GlassCard';
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { ArrowRight, ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
+import { PublicAnalystCard } from "@/components/analysts/public-profile";
+import { usePublishedPublicProfiles } from "@/lib/analysts/hooks/usePublishedPublicProfiles";
+import {
+  toPublicAnalystCardProps,
+  type PublicAnalystProfile,
+} from "@/types/analysts/public-profile";
+import { cn } from "@/lib/admin/cn";
 
-function XIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z" />
-    </svg>
-  );
+const GAP_PX = 28;
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+function wrapIndex(index: number, length: number): number {
+  if (length === 0) return 0;
+  return ((index % length) + length) % length;
 }
 
-function DiscordIcon(props: React.SVGProps<SVGSVGElement>) {
+type SpotlightCarouselProps = {
+  profiles: PublicAnalystProfile[];
+};
+
+/**
+ * Three-window spotlight track (prev / active / next).
+ * Profile-stable keys keep the centered card mounted across the reset,
+ * so the slide feels continuous instead of a hard refresh.
+ */
+function SpotlightCarousel({ profiles }: SpotlightCarouselProps) {
+  const count = profiles.length;
+  const stageRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [stageWidth, setStageWidth] = useState(0);
+  const [cardWidth, setCardWidth] = useState(0);
+  const [uniformHeight, setUniformHeight] = useState<number | undefined>();
+  const [index, setIndex] = useState(0);
+  const [slideOffset, setSlideOffset] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [instant, setInstant] = useState(false);
+
+  const measure = useCallback(() => {
+    const stage = stageRef.current;
+    const track = trackRef.current;
+    if (!stage || !track) return;
+
+    const nextStage = stage.getBoundingClientRect().width;
+    if (nextStage > 0) setStageWidth(nextStage);
+
+    const cards = Array.from(
+      track.querySelectorAll<HTMLElement>("[data-analyst-slide]")
+    );
+    if (cards.length === 0) return;
+
+    const nextWidth = Math.max(
+      ...cards.map((el) => el.getBoundingClientRect().width)
+    );
+    if (nextWidth > 0) setCardWidth(nextWidth);
+
+    const heights = cards.map((el) => {
+      const prev = el.style.minHeight;
+      el.style.minHeight = "";
+      const h = el.getBoundingClientRect().height;
+      el.style.minHeight = prev;
+      return h;
+    });
+    const maxH = Math.max(...heights, 0);
+    if (maxH > 0) setUniformHeight(maxH);
+  }, []);
+
+  useLayoutEffect(() => {
+    measure();
+    const stage = stageRef.current;
+    if (!stage) return;
+    const observer = new ResizeObserver(() => measure());
+    observer.observe(stage);
+    return () => observer.disconnect();
+  }, [count, measure, profiles, index]);
+
+  useEffect(() => {
+    if (index >= count && count > 0) setIndex(0);
+  }, [count, index]);
+
+  const step = cardWidth + GAP_PX;
+  const baseX =
+    cardWidth > 0 && stageWidth > 0
+      ? stageWidth / 2 - cardWidth - GAP_PX - cardWidth / 2
+      : 0;
+  const trackX = count === 1 ? 0 : baseX + slideOffset * step;
+
+  const commitSlide = useCallback(
+    (dir: -1 | 1) => {
+      if (count < 2 || isAnimating || cardWidth <= 0) return;
+      setIsAnimating(true);
+      setInstant(false);
+      setSlideOffset(dir);
+    },
+    [cardWidth, count, isAnimating]
+  );
+
+  const goPrev = useCallback(() => commitSlide(1), [commitSlide]);
+  const goNext = useCallback(() => commitSlide(-1), [commitSlide]);
+
+  const jumpTo = useCallback(
+    (target: number) => {
+      setInstant(true);
+      setIndex(wrapIndex(target, count));
+      setSlideOffset(0);
+      setIsAnimating(false);
+      requestAnimationFrame(() => setInstant(false));
+    },
+    [count]
+  );
+
+  const goTo = useCallback(
+    (nextIndex: number) => {
+      if (count < 2 || isAnimating) return;
+      const target = wrapIndex(nextIndex, count);
+      if (target === index) return;
+
+      const forward = wrapIndex(target - index, count);
+      const backward = wrapIndex(index - target, count);
+      const nearest = Math.min(forward, backward);
+
+      if (nearest === 1) {
+        commitSlide(forward === 1 ? -1 : 1);
+        return;
+      }
+
+      jumpTo(target);
+    },
+    [commitSlide, count, index, isAnimating, jumpTo]
+  );
+
+  const handleAnimationComplete = useCallback(() => {
+    if (slideOffset === 0) return;
+    const dir = slideOffset < 0 ? 1 : -1;
+    setInstant(true);
+    setIndex((prev) => wrapIndex(prev + dir, count));
+    setSlideOffset(0);
+    setIsAnimating(false);
+    requestAnimationFrame(() => setInstant(false));
+  }, [count, slideOffset]);
+
+  useEffect(() => {
+    if (count < 2) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        goPrev();
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        goNext();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [count, goNext, goPrev]);
+
+  if (count === 0) return null;
+
+  const slots: PublicAnalystProfile[] =
+    count === 1
+      ? [profiles[0]!]
+      : [
+          profiles[wrapIndex(index - 1, count)]!,
+          profiles[wrapIndex(index, count)]!,
+          profiles[wrapIndex(index + 1, count)]!,
+        ];
+
+  const showNav = count > 1;
+  const visualActiveSlot =
+    count === 1 ? 0 : slideOffset === -1 ? 2 : slideOffset === 1 ? 0 : 1;
+
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z" />
-    </svg>
+    <div
+      className="relative w-full"
+      role="region"
+      aria-roledescription="carousel"
+      aria-label="Featured analysts"
+    >
+      <div className="relative mx-auto w-full max-w-[1320px] overflow-x-clip">
+        <div ref={stageRef} className="relative w-full overflow-hidden">
+          <div
+            className="pointer-events-none absolute left-1/2 top-[18%] z-0 hidden h-[70%] w-[min(640px,70%)] -translate-x-1/2 rounded-full bg-[#D4AF37]/[0.08] blur-[90px] md:block"
+            aria-hidden
+          />
+
+          <motion.div
+            ref={trackRef}
+            className="relative z-10 flex items-stretch will-change-transform"
+            style={{ gap: GAP_PX }}
+            animate={{ x: trackX }}
+            transition={instant ? { duration: 0 } : { duration: 0.5, ease: EASE }}
+            onAnimationComplete={handleAnimationComplete}
+          >
+            {slots.map((profile, slotIndex) => {
+              const isLogicalActive = count === 1 || slotIndex === 1;
+              const isVisuallyActive = slotIndex === visualActiveSlot;
+
+              return (
+                <div
+                  key={profile.id}
+                  data-analyst-slide
+                  className={cn(
+                    "w-[min(700px,calc(100vw-2rem))] shrink-0 sm:w-[min(680px,78vw)] lg:w-[min(700px,52vw)] xl:w-[700px]",
+                    isVisuallyActive ? "z-10" : "z-0",
+                    isVisuallyActive
+                      ? "opacity-100"
+                      : "opacity-100 md:opacity-[0.4] md:brightness-[0.7] md:saturate-[0.5] md:blur-[1.5px]",
+                    "md:transition-[filter,opacity] md:duration-500 md:ease-out"
+                  )}
+                  style={uniformHeight ? { minHeight: uniformHeight } : undefined}
+                >
+                  <div
+                    className={cn(
+                      "h-full rounded-[1.75rem]",
+                      "md:transition-shadow md:duration-500",
+                      isVisuallyActive
+                        ? "md:shadow-[0_28px_90px_rgba(0,0,0,0.55),0_0_70px_rgba(212,175,55,0.14)]"
+                        : "md:shadow-[0_12px_36px_rgba(0,0,0,0.35)]"
+                    )}
+                  >
+                    <div
+                      className={cn("h-full", !isLogicalActive && "cursor-pointer")}
+                      aria-live={isLogicalActive ? "polite" : undefined}
+                      aria-atomic={isLogicalActive ? true : undefined}
+                      role={!isLogicalActive ? "button" : undefined}
+                      tabIndex={!isLogicalActive ? (isAnimating ? -1 : 0) : undefined}
+                      aria-label={
+                        !isLogicalActive
+                          ? slotIndex === 0
+                            ? `Show previous analyst, ${profile.displayName}`
+                            : `Show next analyst, ${profile.displayName}`
+                          : undefined
+                      }
+                      onClick={
+                        !isLogicalActive
+                          ? slotIndex === 0
+                            ? goPrev
+                            : goNext
+                          : undefined
+                      }
+                      onKeyDown={
+                        !isLogicalActive
+                          ? (event) => {
+                              if (event.key === "Enter" || event.key === " ") {
+                                event.preventDefault();
+                                if (slotIndex === 0) goPrev();
+                                else goNext();
+                              }
+                            }
+                          : undefined
+                      }
+                    >
+                      <PublicAnalystCard
+                        {...toPublicAnalystCardProps(profile)}
+                        preview={!isLogicalActive}
+                        className="h-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </motion.div>
+        </div>
+
+        {showNav ? (
+          <>
+            <button
+              type="button"
+              onClick={goPrev}
+              disabled={isAnimating}
+              aria-label="Previous analyst"
+              className="absolute left-1 top-1/2 z-30 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4AF37]/35 bg-black/60 text-[#D4AF37] backdrop-blur-md transition hover:border-[#D4AF37]/70 hover:bg-[#D4AF37]/10 disabled:opacity-40 sm:left-2 sm:h-12 sm:w-12 md:left-3 lg:left-4"
+            >
+              <ChevronLeft className="h-5 w-5" aria-hidden />
+            </button>
+            <button
+              type="button"
+              onClick={goNext}
+              disabled={isAnimating}
+              aria-label="Next analyst"
+              className="absolute right-1 top-1/2 z-30 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-[#D4AF37]/35 bg-black/60 text-[#D4AF37] backdrop-blur-md transition hover:border-[#D4AF37]/70 hover:bg-[#D4AF37]/10 disabled:opacity-40 sm:right-2 sm:h-12 sm:w-12 md:right-3 lg:right-4"
+            >
+              <ChevronRight className="h-5 w-5" aria-hidden />
+            </button>
+          </>
+        ) : null}
+      </div>
+
+      {showNav ? (
+        <div
+          className="mt-8 flex items-center justify-center gap-2"
+          role="tablist"
+          aria-label="Analyst slides"
+        >
+          {profiles.map((profile, i) => {
+            const active = i === wrapIndex(index, count);
+            return (
+              <button
+                key={profile.id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                aria-label={`Show ${profile.displayName}`}
+                disabled={isAnimating}
+                onClick={() => goTo(i)}
+                className={cn(
+                  "h-1.5 rounded-full transition-all duration-300",
+                  active
+                    ? "w-8 bg-[#D4AF37] shadow-[0_0_12px_rgba(212,175,55,0.45)]"
+                    : "w-2.5 bg-white/20 hover:bg-white/35"
+                )}
+              />
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
   );
 }
 
 export default function AnalystTeamContent() {
-  const [activeIndex, setActiveIndex] = useState(1);
-
-  const handlePrev = () => setActiveIndex((prev) => (prev - 1 + 3) % 3);
-  const handleNext = () => setActiveIndex((prev) => (prev + 1) % 3);
+  const profiles = usePublishedPublicProfiles();
 
   return (
-    <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 sm:px-8 lg:px-16 py-12 lg:py-16 flex flex-col items-center font-sans">
-      
-      {/* Top Row / Header */}
-      <div className="w-full flex flex-col lg:flex-row justify-between items-start gap-12 lg:gap-16 mb-12 lg:mb-16">
-        <motion.div className="w-full lg:max-w-3xl">
-          <SectionEyebrow
-            number="04"
-            label="The Analysts"
-            accentColor="#D4AF37"
-            className="mb-8"
-          />
+    <div className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-col items-center px-5 py-16 font-sans sm:px-8 lg:px-12 lg:py-24">
+      <header className="mb-12 flex max-w-3xl flex-col items-center text-center lg:mb-16">
+        <span className="mb-5 inline-flex items-center rounded-full border border-[#D4AF37]/35 bg-[#D4AF37]/[0.08] px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#E8C96A]">
+          Meet the Analysts
+        </span>
+        <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl lg:leading-[1.1]">
+          The Minds Behind TraderCity
+        </h2>
+        <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/55 sm:text-lg">
+          Verified specialists who produce TraderCity&apos;s market intelligence
+          and educational research — the human face of our research ecosystem.
+        </p>
+        <div
+          className="mt-7 h-px w-16 bg-gradient-to-r from-transparent via-[#D4AF37]/80 to-transparent"
+          aria-hidden
+        />
+      </header>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-8 tracking-tight leading-[1.1]">
-            The Analysts<br />
-            Behind The{' '}
-            <GradientText from="#A855F7" via="#F472B6" to="#D4AF37">Conviction.</GradientText>
-          </h2>
-
-          <p className="text-[#D4AF37] text-base md:text-lg font-semibold tracking-[0.15em] uppercase leading-relaxed max-w-2xl">
-            No single trader sees the entire market.<br className="hidden md:block" />
-            Together, they cover every dimension that matters.
+      {profiles.length === 0 ? (
+        <div className="w-full max-w-xl rounded-3xl border border-white/10 bg-white/[0.02] px-8 py-16 text-center">
+          <p className="text-sm text-white/50">
+            Published analyst profiles will appear here once they are curated and
+            made publicly visible.
           </p>
-        </motion.div>
-
-        <motion.div className="flex flex-col sm:flex-row items-start lg:justify-end gap-6 lg:gap-8 lg:mt-8 w-full lg:w-auto">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border border-[#D4AF37]/30 flex items-center justify-center shrink-0">
-            <Users className="w-8 h-8 sm:w-10 sm:h-10 text-[#D4AF37]" />
-          </div>
-          <div className="text-white/80 text-xl lg:text-2xl leading-relaxed">
-            <p className="text-white">Different expertise.</p>
-            <p className="text-white">Different perspectives.</p>
-            <p className="mt-2 font-medium">
-              <GradientText from="#A855F7" via="#F472B6" to="#D4AF37">
-                One ecosystem built<br />for smarter decisions.
-              </GradientText>
-            </p>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Carousel Section */}
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[18%_minmax(0,1fr)_18%] lg:items-center gap-6 lg:gap-8 mb-16 relative">
-
-        {/* Connection Lines between cards (Desktop Only) */}
-        <div className="hidden lg:block absolute top-1/2 left-[10%] right-[10%] h-[2px] -translate-y-1/2 z-0 pointer-events-none">
-          <div className="w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent relative">
-            <div className="absolute left-[15%] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[#A855F7]/30 shadow-[0_0_10px_rgba(168,85,247,0.3)]"></div>
-            <div className="absolute right-[15%] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[#3B82F6]/30 shadow-[0_0_10px_rgba(59,130,246,0.3)]"></div>
-          </div>
         </div>
+      ) : (
+        <SpotlightCarousel profiles={profiles} />
+      )}
 
-        {/* Left Arrow (Desktop Only) */}
-        <button onClick={handlePrev} className="hidden xl:flex absolute -left-16 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full border border-[#A855F7]/30 items-center justify-center text-[#A855F7] hover:bg-[#A855F7]/10 transition-all hover:scale-105 bg-black/50 backdrop-blur-sm z-20">
-          <ChevronLeft className="w-6 h-6" />
-        </button>
-
-        {/* Left Card: Mattertrade (Selector Card) */}
-        <motion.div
-          onClick={() => setActiveIndex(0)}
-          className={`order-2 col-span-1 lg:order-1 w-full ${GLASS_CARD_CLASSES} p-6 flex flex-col items-center text-center justify-center h-auto min-h-[280px] lg:h-[320px] cursor-pointer group shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:-translate-y-1 hover:shadow-[0_8px_32px_rgba(168,85,247,0.15)] hover:border-[#A855F7]/50 transition-all duration-300 z-10`}
-        >
-          <div className="w-14 h-14 rounded-xl border border-[#A855F7]/40 flex items-center justify-center mb-6 bg-[#A855F7]/10 text-[#A855F7] font-bold text-xl group-hover:shadow-[0_0_20px_rgba(168,85,247,0.3)] transition-all">
-            MT
-          </div>
-          <h3 className="text-2xl font-bold text-white mb-4">Mattertrade</h3>
-          <div className="w-8 h-px bg-white/10 mb-4"></div>
-          <p className="text-[#A855F7] text-base font-medium mb-8 leading-relaxed">
-            Macro &<br />Market Structure
-          </p>
-          <div className="mt-auto">
-            <div className="w-12 h-12 rounded-lg border border-[#A855F7]/20 flex items-center justify-center group-hover:border-[#A855F7]/50 transition-colors">
-              <Layers className="w-6 h-6 text-[#A855F7]" />
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Center Card: ChartInDepth (Active Card) */}
-        <motion.div
-          onClick={() => setActiveIndex(1)}
-          className="order-1 md:col-span-2 lg:col-span-1 lg:order-2 w-full bg-[#0A0A0A]/80 backdrop-blur-xl border border-[#D4AF37]/60 rounded-[2rem] p-8 sm:p-10 lg:p-14 shadow-[0_0_80px_rgba(212,175,55,0.15)] ring-1 ring-inset ring-[#D4AF37]/20 relative overflow-hidden z-10 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.005] hover:shadow-[0_10px_100px_rgba(212,175,55,0.25)] hover:border-[#D4AF37]/80 hover:ring-[#D4AF37]/40 cursor-pointer"
-        >
-          {/* Top Header */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 lg:gap-8 mb-12">
-            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border border-[#D4AF37] flex items-center justify-center bg-[#D4AF37]/10 text-[#D4AF37] font-bold text-2xl sm:text-3xl shrink-0 shadow-[0_0_20px_rgba(212,175,55,0.2)]">
-              CID
+      <div className="mt-14 w-full max-w-5xl lg:mt-16">
+        <div className="flex flex-col items-start gap-5 rounded-2xl border border-white/[0.08] bg-gradient-to-r from-[#0C0E14] via-[#10131C] to-[#0C0E14] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:px-7 sm:py-6">
+          <div className="flex items-start gap-4">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#D4AF37]/25 bg-[#D4AF37]/10 text-[#D4AF37]">
+              <BookOpen className="h-5 w-5" aria-hidden />
             </div>
             <div>
-              <h3 className="text-4xl sm:text-5xl font-bold text-white mb-3">ChartInDepth</h3>
-              <p className="text-[#D4AF37] text-lg sm:text-xl font-medium mb-3">Market Structure Specialist</p>
-              <div className="flex items-center gap-3 text-white/60 text-sm sm:text-base">
-                <ShieldCheck className="w-5 h-5 text-white/40" />
-                <span>8+ Years Experience</span>
-              </div>
+              <p className="text-base font-semibold text-white sm:text-lg">
+                TraderCity Research Coverage
+              </p>
+              <p className="mt-1 max-w-xl text-sm leading-relaxed text-white/50">
+                Members receive structured market reports, educational breakdowns,
+                and multi-perspective analysis from this verified research team.
+              </p>
             </div>
           </div>
-
-          <div className="w-full h-px bg-white/10 mb-12"></div>
-
-          {/* Grid Content */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 lg:gap-16 mb-12 relative">
-            <div className="hidden sm:block absolute left-1/2 top-0 bottom-0 w-px bg-white/10 -translate-x-1/2"></div>
-
-            <div className="sm:pr-6 lg:pr-10">
-              <h4 className="text-white/40 text-xs sm:text-sm font-bold tracking-[0.2em] uppercase mb-6 lg:mb-8">Focus Areas</h4>
-              <ul className="space-y-4 lg:space-y-5">
-                {['Market Structure', 'Futures', 'Sentiment', 'Positioning'].map((item) => (
-                  <li key={item} className="flex items-center gap-4 text-white/90 text-sm sm:text-base lg:text-lg">
-                    <div className="w-1.5 h-1.5 lg:w-2 lg:h-2 rounded-full bg-[#D4AF37] shrink-0"></div>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="sm:pl-6 lg:pl-10">
-              <h4 className="text-white/40 text-xs sm:text-sm font-bold tracking-[0.2em] uppercase mb-6 lg:mb-8">Inside TraderCity</h4>
-              <ul className="space-y-4 lg:space-y-5">
-                {['Weekly Market Reports', 'Trade Reviews', 'Educational Breakdowns', 'Market Outlooks'].map((item) => (
-                  <li key={item} className="flex items-center gap-4 text-white/90 text-sm sm:text-base lg:text-lg">
-                    <Check className="w-4 h-4 lg:w-5 lg:h-5 text-[#D4AF37] shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <p className="text-white/70 leading-relaxed text-sm sm:text-base lg:text-lg max-w-3xl">
-            "Specializes in high timeframe structure, perpetual positioning and market sentiment to identify high probability opportunities."
-          </p>
-
-          {/* Social Strip */}
-          <div className="mt-8 lg:mt-12 bg-[#1A1A1A]/80 border border-white/10 rounded-2xl p-5 flex items-center justify-between sm:justify-center sm:gap-12 w-full max-w-sm mx-auto sm:mx-0">
-            <button className="text-white/70 hover:text-white transition-colors flex items-center justify-center">
-              <XIcon className="w-5 h-5 sm:w-6 sm:h-6" />
-            </button>
-            <button className="text-white/70 hover:text-[#3B82F6] transition-colors flex items-center justify-center">
-              <Send className="w-5 h-5 sm:w-6 sm:h-6" />
-            </button>
-            <button className="text-white/70 hover:text-[#EF4444] transition-colors flex items-center justify-center font-bold text-base sm:text-lg tracking-wide">
-              YT
-            </button>
-            <button className="text-white/70 hover:text-white transition-colors flex items-center justify-center">
-              <DiscordIcon className="w-6 h-6 sm:w-7 sm:h-7" />
-            </button>
-          </div>
-        </motion.div>
-
-        {/* Right Card: Heavyweight (Selector Card) */}
-        <motion.div
-          onClick={() => setActiveIndex(2)}
-          className={`order-3 col-span-1 lg:order-3 w-full ${GLASS_CARD_CLASSES} p-6 flex flex-col items-center text-center justify-center h-auto min-h-[280px] lg:h-[320px] cursor-pointer group shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:-translate-y-1 hover:shadow-[0_8px_32px_rgba(59,130,246,0.15)] hover:border-[#3B82F6]/50 transition-all duration-300 z-10`}
-        >
-          <div className="w-14 h-14 rounded-xl border border-[#3B82F6]/40 flex items-center justify-center mb-6 bg-[#3B82F6]/10 text-[#3B82F6] font-bold text-xl group-hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] transition-all">
-            HW
-          </div>
-          <h3 className="text-2xl font-bold text-white mb-4">Heavyweight</h3>
-          <div className="w-8 h-px bg-white/10 mb-4"></div>
-          <p className="text-[#3B82F6] text-base font-medium mb-8 leading-relaxed">
-            Orderflow &<br />Execution
-          </p>
-          <div className="mt-auto">
-            <div className="w-12 h-12 rounded-lg border border-[#3B82F6]/20 flex items-center justify-center group-hover:border-[#3B82F6]/50 transition-colors">
-              <Target className="w-6 h-6 text-[#3B82F6]" />
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Right Arrow (Desktop Only) */}
-        <button onClick={handleNext} className="hidden xl:flex absolute -right-16 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full border border-[#3B82F6]/30 items-center justify-center text-[#3B82F6] hover:bg-[#3B82F6]/10 transition-all hover:scale-105 bg-black/50 backdrop-blur-sm z-20">
-          <ChevronRight className="w-6 h-6" />
-        </button>
+          <Link
+            href="/analysts"
+            className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-[#D4AF37] px-6 py-3.5 text-sm font-semibold text-[#1A1408] transition hover:brightness-110 sm:w-auto"
+          >
+            Become an Analyst
+            <ArrowRight className="h-4 w-4" aria-hidden />
+          </Link>
+        </div>
       </div>
-
-      {/* Bottom Navigation */}
-      <motion.div className="w-full max-w-4xl mx-auto mt-16">
-        
-        {/* Desktop & Tablet Nav */}
-        <div className="hidden sm:flex items-center justify-between px-4 md:px-0">
-          
-          {/* Left Item */}
-          <button onClick={() => setActiveIndex(0)} className={`flex items-center gap-4 shrink-0 transition-all duration-300 ${activeIndex === 0 ? 'opacity-100' : 'opacity-50 hover:opacity-80'}`}>
-            <span className={`text-sm font-bold tracking-widest uppercase transition-all duration-300 ${activeIndex === 0 ? 'text-[#A855F7] drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]' : 'text-white'}`}>Mattertrade</span>
-            <div className={`w-6 h-6 rounded-full bg-black border-2 flex items-center justify-center transition-all duration-300 ${activeIndex === 0 ? 'border-[#A855F7] shadow-[0_0_15px_rgba(168,85,247,0.4)]' : 'border-white/20'}`}>
-              <div className={`w-2 h-2 rounded-full transition-all duration-300 ${activeIndex === 0 ? 'bg-[#A855F7] shadow-[0_0_8px_rgba(168,85,247,0.8)]' : 'bg-transparent'}`}></div>
-            </div>
-          </button>
-
-          {/* Connector 1 */}
-          <div className={`flex-1 h-[2px] mx-2 sm:mx-4 transition-all duration-300 ${activeIndex === 0 ? 'bg-gradient-to-r from-[#A855F7]/80 to-transparent' : 'bg-white/10'}`}></div>
-          <div className={`w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-300 ${activeIndex === 0 || activeIndex === 1 ? 'bg-white/60 shadow-[0_0_8px_rgba(255,255,255,0.4)]' : 'bg-white/20'}`}></div>
-          <div className={`flex-1 h-[2px] mx-2 sm:mx-4 transition-all duration-300 ${activeIndex === 1 ? 'bg-gradient-to-l from-[#D4AF37]/80 to-transparent' : 'bg-white/10'}`}></div>
-
-          {/* Center Item */}
-          <button onClick={() => setActiveIndex(1)} className={`flex items-center gap-4 shrink-0 transition-all duration-300 ${activeIndex === 1 ? 'opacity-100' : 'opacity-50 hover:opacity-80'}`}>
-            <span className={`text-sm font-bold tracking-widest uppercase transition-all duration-300 ${activeIndex === 1 ? 'text-[#D4AF37] drop-shadow-[0_0_8px_rgba(212,175,55,0.5)]' : 'text-white'}`}>ChartInDepth</span>
-            <div className={`w-6 h-6 rounded-full bg-black border-2 flex items-center justify-center relative transition-all duration-300 ${activeIndex === 1 ? 'border-[#D4AF37] shadow-[0_0_20px_rgba(212,175,55,0.4)]' : 'border-white/20'}`}>
-              <div className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${activeIndex === 1 ? 'bg-[#D4AF37]' : 'bg-transparent'}`}></div>
-              {activeIndex === 1 && <div className="absolute inset-0 rounded-full border border-[#D4AF37] animate-ping opacity-20"></div>}
-            </div>
-          </button>
-
-          {/* Connector 2 */}
-          <div className={`flex-1 h-[2px] mx-2 sm:mx-4 transition-all duration-300 ${activeIndex === 1 ? 'bg-gradient-to-r from-[#D4AF37]/80 to-transparent' : 'bg-white/10'}`}></div>
-          <div className={`w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-300 ${activeIndex === 1 || activeIndex === 2 ? 'bg-white/60 shadow-[0_0_8px_rgba(255,255,255,0.4)]' : 'bg-white/20'}`}></div>
-          <div className={`flex-1 h-[2px] mx-2 sm:mx-4 transition-all duration-300 ${activeIndex === 2 ? 'bg-gradient-to-l from-[#3B82F6]/80 to-transparent' : 'bg-white/10'}`}></div>
-
-          {/* Right Item */}
-          <button onClick={() => setActiveIndex(2)} className={`flex items-center gap-4 shrink-0 transition-all duration-300 ${activeIndex === 2 ? 'opacity-100' : 'opacity-50 hover:opacity-80'}`}>
-            <div className={`w-6 h-6 rounded-full bg-black border-2 flex items-center justify-center transition-all duration-300 ${activeIndex === 2 ? 'border-[#3B82F6] shadow-[0_0_15px_rgba(59,130,246,0.4)]' : 'border-white/20'}`}>
-              <div className={`w-2 h-2 rounded-full transition-all duration-300 ${activeIndex === 2 ? 'bg-[#3B82F6] shadow-[0_0_8px_rgba(59,130,246,0.8)]' : 'bg-transparent'}`}></div>
-            </div>
-            <span className={`text-sm font-bold tracking-widest uppercase transition-all duration-300 ${activeIndex === 2 ? 'text-[#3B82F6] drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]' : 'text-white'}`}>Heavyweight</span>
-          </button>
-
-        </div>
-
-        {/* Mobile Nav */}
-        <div className="flex sm:hidden flex-col items-center">
-          <div className="flex items-start justify-between w-full max-w-xs mx-auto">
-            
-            <button onClick={() => setActiveIndex(0)} className={`flex flex-col items-center gap-3 w-1/3 transition-all duration-300 ${activeIndex === 0 ? 'opacity-100' : 'opacity-50'}`}>
-              <div className={`w-5 h-5 rounded-full bg-black border-2 flex items-center justify-center transition-all duration-300 ${activeIndex === 0 ? 'border-[#A855F7] shadow-[0_0_15px_rgba(168,85,247,0.4)]' : 'border-white/20'}`}>
-                <div className={`w-2 h-2 rounded-full transition-all duration-300 ${activeIndex === 0 ? 'bg-[#A855F7]' : 'bg-transparent'}`}></div>
-              </div>
-              <span className={`text-[10px] font-bold tracking-widest uppercase text-center leading-tight transition-colors duration-300 ${activeIndex === 0 ? 'text-[#A855F7]' : 'text-white'}`}>Matter<br />trade</span>
-            </button>
-
-            <button onClick={() => setActiveIndex(1)} className={`flex flex-col items-center gap-3 w-1/3 transition-all duration-300 ${activeIndex === 1 ? 'opacity-100' : 'opacity-50'}`}>
-              <div className={`w-6 h-6 rounded-full bg-black border-2 flex items-center justify-center relative transition-all duration-300 ${activeIndex === 1 ? 'border-[#D4AF37] shadow-[0_0_15px_rgba(212,175,55,0.4)]' : 'border-white/20'}`}>
-                <div className={`w-2 h-2 rounded-full transition-all duration-300 ${activeIndex === 1 ? 'bg-[#D4AF37]' : 'bg-transparent'}`}></div>
-                {activeIndex === 1 && <div className="absolute inset-0 rounded-full border border-[#D4AF37] animate-ping opacity-20"></div>}
-              </div>
-              <span className={`text-[10px] font-bold tracking-widest uppercase text-center leading-tight transition-colors duration-300 ${activeIndex === 1 ? 'text-[#D4AF37]' : 'text-white'}`}>ChartIn<br />Depth</span>
-            </button>
-
-            <button onClick={() => setActiveIndex(2)} className={`flex flex-col items-center gap-3 w-1/3 transition-all duration-300 ${activeIndex === 2 ? 'opacity-100' : 'opacity-50'}`}>
-              <div className={`w-5 h-5 rounded-full bg-black border-2 flex items-center justify-center transition-all duration-300 ${activeIndex === 2 ? 'border-[#3B82F6] shadow-[0_0_15px_rgba(59,130,246,0.4)]' : 'border-white/20'}`}>
-                <div className={`w-2 h-2 rounded-full transition-all duration-300 ${activeIndex === 2 ? 'bg-[#3B82F6]' : 'bg-transparent'}`}></div>
-              </div>
-              <span className={`text-[10px] font-bold tracking-widest uppercase text-center leading-tight transition-colors duration-300 ${activeIndex === 2 ? 'text-[#3B82F6]' : 'text-white'}`}>Heavy<br />weight</span>
-            </button>
-
-          </div>
-        </div>
-      </motion.div>
-
     </div>
   );
 }

@@ -7,6 +7,7 @@ import Community from "@/components/home/community/Community";
 import MembershipComparison from "@/components/home/membership-comparison/MembershipComparison";
 import ResearchFramework from "@/components/home/research-framework/ResearchFramework";
 import Pricing from "@/components/pricing/Pricing";
+import BecomeAnalyst from "@/components/home/become-analyst/BecomeAnalyst";
 
 export default function Page() {
   return (
@@ -21,6 +22,7 @@ export default function Page() {
       <ResearchFramework />
       <MembershipComparison />
       <Pricing />
+      <BecomeAnalyst />
     </main>
   );
 }

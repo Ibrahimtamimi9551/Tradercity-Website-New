@@ -66,8 +66,10 @@ export function MembershipCard({ profile, onViewActivity }: MembershipCardProps)
           </span>
         </FieldRow>
         <FieldRow label="Renewal Count">{membership.renewalCount}</FieldRow>
-        <FieldRow label="VIP Activated Via">
-          <span className="text-sky-300">{membership.activatedVia ?? "—"}</span>
+        <FieldRow label="Activation Source">
+          <span className="text-sky-300">
+            {membership.activatedVia ?? "—"}
+          </span>
         </FieldRow>
         <FieldRow label="Total Duration">{membership.totalDuration}</FieldRow>
       </div>

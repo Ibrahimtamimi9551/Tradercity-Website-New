@@ -11,10 +11,7 @@ import type {
   ReferralSort,
   ReferralSortKey,
 } from "@/types/members/referral";
-import {
-  ReferralRowActions,
-  type ReferralRowActionHandlers,
-} from "./ReferralRowActions";
+import { ReferralRowActions } from "./ReferralRowActions";
 
 const avatarToneStyles: Record<ReferralMember["avatarTone"], string> = {
   discord: "admin-on-accent bg-[#5865F2] text-white",
@@ -99,7 +96,9 @@ export function ReferralProgressCell({ member }: { member: ReferralMember }) {
   const pct = Math.round(
     (member.successfulReferrals / Math.max(member.progressTarget, 1)) * 100
   );
-  const completed = member.progressStatus === "completed";
+  const approved = member.redeemRequestStatus === "approved";
+  const awaitingRedeem =
+    member.redeemRequestStatus === "waiting_admin_approval";
 
   return (
     <div className="min-w-[8.5rem]">
@@ -113,14 +112,24 @@ export function ReferralProgressCell({ member }: { member: ReferralMember }) {
         <div
           className={cn(
             "h-full rounded-full",
-            completed ? "bg-violet-400" : pct >= 50 ? "bg-violet-400" : "bg-amber-400"
+            awaitingRedeem
+              ? "bg-amber-400"
+              : approved
+                ? "bg-violet-400"
+                : pct >= 50
+                  ? "bg-violet-400"
+                  : "bg-amber-400"
           )}
           style={{ width: `${Math.min(pct, 100)}%` }}
         />
       </div>
-      {completed ? (
+      {awaitingRedeem ? (
         <div className="mt-1.5">
-          <StatusBadge label="Completed" tone="vip" dot={false} />
+          <StatusBadge label="Waiting Admin Approval" tone="warning" dot={false} />
+        </div>
+      ) : approved ? (
+        <div className="mt-1.5">
+          <StatusBadge label="Approved" tone="success" dot={false} />
         </div>
       ) : null}
     </div>
@@ -131,7 +140,6 @@ type ReferralTableProps = {
   rows: ReferralMember[];
   selectedId: string | null;
   onRowSelect: (member: ReferralMember) => void;
-  actionHandlers: ReferralRowActionHandlers;
   sort: ReferralSort;
   onSortChange: (key: ReferralSortKey) => void;
   emptyTitle?: string;
@@ -141,7 +149,6 @@ export function ReferralTable({
   rows,
   selectedId,
   onRowSelect,
-  actionHandlers,
   sort,
   onSortChange,
   emptyTitle = "No referral members found",
@@ -197,7 +204,7 @@ export function ReferralTable({
       stopRowClick: true,
       className: "w-[3.5rem] text-right",
       render: (member) => (
-        <ReferralRowActions member={member} handlers={actionHandlers} />
+        <ReferralRowActions member={member} />
       ),
     },
   ];

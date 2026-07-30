@@ -1,13 +1,13 @@
 "use client";
 
 import { Users, Clock, UserPlus, Crown, User, Mail } from "lucide-react";
+import { AdminStatGrid } from "@/components/admin/directory";
 import { WidgetCard } from "@/components/admin/ui";
 import { DiscordIcon } from "@/components/admin/ui/icons/DiscordIcon";
 
 export function OperationalWidgets() {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-      {/* Informational */}
+    <AdminStatGrid mobileCols={2} mdCols={2} xlCols={4}>
       <WidgetCard
         label="Total Members"
         value="1,248"
@@ -15,25 +15,25 @@ export function OperationalWidgets() {
         icon={Users}
         accent="purple"
         priority="informational"
+        compactMobile
         trend={{ value: 18.4, label: "vs 25 May - 31 May", direction: "up" }}
         href="/admin/members"
         linkText="View all members"
       />
 
-      {/* Critical — amber */}
       <WidgetCard
-        label="Pending Verification"
-        value="24"
-        hint="Subscription payments"
+        label="Approval Pending"
+        value="3"
+        hint="Verified — final admin approval"
         icon={Clock}
         accent="amber"
         priority="critical"
+        compactMobile
         trend={{ value: 14.3, label: "vs 25 May - 31 May", direction: "down" }}
-        href="/admin/subscriptions?status=pending_verification"
+        href="/admin/subscriptions?status=approval_pending"
         linkText="Review now"
       />
 
-      {/* Critical — red */}
       <WidgetCard
         label="Discord Issues"
         value="7"
@@ -41,25 +41,25 @@ export function OperationalWidgets() {
         icon={DiscordIcon}
         accent="rose"
         priority="critical"
+        compactMobile
         trend={{ value: 12.5, label: "vs 25 May - 31 May", direction: "down" }}
         href="/admin/discord?sync=failed"
         linkText="Review now"
       />
 
-      {/* Important — purple */}
       <WidgetCard
-        label="Referral Requests"
+        label="Referral Redeem Requests"
         value="12"
-        hint="Pending approval"
+        hint="Waiting admin approval"
         icon={UserPlus}
         accent="purple"
         priority="important"
+        compactMobile
         trend={{ value: 20.0, label: "vs 25 May - 31 May", direction: "up" }}
-        href="/admin/referrals?status=pending"
+        href="/admin/subscriptions?source=referral_redeem"
         linkText="Review now"
       />
 
-      {/* Informational row */}
       <WidgetCard
         label="VIP Members"
         value="812"
@@ -67,6 +67,7 @@ export function OperationalWidgets() {
         icon={Crown}
         accent="gold"
         priority="informational"
+        compactMobile
         trend={{ value: 22.7, label: "vs 25 May - 31 May", direction: "up" }}
         href="/admin/members?membership=vip"
         linkText="View VIP members"
@@ -78,6 +79,7 @@ export function OperationalWidgets() {
         icon={User}
         accent="green"
         priority="informational"
+        compactMobile
         trend={{ value: 9.2, label: "vs 25 May - 31 May", direction: "up" }}
         href="/admin/members?membership=free"
         linkText="View free members"
@@ -89,6 +91,7 @@ export function OperationalWidgets() {
         icon={Mail}
         accent="blue"
         priority="informational"
+        compactMobile
         trend={{ value: 22.7, label: "vs 25 May - 31 May", direction: "up" }}
         href="/admin/members?source=email"
         linkText="View details"
@@ -100,10 +103,11 @@ export function OperationalWidgets() {
         icon={DiscordIcon}
         accent="teal"
         priority="informational"
+        compactMobile
         trend={{ value: 15.3, label: "vs 25 May - 31 May", direction: "up" }}
         href="/admin/members?source=discord"
         linkText="View details"
       />
-    </div>
+    </AdminStatGrid>
   );
 }

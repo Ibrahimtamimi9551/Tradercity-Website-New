@@ -31,7 +31,7 @@ const previewRows: PreviewRow[] = [
     id: "2",
     username: "usman_hodler",
     membership: "Free",
-    subscription: "Pending Verification",
+    subscription: "Blockchain Verifying",
     health: "needs_attention",
   },
   {
@@ -63,13 +63,13 @@ export function AdminFoundationPreview() {
             href="/admin/members"
           />
           <WidgetCard
-            label="Pending Verification"
+            label="Blockchain Verifying"
             value={24}
-            hint="Requires review"
+            hint="System verifying"
             icon={CreditCard}
             accent="amber"
             priority="critical"
-            href="/admin/subscriptions?status=pending_verification"
+            href="/admin/subscriptions?status=blockchain_verifying"
           />
           <WidgetCard
             label="Action Required"
@@ -108,8 +108,8 @@ export function AdminFoundationPreview() {
                 const tone =
                   row.subscription === "Active"
                     ? "success"
-                    : row.subscription === "Pending Verification"
-                      ? "warning"
+                    : row.subscription === "Blockchain Verifying"
+                      ? "info"
                       : "danger";
                 return <StatusBadge label={row.subscription} tone={tone} />;
               },

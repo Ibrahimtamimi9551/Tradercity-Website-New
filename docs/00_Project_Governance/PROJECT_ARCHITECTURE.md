@@ -27,15 +27,30 @@ It combines education, research, community, analyst insights, and membership ope
 
 It is **not** a typical crypto education landing site.
 
+**Ubiquitous language:** [`PLATFORM_TERMINOLOGY.md`](./PLATFORM_TERMINOLOGY.md) — Product = Platform · Engineering = Domain · Admin UI = short nouns (Members, Analysts, Content).
+
 | Layer | Role |
 |-------|------|
 | **Marketing Website** | Attracts and converts members |
-| **Member Experience** | Delivers Free and VIP product value |
-| **Admin Platform** | Operates the business (internal) |
-| **Analyst Platform** | Publishes analyst identity and research |
-| **Content Platform** | Structures learning, reports, news, and media |
+| **Member Platform** | Registration, membership, member experience |
+| **Analyst Platform** | Partner analysts, research publishing, commissions |
+| **Content Platform** | Learning, research libraries, reports, events, CMS |
+| **Commerce Platform** | *(future)* Pricing, payments, payouts |
+| **Community Platform** | *(future)* Discord ops, campaigns, social |
+| **Platform Administration** | *(future)* Roles, settings, audit, feature flags |
+| **Admin (shell)** | Internal operating UI across platforms |
 
-Marketing and Admin are **two products**, not one UI:
+```text
+TraderCity Platform
+├── Member Platform
+├── Analyst Platform
+├── Content Platform
+├── Commerce Platform          (future)
+├── Community Platform         (future)
+└── Platform Administration    (future)
+```
+
+Marketing site and Admin shell are **two UI products**, not one surface:
 
 ```text
 TraderCity Website  →  Public Experience
@@ -154,6 +169,12 @@ Workload widgets deep-link into modules with filters pre-applied.
 Directory and search. Answers: *Which users exist — and who needs attention?*  
 Member Control Center (`/admin/members/[id]`) reflects cross-module state; it does not own every management action.
 
+**Membership** is a **backend domain** (not an Admin page): single source of truth for VIP / access lifecycle. Subscriptions, Referral, Manual Activation, and future grants write Membership; Profile, Members, Dashboard, and Discord consume it. Canonical contract: [`docs/04_Product_Architecture/CROSS_MODULE_DATA_SYNCHRONIZATION_ARCHITECTURE.md`](../04_Product_Architecture/CROSS_MODULE_DATA_SYNCHRONIZATION_ARCHITECTURE.md).
+
+Member Free/VIP dashboards + Auth/session integration expectations: [`docs/04_Product_Architecture/MEMBER_DASHBOARD_AND_AUTH_INTEGRATION_ARCHITECTURE.md`](../04_Product_Architecture/MEMBER_DASHBOARD_AND_AUTH_INTEGRATION_ARCHITECTURE.md).
+
+Frontend documentation audit: [`docs/Development/TraderCity_Frontend_Engineering_Audit.md`](../Development/TraderCity_Frontend_Engineering_Audit.md).
+
 ### Subscriptions
 
 Payment / subscription ticket resolution.
@@ -177,6 +198,8 @@ Payment verification and financial operational flows (aligned with subscription/
 **Current route anchors:** `/admin`, `/admin/members`, `/admin/subscriptions`, `/admin/discord`, `/admin/referrals`
 
 Authoritative Admin specs live under `docs/AI/Agents/Admin/`.
+
+Highest-level Admin ecosystem + user lifecycle reference: [`docs/04_Product_Architecture/TRADERCITY_ADMIN_ECOSYSTEM_AND_USER_LIFECYCLE_ARCHITECTURE.md`](../04_Product_Architecture/TRADERCITY_ADMIN_ECOSYSTEM_AND_USER_LIFECYCLE_ARCHITECTURE.md).
 
 ---
 
@@ -205,6 +228,8 @@ Pipeline for releasing analyst content into member and marketing surfaces as app
 **Scalability:** Treat as its own product domain. Homepage “Analyst Team” marketing sections are presentation; Analyst Platform is the durable system for analyst operations and publishing.
 
 **Maturity note (v1.0):** Domain is defined for product architecture. Implementation depth may lag Admin/Marketing — build under dedicated analyst namespaces when activated.
+
+Canonical Analyst Ecosystem documentation (isolated subsystem): [`docs/Analyst/00_Overview/ANALYST_DOCUMENTATION_INDEX.md`](../Analyst/00_Overview/ANALYST_DOCUMENTATION_INDEX.md). Architecture: [`docs/Analyst/02_Product_Architecture/ANALYST_ECOSYSTEM_ARCHITECTURE.md`](../Analyst/02_Product_Architecture/ANALYST_ECOSYSTEM_ARCHITECTURE.md).
 
 ---
 

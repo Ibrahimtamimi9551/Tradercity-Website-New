@@ -51,9 +51,7 @@ export function useActiveSection() {
 
 export function isNavItemActive(activeId: string, itemId: string): boolean {
   if (itemId === "team") return activeId === "analysts";
+  if (itemId === "knowledge") return activeId === "research";
+  if (itemId === "partnership") return activeId === "become-analyst";
   return activeId === itemId;
-}
-
-export function isMoreMenuActive(activeId: string): boolean {
-  return ["analysts", "pricing"].includes(activeId);
 }

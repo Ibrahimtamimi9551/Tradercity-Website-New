@@ -199,34 +199,20 @@ export default function TraderCityNavigation() {
                 </div>
               ))}
 
-              <div
-                className={[
-                  "flex items-center overflow-hidden transition-all",
-                  showInlineLogin
-                    ? "max-w-[148px] opacity-100"
-                    : "pointer-events-none max-w-0 opacity-0",
-                ].join(" ")}
-                style={transitionStyle}
-                aria-hidden={!showInlineLogin}
-              >
-                <NavDivider />
-                <LoginButton variant="inline" />
-              </div>
+              {showInlineLogin ? (
+                <div className="flex items-center">
+                  <NavDivider />
+                  <LoginButton variant="inline" />
+                </div>
+              ) : null}
             </div>
           </nav>
 
-          <div
-            className={[
-              "justify-self-end overflow-hidden transition-all",
-              showExternalLogin
-                ? "max-w-[180px] opacity-100"
-                : "pointer-events-none max-w-0 opacity-0",
-            ].join(" ")}
-            style={transitionStyle}
-            aria-hidden={!showExternalLogin}
-          >
-            <LoginButton variant="external" />
-          </div>
+          {showExternalLogin ? (
+            <div className="justify-self-end">
+              <LoginButton variant="external" />
+            </div>
+          ) : null}
         </div>
       </div>
     </header>

@@ -2,11 +2,11 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/admin/cn";
 
 /**
- * Desktop details panel width — Referrals standard (~30% wider than the
- * original 22–28rem shells) for stacked inspection content.
+ * Desktop details panel width — Referrals standard for stacked inspection content.
+ * ~10% narrower than the prior 36rem / 40% shell so the primary workspace can breathe.
  */
 export const ADMIN_DETAIL_PANEL_WIDTH =
-  "lg:grid-cols-[minmax(0,1fr)_min(36rem,40%)] xl:grid-cols-[minmax(0,1fr)_36rem]";
+  "lg:grid-cols-[minmax(0,1fr)_min(32.4rem,36%)] xl:grid-cols-[minmax(0,1fr)_32.4rem]";
 
 type AdminMasterDetailProps = {
   list: ReactNode;

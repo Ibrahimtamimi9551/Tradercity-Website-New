@@ -1,170 +1,226 @@
-//Iteration 3 
-
 "use client";
 
-import React from "react";
+import { useState, useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import {
-  User,
-  LayoutGrid,
-  Mail,
-  Send,
-  Lock,
+  Check,
+  Crown,
   DollarSign,
   Gift,
-  Crown,
-  Check,
-  ArrowRight,
+  LayoutGrid,
+  Loader2,
+  Lock,
   Shield,
-  Users
+  User,
+  Users,
 } from "lucide-react";
-import Link from "next/link";
+import {
+  type AuthMode,
+  type MockAuthProvider,
+  resolvePostAuthRedirect,
+  useAuth,
+} from "@/lib/auth";
+import AuthFormFields from "./AuthFormFields";
+import AuthModeToggle from "./AuthModeToggle";
+import AuthStatusBanner from "./AuthStatusBanner";
+import MockSignOutButton from "./MockSignOutButton";
+import SocialAuthButtons from "./SocialAuthButtons";
+import { DiscordIcon, TraderCityLogo } from "./icons";
 
-// ==========================================
-// Custom SVG Icons
-// ==========================================
-const TraderCityLogo = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12 2.5L20 7v9l-8 4.5L4 16V7l8-4.5zM12 5.5L7 8.5v6l5 3 5-3v-6l-5-3z" />
-  </svg>
-);
+type BusyState = "idle" | "email" | "google" | "discord";
+type BannerState =
+  | { tone: "error" | "success" | "info"; message: string }
+  | null;
 
-const DiscordIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
-  </svg>
-);
+function parseMode(raw: string | null): AuthMode {
+  return raw === "register" ? "register" : "login";
+}
 
-const GoogleIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24">
-    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-  </svg>
-);
+export default function LoginContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { login, register, logout, isAuthenticated, isReady, user } = useAuth();
+  const [, startTransition] = useTransition();
 
-// ==========================================
-// Main Component
-// ==========================================
-export default function LoginPage() {
+  const returnUrl = searchParams.get("returnUrl") ?? searchParams.get("next");
+  const plan = searchParams.get("plan");
+  const mode = parseMode(searchParams.get("mode"));
+  const continueHref = resolvePostAuthRedirect({ returnUrl, plan });
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [busy, setBusy] = useState<BusyState>("idle");
+  const [banner, setBanner] = useState<BannerState>(null);
+  const [signingOut, setSigningOut] = useState(false);
+
+  /** Redirect only after an explicit auth action — never on page load. */
+  const redirectAfterAuth = () => {
+    const destination = resolvePostAuthRedirect({ returnUrl, plan });
+    setBanner({
+      tone: "success",
+      message:
+        mode === "register"
+          ? "Account created (mock). Continuing your journey…"
+          : "Signed in (mock). Continuing your journey…",
+    });
+    startTransition(() => {
+      router.push(destination);
+    });
+  };
+
+  const runAuth = async (provider: MockAuthProvider) => {
+    if (busy !== "idle") return;
+    setBanner(null);
+    setBusy(provider === "email" ? "email" : provider);
+
+    try {
+      const credentials = {
+        email,
+        password,
+        displayName: mode === "register" ? displayName : undefined,
+      };
+
+      if (mode === "register") {
+        await register(credentials, provider);
+      } else {
+        await login(credentials, provider);
+      }
+      redirectAfterAuth();
+    } catch {
+      setBanner({
+        tone: "error",
+        message: "Something went wrong. Please try again.",
+      });
+    } finally {
+      setBusy("idle");
+    }
+  };
+
+  const onSignOutHere = async () => {
+    if (signingOut) return;
+    setSigningOut(true);
+    try {
+      await logout();
+      setBanner({
+        tone: "info",
+        message: "Signed out (mock). You can sign in again below.",
+      });
+    } finally {
+      setSigningOut(false);
+    }
+  };
+
+  const onModeChange = (next: AuthMode) => {
+    setBanner(null);
+    const params = new URLSearchParams(searchParams.toString());
+    if (next === "register") params.set("mode", "register");
+    else params.delete("mode");
+    const query = params.toString();
+    router.replace(query ? `/login?${query}` : "/login", { scroll: false });
+  };
+
+  const locked = busy !== "idle";
+
   return (
-    <div className="min-h-screen bg-[#050608] text-white font-sans overflow-x-hidden relative flex flex-col justify-center pb-20 pt-28">
-      
-      {/* Background Ambient Glow */}
-      <div className="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/5 via-[#050608] to-[#050608]"></div>
+    <div className="relative flex min-h-screen flex-col justify-center overflow-x-hidden bg-[#050608] pb-16 pt-24 text-white sm:pb-20 sm:pt-28 lg:pb-10 lg:pt-20">
+      <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/5 via-[#050608] to-[#050608]" />
 
-      {/* ========================================== */}
-      {/* TOP HEADER */}
-      {/* ========================================== */}
-      <header className="absolute top-0 w-full px-6 lg:px-12 py-8 flex justify-between items-center z-50 pointer-events-auto">
-        <div className="flex items-center gap-3">
-          <TraderCityLogo className="w-8 h-8 text-[#3B82F6]" />
-          <span className="text-xl font-bold tracking-widest text-white">
+      <header className="pointer-events-auto absolute top-0 z-50 flex w-full items-center justify-between px-5 py-6 sm:px-6 lg:px-10 lg:py-5">
+        <Link href="/" className="flex items-center gap-3 transition-opacity hover:opacity-90">
+          <TraderCityLogo className="h-8 w-8 text-[#3B82F6]" />
+          <span className="text-lg font-bold tracking-widest text-white sm:text-xl">
             TRADERCITY
           </span>
-        </div>
+        </Link>
 
-        <div className="hidden md:flex items-center gap-3 text-sm text-[#94A3B8]">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full border border-gray-700 flex items-center justify-center">
-              <User className="w-3.5 h-3.5 text-gray-400" />
-            </div>
-            <span>Login</span>
-          </div>
-          
-          <div className="flex gap-1">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="w-[3px] h-[3px] rounded-full bg-gray-700" />
-            ))}
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full border border-gray-700 flex items-center justify-center">
-              <LayoutGrid className="w-3.5 h-3.5 text-gray-400" />
-            </div>
-            <span>Dashboard</span>
-          </div>
-
-          <div className="flex gap-1">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="w-[3px] h-[3px] rounded-full bg-gray-700" />
-            ))}
-          </div>
-          
-          <div className="flex items-center gap-2 text-white font-medium">
-            <div className="relative flex items-center justify-center w-7 h-7 bg-[#5865F2] rounded-full">
-              <DiscordIcon className="w-4 h-4 text-white" />
-              <div className="absolute -top-1.5 -right-1.5 bg-[#A855F7] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-[#050608]">
-                2
+        <div className="flex items-center gap-3 text-sm text-[#94A3B8]">
+          <MockSignOutButton redirectTo={null} />
+          <div className="hidden items-center gap-3 md:flex">
+            <div className="flex items-center gap-2 text-white">
+              <div className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-700">
+                <User className="h-3.5 w-3.5 text-gray-400" />
               </div>
+              <span>Login</span>
             </div>
-            <span>Join Discord</span>
+            <div className="flex gap-1">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="h-[3px] w-[3px] rounded-full bg-gray-700" />
+              ))}
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-700">
+                <LayoutGrid className="h-3.5 w-3.5 text-gray-400" />
+              </div>
+              <span>Dashboard</span>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* ========================================== */}
-      {/* 3D PERSPECTIVE LAYOUT */}
-      {/* ========================================== */}
-      <main className="relative z-10 max-w-[1400px] w-full mx-auto px-4 lg:px-8 flex flex-col items-center">
-        
-        <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8 xl:gap-12 w-full perspective-[1400px]">
-          
-          {/* -------------------------------------- */}
-          {/* LEFT FEATURE CARD */}
-          {/* -------------------------------------- */}
-          <div
-            className="w-full max-w-[300px] rounded-[24px] p-6 lg:rotate-y-[12deg] lg:rotate-z-[1deg] lg:translate-x-4 relative bg-[#090A10] pointer-events-auto"
+      <main className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-col items-center px-4 lg:px-6 xl:px-8">
+        <div className="flex w-full flex-col items-stretch justify-center gap-6 md:items-center lg:flex-row lg:items-center lg:gap-5 xl:gap-6 lg:[perspective:1400px]">
+          {/* Left feature — desktop / tablet */}
+          <aside
+            className="pointer-events-auto relative hidden w-full max-w-[280px] shrink-0 rounded-[24px] bg-[#090A10] p-6 md:block lg:max-w-[260px] xl:max-w-[280px] lg:translate-x-1 lg:rotate-y-[8deg] lg:rotate-z-[0.5deg]"
             style={{
-              background: "linear-gradient(#090A10, #090A10) padding-box, linear-gradient(180deg, rgba(56,189,248,0.6), rgba(168,85,247,0.3)) border-box",
+              background:
+                "linear-gradient(#090A10, #090A10) padding-box, linear-gradient(180deg, rgba(56,189,248,0.6), rgba(168,85,247,0.3)) border-box",
               borderWidth: "1px",
               borderColor: "transparent",
               boxShadow: "-10px 10px 40px rgba(56,189,248,0.05)",
             }}
           >
             <div className="flex flex-col items-center text-center">
-              <div className="w-12 h-12 bg-[#A855F7]/10 rounded-2xl flex items-center justify-center mb-4 border border-[#A855F7]/20">
-                <DiscordIcon className="w-7 h-7 text-[#A855F7]" />
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-[#A855F7]/20 bg-[#A855F7]/10 lg:mb-3 lg:h-11 lg:w-11">
+                <DiscordIcon className="h-7 w-7 text-[#A855F7] lg:h-6 lg:w-6" />
               </div>
-              <span className="text-[#A855F7] text-[9px] font-bold tracking-[0.15em] uppercase mb-1.5">
-                JOIN FREE
+              <span className="mb-1.5 text-[9px] font-bold uppercase tracking-[0.15em] text-[#A855F7]">
+                Join free
               </span>
-              <h3 className="text-white text-lg font-bold tracking-tight mb-2">
-                DISCORD COMMUNITY
+              <h3 className="mb-2 text-lg font-bold tracking-tight text-white">
+                Discord Community
               </h3>
-              <p className="text-[#94A3B8] text-xs mb-6 leading-relaxed">
-                Access our active community, market insights, analysis and connect with elite traders.
+              <p className="mb-6 text-xs leading-relaxed text-[#94A3B8] lg:mb-4">
+                Access our active community, market insights, analysis and connect
+                with elite traders.
               </p>
-
-              <div className="w-full flex flex-col gap-3">
-                {/* Feature 1 */}
-                <div className="rounded-xl border border-[#3B82F6]/30 bg-[#0C0E14] p-3 text-left relative overflow-hidden group hover:border-[#3B82F6]/50 transition-colors">
-                  <div className="absolute inset-0 bg-[#3B82F6]/5 group-hover:bg-[#3B82F6]/10 transition-colors"></div>
+              <div className="flex w-full flex-col gap-3 lg:gap-2.5">
+                <div className="group relative overflow-hidden rounded-xl border border-[#3B82F6]/30 bg-[#0C0E14] p-3 text-left transition-colors hover:border-[#3B82F6]/50">
+                  <div className="absolute inset-0 bg-[#3B82F6]/5 transition-colors group-hover:bg-[#3B82F6]/10" />
                   <div className="relative z-10 flex gap-3">
-                    <div className="w-9 h-9 shrink-0 rounded-full border border-[#3B82F6]/50 bg-[#3B82F6]/10 flex items-center justify-center text-[#3B82F6]">
-                      <DollarSign className="w-4 h-4" />
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#3B82F6]/50 bg-[#3B82F6]/10 text-[#3B82F6]">
+                      <DollarSign className="h-4 w-4" />
                     </div>
                     <div>
-                      <span className="text-[#3B82F6] text-[9px] font-bold tracking-wider uppercase">RECEIVE</span>
-                      <h4 className="text-white font-bold text-xs mb-1 leading-tight">$10 CREDIT</h4>
-                      <p className="text-[#64748B] text-[10px] leading-relaxed">
-                        Get $10 worth of subscription credit instantly after registration.
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-[#3B82F6]">
+                        Receive
+                      </span>
+                      <h4 className="mb-1 text-xs font-bold leading-tight text-white">
+                        $10 Credit
+                      </h4>
+                      <p className="text-[10px] leading-relaxed text-[#64748B]">
+                        Get $10 worth of subscription credit instantly after
+                        registration.
                       </p>
                     </div>
                   </div>
                 </div>
-
-                {/* Feature 2 */}
-                <div className="rounded-xl border border-[#A855F7]/30 bg-[#0C0E14] p-3 text-left relative overflow-hidden group hover:border-[#A855F7]/50 transition-colors">
-                  <div className="absolute inset-0 bg-[#A855F7]/5 group-hover:bg-[#A855F7]/10 transition-colors"></div>
+                <div className="group relative overflow-hidden rounded-xl border border-[#A855F7]/30 bg-[#0C0E14] p-3 text-left transition-colors hover:border-[#A855F7]/50">
+                  <div className="absolute inset-0 bg-[#A855F7]/5 transition-colors group-hover:bg-[#A855F7]/10" />
                   <div className="relative z-10 flex gap-3">
-                    <div className="w-9 h-9 shrink-0 rounded-full border border-[#A855F7]/50 bg-[#A855F7]/10 flex items-center justify-center text-[#A855F7]">
-                      <Gift className="w-4 h-4" />
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#A855F7]/50 bg-[#A855F7]/10 text-[#A855F7]">
+                      <Gift className="h-4 w-4" />
                     </div>
                     <div>
-                      <span className="text-[#A855F7] text-[9px] font-bold tracking-wider uppercase">EARN WITH</span>
-                      <h4 className="text-white font-bold text-xs mb-1 leading-tight">REFERRAL REWARDS</h4>
-                      <p className="text-[#64748B] text-[10px] leading-relaxed">
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-[#A855F7]">
+                        Earn with
+                      </span>
+                      <h4 className="mb-1 text-xs font-bold leading-tight text-white">
+                        Referral Rewards
+                      </h4>
+                      <p className="text-[10px] leading-relaxed text-[#64748B]">
                         Unlock referral potential and earn commissions as you grow.
                       </p>
                     </div>
@@ -172,799 +228,208 @@ export default function LoginPage() {
                 </div>
               </div>
             </div>
-          </div>
+          </aside>
 
-          {/* -------------------------------------- */}
-          {/* CENTER LOGIN CARD (Visual Dominance) */}
-          {/* -------------------------------------- */}
+          {/* Center auth card */}
           <div
-            className="w-full max-w-[760px] rounded-[24px] p-6 sm:p-12 lg:p-14 z-20 bg-[#0A0C10] relative shadow-[0_0_100px_rgba(59,130,246,0.15)] order-first lg:order-none pointer-events-auto flex flex-col items-center"
+            className="pointer-events-auto relative z-20 order-first flex w-full max-w-[520px] flex-col items-center rounded-[24px] bg-[#0A0C10] p-6 shadow-[0_0_100px_rgba(59,130,246,0.15)] sm:p-10 lg:order-none lg:max-w-[760px] lg:flex-1 lg:px-10 lg:py-8 xl:max-w-[800px] xl:px-12 xl:py-9"
             style={{
-              background: "linear-gradient(#0A0C10, #0A0C10) padding-box, linear-gradient(135deg, rgba(56,189,248,0.9), rgba(168,85,247,0.7)) border-box",
+              background:
+                "linear-gradient(#0A0C10, #0A0C10) padding-box, linear-gradient(135deg, rgba(56,189,248,0.9), rgba(168,85,247,0.7)) border-box",
               borderWidth: "1.5px",
               borderColor: "transparent",
             }}
           >
-            <h2 className="text-5xl md:text-[50px] font-extrabold text-white mb-12 tracking-tight text-center mt-2 drop-shadow-md">
-              Register / Login
-            </h2>
+            <p className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#64748B] lg:mb-1">
+              Development mock auth
+            </p>
+            <h1 className="mb-2 text-center text-3xl font-extrabold tracking-tight text-white drop-shadow-md sm:text-4xl md:text-[44px] lg:mb-1.5 lg:text-[40px] xl:text-[42px]">
+              {mode === "register" ? "Create Account" : "Welcome back"}
+            </h1>
+            <p className="mb-6 max-w-sm text-center text-sm text-[#94A3B8] lg:mb-4 lg:max-w-md">
+              {mode === "register"
+                ? "Join TraderCity and continue to your destination."
+                : "Sign in to continue your TraderCity journey."}
+            </p>
 
-            {/* Google Auth Button */}
-            {/*  Added Link component to wrap the Google Auth Button, directing users to the free dashboard after clicking  but here a problem , this click work on 2 conditions , if user come from free discord this login should redirect to free , otherwise activation page */}
-            {/* <Link href="/dashboard/free">
-              <button className="w-full h-16 bg-white hover:bg-gray-50 text-black font-extrabold rounded-xl flex items-center justify-center gap-3 mb-6 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98]">
-                <GoogleIcon className="w-6 h-6" />
-                <span className="text-[16px]">Continue with Google</span>
-              </button>
-            </Link> */}
+            <AuthModeToggle mode={mode} onChange={onModeChange} disabled={locked} />
 
-            <Link href="/dashboard/free">
-            {/* mock frontend stage ke liye: */}
-             <button onClick={() => window.location.href = "/dashboard/free"}
-             className="w-full h-16 bg-white hover:bg-gray-50 text-black font-extrabold rounded-xl flex items-center justify-center gap-3 mb-6 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98]">
-                <GoogleIcon className="w-6 h-6" />
-                <span className="text-[16px]">Continue with Google</span>
-              </button>
-            </Link>
-
-            <div className="flex items-center gap-4 w-full mb-6">
-              <div className="h-px bg-[#1F2129] flex-1"></div>
-              <span className="text-[#64748B] text-xs font-bold tracking-widest uppercase">OR</span>
-              <div className="h-px bg-[#1F2129] flex-1"></div>
-            </div>
-
-            {/* Discord Auth Button */}
-            <button className="w-full h-16 bg-gradient-to-r from-[#5865F2] to-[#4752C4] hover:opacity-95 text-white font-extrabold rounded-xl flex items-center justify-center gap-3 mb-12 shadow-[0_0_20px_rgba(88,101,242,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_0_25px_rgba(88,101,242,0.4)] active:scale-[0.98]">
-              <DiscordIcon className="w-6 h-6 text-white" />
-              <span className="text-[16px]">Continue with Discord</span>
-            </button>
-
-            {/* Trust Indicators */}
-            <div className="mb-12 grid w-full grid-cols-3 gap-2 px-1 sm:gap-4 sm:px-2">
-              <div className="flex min-w-0 flex-col items-center gap-2.5 text-center">
-                <div className="text-[#A855F7]">
-                  <Shield className="h-6 w-6" />
+            {isReady && isAuthenticated ? (
+              <div className="mb-5 w-full rounded-xl border border-[#3B82F6]/35 bg-[#3B82F6]/10 px-4 py-4 text-left lg:mb-4 lg:px-4 lg:py-3">
+                <p className="text-sm font-semibold text-[#BFDBFE]">
+                  You are already signed in
+                  {user?.displayName ? ` as ${user.displayName}` : ""}.
+                </p>
+                <p className="mt-1 text-xs leading-relaxed text-[#94A3B8] lg:mt-0.5">
+                  Development mock session is active. Stay here to re-test auth,
+                  continue your journey, or sign out.
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2 lg:mt-2.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      startTransition(() => {
+                        router.push(continueHref);
+                      });
+                    }}
+                    className="inline-flex items-center justify-center rounded-lg bg-[#3B82F6] px-3.5 py-2 text-xs font-bold text-white transition-colors hover:bg-[#2563EB] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6]/60"
+                  >
+                    Continue to Dashboard
+                  </button>
+                  <button
+                    type="button"
+                    disabled={signingOut}
+                    onClick={() => void onSignOutHere()}
+                    className="inline-flex items-center justify-center rounded-lg border border-[#1F2129] px-3.5 py-2 text-xs font-bold text-[#94A3B8] transition-colors hover:border-[#3B82F6]/40 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6]/50 disabled:opacity-60"
+                  >
+                    {signingOut ? "Signing out…" : "Sign Out"}
+                  </button>
                 </div>
+              </div>
+            ) : null}
+
+            {banner ? (
+              <AuthStatusBanner tone={banner.tone} message={banner.message} />
+            ) : null}
+
+            <SocialAuthButtons
+              busyProvider={
+                busy === "google" || busy === "discord" ? busy : null
+              }
+              disabled={locked && busy === "email"}
+              onGoogle={() => void runAuth("google")}
+              onDiscord={() => void runAuth("discord")}
+            />
+
+            <form
+              className="w-full"
+              onSubmit={(e) => {
+                e.preventDefault();
+                void runAuth("email");
+              }}
+            >
+              <AuthFormFields
+                mode={mode}
+                email={email}
+                password={password}
+                displayName={displayName}
+                disabled={locked}
+                onEmailChange={setEmail}
+                onPasswordChange={setPassword}
+                onDisplayNameChange={setDisplayName}
+              />
+
+              <button
+                type="submit"
+                disabled={locked}
+                className="mb-8 flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] text-[15px] font-extrabold text-white shadow-[0_0_20px_rgba(59,130,246,0.3)] transition-all hover:-translate-y-0.5 hover:opacity-95 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 sm:h-16 sm:text-[16px] lg:mb-5 lg:h-12 lg:text-[15px]"
+              >
+                {busy === "email" ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <span>
+                      {mode === "register" ? "Creating account…" : "Signing in…"}
+                    </span>
+                  </>
+                ) : (
+                  <span>
+                    {mode === "register" ? "Create Account" : "Login"}
+                  </span>
+                )}
+              </button>
+            </form>
+
+            <div className="mb-8 grid w-full grid-cols-3 gap-2 px-1 sm:gap-4 sm:px-2 lg:mb-5 lg:gap-3">
+              <div className="flex min-w-0 flex-col items-center gap-2.5 text-center lg:gap-1.5">
+                <Shield className="h-6 w-6 text-[#A855F7] lg:h-5 lg:w-5" />
                 <span className="text-[10px] font-medium leading-snug text-white sm:text-xs">
                   Secure &amp; Private
                 </span>
               </div>
-              <div className="flex min-w-0 flex-col items-center gap-2.5 text-center">
-                <div className="text-[#FACC15]">
-                  <Lock className="h-6 w-6" />
-                </div>
+              <div className="flex min-w-0 flex-col items-center gap-2.5 text-center lg:gap-1.5">
+                <Lock className="h-6 w-6 text-[#FACC15] lg:h-5 lg:w-5" />
                 <span className="text-[10px] font-medium leading-snug text-white sm:text-xs">
-                  No Password
+                  Mock session
                 </span>
               </div>
-              <div className="flex min-w-0 flex-col items-center gap-2.5 text-center">
-                <div className="text-[#3B82F6]">
-                  <Users className="h-6 w-6" />
-                </div>
+              <div className="flex min-w-0 flex-col items-center gap-2.5 text-center lg:gap-1.5">
+                <Users className="h-6 w-6 text-[#3B82F6] lg:h-5 lg:w-5" />
                 <span className="text-[10px] font-medium leading-snug text-white sm:text-xs">
                   Trusted by Traders
                 </span>
               </div>
             </div>
 
-            {/* Terms & Conditions */}
-            <p className="text-[#64748B] text-[11px] font-medium text-center max-w-[280px]">
-              By continuing, you agree to our<br/>
-              <a href="#" className="text-[#FACC15] hover:text-[#fde047] transition-colors">Terms of Service</a> and <a href="#" className="text-[#FACC15] hover:text-[#fde047] transition-colors">Privacy Policy</a>.
+            <p className="max-w-[300px] text-center text-[11px] font-medium text-[#64748B] lg:max-w-none">
+              By continuing, you agree to our{" "}
+              <a
+                href="#"
+                className="text-[#FACC15] transition-colors hover:text-[#fde047]"
+              >
+                Terms of Service
+              </a>{" "}
+              and{" "}
+              <a
+                href="#"
+                className="text-[#FACC15] transition-colors hover:text-[#fde047]"
+              >
+                Privacy Policy
+              </a>
+              .
             </p>
           </div>
 
-          {/* -------------------------------------- */}
-          {/* RIGHT FEATURE CARD */}
-          {/* -------------------------------------- */}
-          <div
-            className="w-full max-w-[300px] rounded-[24px] p-6 lg:-rotate-y-[12deg] lg:-rotate-z-[1deg] lg:-translate-x-4 relative bg-[#090A10] pointer-events-auto"
+          {/* Right feature — desktop / tablet */}
+          <aside
+            className="pointer-events-auto relative hidden w-full max-w-[280px] shrink-0 rounded-[24px] bg-[#090A10] p-6 md:block lg:max-w-[260px] xl:max-w-[280px] lg:-translate-x-1 lg:-rotate-y-[8deg] lg:-rotate-z-[0.5deg]"
             style={{
-              background: "linear-gradient(#090A10, #090A10) padding-box, linear-gradient(180deg, rgba(234,179,8,0.6), rgba(234,179,8,0.1)) border-box",
+              background:
+                "linear-gradient(#090A10, #090A10) padding-box, linear-gradient(180deg, rgba(234,179,8,0.6), rgba(234,179,8,0.1)) border-box",
               borderWidth: "1px",
               borderColor: "transparent",
               boxShadow: "10px 10px 40px rgba(234,179,8,0.05)",
             }}
           >
             <div className="flex flex-col items-center text-center">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#FACC15]/30 bg-[#FACC15]/5 text-[#FACC15] text-[9px] font-bold tracking-widest uppercase mb-6">
-                <Crown className="w-3 h-3" /> VIP ACCESS
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#FACC15]/30 bg-[#FACC15]/5 px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-[#FACC15] lg:mb-4">
+                <Crown className="h-3 w-3" /> VIP Access
               </div>
-              
-              <Crown className="w-14 h-14 text-[#FACC15] mb-4 drop-shadow-[0_0_15px_rgba(234,179,8,0.4)]" />
-              
-              <h3 className="text-white text-lg font-bold tracking-tight mb-2">
-                VIP COMMUNITY
+              <Crown className="mb-4 h-14 w-14 text-[#FACC15] drop-shadow-[0_0_15px_rgba(234,179,8,0.4)] lg:mb-3 lg:h-12 lg:w-12" />
+              <h3 className="mb-2 text-lg font-bold tracking-tight text-white">
+                VIP Community
               </h3>
-              <p className="text-[#94A3B8] text-xs mb-6 leading-relaxed">
-                Premium access to elite tools, advanced education and exclusive content.
+              <p className="mb-6 text-xs leading-relaxed text-[#94A3B8] lg:mb-4">
+                Premium access to elite tools, advanced education and exclusive
+                content.
               </p>
-
-              <div className="w-full flex flex-col gap-4 text-left mb-6">
-                <div className="flex items-start gap-3">
-                  <div className="w-[16px] h-[16px] mt-0.5 shrink-0 rounded-full border border-[#FACC15] flex items-center justify-center">
-                    <Check className="w-2.5 h-2.5 text-[#FACC15]" />
+              <div className="mb-6 flex w-full flex-col gap-4 text-left lg:mb-4 lg:gap-3">
+                {[
+                  "Full Discord Access",
+                  "Microstructure Report & Orderflow Analysis",
+                  "Complete Education & Report Archive",
+                  "Active Discussions with Analysts",
+                ].map((item) => (
+                  <div key={item} className="flex items-start gap-3">
+                    <div className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-[#FACC15]">
+                      <Check className="h-2.5 w-2.5 text-[#FACC15]" />
+                    </div>
+                    <span className="text-xs font-medium leading-snug text-[#CBD5E1]">
+                      {item}
+                    </span>
                   </div>
-                  <span className="text-[#CBD5E1] text-xs font-medium leading-snug">Full Discord Access</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-[16px] h-[16px] mt-0.5 shrink-0 rounded-full border border-[#FACC15] flex items-center justify-center">
-                    <Check className="w-2.5 h-2.5 text-[#FACC15]" />
-                  </div>
-                  <span className="text-[#CBD5E1] text-xs font-medium leading-snug">Microstructure Report & Orderflow Analysis</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-[16px] h-[16px] mt-0.5 shrink-0 rounded-full border border-[#FACC15] flex items-center justify-center">
-                    <Check className="w-2.5 h-2.5 text-[#FACC15]" />
-                  </div>
-                  <span className="text-[#CBD5E1] text-xs font-medium leading-snug">Complete Education & Report Archive</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-[16px] h-[16px] mt-0.5 shrink-0 rounded-full border border-[#FACC15] flex items-center justify-center">
-                    <Check className="w-2.5 h-2.5 text-[#FACC15]" />
-                  </div>
-                  <span className="text-[#CBD5E1] text-xs font-medium leading-snug">Active Discussions with Analysts</span>
-                </div>
+                ))}
               </div>
-
-              <button className="w-full h-10 bg-gradient-to-r from-[#FACC15] to-[#EAB308] hover:opacity-90 text-black font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(234,179,8,0.2)] transition-opacity">
-                <Crown className="w-3.5 h-3.5" />
+              <Link
+                href="/pricing"
+                className="flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#FACC15] to-[#EAB308] text-sm font-bold text-black shadow-[0_0_15px_rgba(234,179,8,0.2)] transition-opacity hover:opacity-90"
+              >
+                <Crown className="h-3.5 w-3.5" />
                 Upgrade to VIP
-              </button>
+              </Link>
             </div>
-          </div>
+          </aside>
         </div>
-
       </main>
     </div>
   );
 }
-
-
-
-
-
-// //iteration1 
-// "use client";
-
-// import React from "react";
-// import { motion } from "framer-motion";
-// import {
-//   User,
-//   LayoutGrid,
-//   Mail,
-//   Send,
-//   Lock,
-//   DollarSign,
-//   Gift,
-//   Crown,
-//   Check,
-//   ArrowRight,
-//   Shield,
-//   Users
-// } from "lucide-react";
-
-// // ==========================================
-// // Custom SVG Icons (Matches Reference)
-// // ==========================================
-// const TraderCityLogo = ({ className }: { className?: string }) => (
-//   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-//     <path d="M12 2.5L20 7v9l-8 4.5L4 16V7l8-4.5zM12 5.5L7 8.5v6l5 3 5-3v-6l-5-3z" />
-//   </svg>
-// );
-
-// const DiscordIcon = ({ className }: { className?: string }) => (
-//   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-//     <path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
-//   </svg>
-// );
-
-// const GoogleIcon = ({ className }: { className?: string }) => (
-//   <svg className={className} viewBox="0 0 24 24">
-//     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-//     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-//     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-//     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-//   </svg>
-// );
-
-// // ==========================================
-// // Main Component
-// // ==========================================
-// export default function LoginPage() {
-//   return (
-//     <div className="min-h-screen bg-[#050608] text-white font-sans overflow-x-hidden relative flex flex-col justify-center pb-20 pt-28">
-      
-//       {/* Background Ambient Glow - Reduced visual noise */}
-//       <div className="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/5 via-[#050608] to-[#050608]"></div>
-
-//       {/* ========================================== */}
-//       {/* TOP HEADER */}
-//       {/* ========================================== */}
-//       <header className="absolute top-0 w-full px-6 lg:px-12 py-8 flex justify-between items-center z-50 pointer-events-auto">
-//         <div className="flex items-center gap-3">
-//           <TraderCityLogo className="w-8 h-8 text-[#3B82F6]" />
-//           <span className="text-xl font-bold tracking-widest text-white">
-//             TRADERCITY
-//           </span>
-//         </div>
-
-//         <div className="hidden md:flex items-center gap-3 text-sm text-[#94A3B8]">
-//           <div className="flex items-center gap-2">
-//             <div className="w-7 h-7 rounded-full border border-gray-700 flex items-center justify-center">
-//               <User className="w-3.5 h-3.5 text-gray-400" />
-//             </div>
-//             <span>Login</span>
-//           </div>
-          
-//           <div className="flex gap-1">
-//             {[...Array(6)].map((_, i) => (
-//               <div key={i} className="w-[3px] h-[3px] rounded-full bg-gray-700" />
-//             ))}
-//           </div>
-          
-//           <div className="flex items-center gap-2">
-//             <div className="w-7 h-7 rounded-full border border-gray-700 flex items-center justify-center">
-//               <LayoutGrid className="w-3.5 h-3.5 text-gray-400" />
-//             </div>
-//             <span>Dashboard</span>
-//           </div>
-
-//           <div className="flex gap-1">
-//             {[...Array(6)].map((_, i) => (
-//               <div key={i} className="w-[3px] h-[3px] rounded-full bg-gray-700" />
-//             ))}
-//           </div>
-          
-//           <div className="flex items-center gap-2 text-white font-medium">
-//             <div className="relative flex items-center justify-center w-7 h-7 bg-[#5865F2] rounded-full">
-//               <DiscordIcon className="w-4 h-4 text-white" />
-//               <div className="absolute -top-1.5 -right-1.5 bg-[#A855F7] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-[#050608]">
-//                 2
-//               </div>
-//             </div>
-//             <span>Join Discord</span>
-//           </div>
-//         </div>
-//       </header>
-
-//       {/* ========================================== */}
-//       {/* 3D PERSPECTIVE LAYOUT */}
-//       {/* ========================================== */}
-//       <main className="relative z-10 max-w-[1200px] w-full mx-auto px-4 lg:px-8 flex flex-col items-center">
-        
-//        <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8 xl:gap-12 w-full perspective-[1400px]">
-          
-//           {/* -------------------------------------- */}
-//           {/* LEFT FEATURE CARD */}
-//           {/* -------------------------------------- */}
-//           <motion.div
-//             // initial={{ opacity: 0, x: -50 }}
-//             // animate={{ opacity: 1, x: 0 }}
-//             // transition={{ duration: 0.6, delay: 0.1 }}
-//             className="w-full max-w-[320px] rounded-[24px] p-7 lg:rotate-y-[12deg] lg:rotate-z-[1deg] lg:translate-x-6 relative bg-[#090A10] pointer-events-auto"
-//             style={{
-//               background: "linear-gradient(#090A10, #090A10) padding-box, linear-gradient(180deg, rgba(56,189,248,0.6), rgba(168,85,247,0.3)) border-box",
-//               borderWidth: "1px",
-//               borderColor: "transparent",
-//               boxShadow: "-10px 10px 40px rgba(56,189,248,0.05)",
-//             }}
-//           >
-//             <div className="flex flex-col items-center text-center">
-//               <div className="w-14 h-14 bg-[#A855F7]/10 rounded-2xl flex items-center justify-center mb-5 border border-[#A855F7]/20">
-//                 <DiscordIcon className="w-8 h-8 text-[#A855F7]" />
-//               </div>
-//               <span className="text-[#A855F7] text-[10px] font-bold tracking-[0.15em] uppercase mb-1.5">
-//                 JOIN FREE
-//               </span>
-//               <h3 className="text-white text-xl font-bold tracking-tight mb-3">
-//                 DISCORD COMMUNITY
-//               </h3>
-//               <p className="text-[#94A3B8] text-[13px] mb-8 leading-relaxed">
-//                 Access our active community, market insights, analysis and connect with elite traders.
-//               </p>
-
-//               <div className="w-full flex flex-col gap-4">
-//                 {/* Feature 1 */}
-//                 <div className="rounded-xl border border-[#3B82F6]/30 bg-[#0C0E14] p-4 text-left relative overflow-hidden group">
-//                   <div className="absolute inset-0 bg-[#3B82F6]/5 group-hover:bg-[#3B82F6]/10 transition-colors"></div>
-//                   <div className="relative z-10 flex gap-4">
-//                     <div className="w-10 h-10 shrink-0 rounded-full border border-[#3B82F6]/50 bg-[#3B82F6]/10 flex items-center justify-center text-[#3B82F6]">
-//                       <DollarSign className="w-5 h-5" />
-//                     </div>
-//                     <div>
-//                       <span className="text-[#3B82F6] text-[10px] font-bold tracking-wider uppercase">RECEIVE</span>
-//                       <h4 className="text-white font-bold text-sm mb-1 leading-tight">$10 CREDIT</h4>
-//                       <p className="text-[#64748B] text-[11px] leading-relaxed">
-//                         Get $10 worth of subscription credit instantly after registration.
-//                       </p>
-//                     </div>
-//                   </div>
-//                 </div>
-
-//                 {/* Feature 2 */}
-//                 <div className="rounded-xl border border-[#A855F7]/30 bg-[#0C0E14] p-4 text-left relative overflow-hidden group">
-//                   <div className="absolute inset-0 bg-[#A855F7]/5 group-hover:bg-[#A855F7]/10 transition-colors"></div>
-//                   <div className="relative z-10 flex gap-4">
-//                     <div className="w-10 h-10 shrink-0 rounded-full border border-[#A855F7]/50 bg-[#A855F7]/10 flex items-center justify-center text-[#A855F7]">
-//                       <Gift className="w-5 h-5" />
-//                     </div>
-//                     <div>
-//                       <span className="text-[#A855F7] text-[10px] font-bold tracking-wider uppercase">EARN WITH</span>
-//                       <h4 className="text-white font-bold text-sm mb-1 leading-tight">REFERRAL REWARDS</h4>
-//                       <p className="text-[#64748B] text-[11px] leading-relaxed">
-//                         Unlock referral potential and earn commissions as you grow with TraderCity.
-//                       </p>
-//                     </div>
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-//           </motion.div>
-
-//           {/* -------------------------------------- */}
-//           {/* CENTER LOGIN CARD (Visual Dominance) */}
-//           {/* -------------------------------------- */}
-//           <motion.div
-//             // initial={{ opacity: 0, y: 20 }}
-//             // animate={{ opacity: 1, y: 0 }}
-//             // transition={{ duration: 0.5 }}
-//             className="w-full max-w-[440px] rounded-[24px] p-8 lg:p-10 z-20 bg-[#0A0C10] relative shadow-[0_0_80px_rgba(59,130,246,0.15)] order-first lg:order-none pointer-events-auto"
-//             style={{
-//               background: "linear-gradient(#0A0C10, #0A0C10) padding-box, linear-gradient(135deg, rgba(56,189,248,0.9), rgba(168,85,247,0.7)) border-box",
-//               borderWidth: "1.5px",
-//               borderColor: "transparent",
-//             }}
-//           >
-//             <div className="flex flex-col items-center w-full">
-              
-//               <h2 className="text-3xl md:text-[34px] font-bold text-white mb-10 tracking-tight text-center mt-2">
-//                 Register / Login
-//               </h2>
-
-//               {/* Google Auth Button */}
-//               <button className="w-full h-14 bg-white hover:bg-gray-50 text-black font-bold rounded-xl flex items-center justify-center gap-3 mb-6 transition-all shadow-lg hover:shadow-xl active:scale-[0.98]">
-//                 <GoogleIcon className="w-6 h-6" />
-//                 <span className="text-[15px]">Continue with Google</span>
-//               </button>
-
-//               <div className="flex items-center gap-4 w-full mb-6">
-//                 <div className="h-px bg-[#1F2129] flex-1"></div>
-//                 <span className="text-[#64748B] text-xs font-bold tracking-widest uppercase">OR</span>
-//                 <div className="h-px bg-[#1F2129] flex-1"></div>
-//               </div>
-
-//               {/* Discord Auth Button */}
-//               <button className="w-full h-14 bg-gradient-to-r from-[#5865F2] to-[#4752C4] hover:opacity-95 text-white font-bold rounded-xl flex items-center justify-center gap-3 mb-10 shadow-[0_0_20px_rgba(88,101,242,0.3)] transition-all active:scale-[0.98]">
-//                 <DiscordIcon className="w-6 h-6 text-white" />
-//                 <span className="text-[15px]">Continue with Discord</span>
-//               </button>
-
-//               {/* Trust Indicators */}
-//               <div className="flex items-center justify-between w-full mb-10 px-2">
-//                 <div className="flex flex-col items-center gap-2.5">
-//                   <div className="text-[#A855F7]">
-//                     <Shield className="w-5 h-5" />
-//                   </div>
-//                   <span className="text-white text-[11px] font-medium whitespace-nowrap">Secure & Private</span>
-//                 </div>
-//                 <div className="flex flex-col items-center gap-2.5">
-//                   <div className="text-[#FACC15]">
-//                     <Lock className="w-5 h-5" />
-//                   </div>
-//                   <span className="text-white text-[11px] font-medium whitespace-nowrap">No Password</span>
-//                 </div>
-//                 <div className="flex flex-col items-center gap-2.5">
-//                   <div className="text-[#3B82F6]">
-//                     <Users className="w-5 h-5" />
-//                   </div>
-//                   <span className="text-white text-[11px] font-medium whitespace-nowrap">Trusted by Traders</span>
-//                 </div>
-//               </div>
-
-//               {/* Terms & Conditions */}
-//               <p className="text-[#64748B] text-[11px] font-medium text-center max-w-[280px]">
-//                 By continuing, you agree to our<br/>
-//                 <a href="#" className="text-[#FACC15] hover:text-[#fde047] transition-colors">Terms of Service</a> and <a href="#" className="text-[#FACC15] hover:text-[#fde047] transition-colors">Privacy Policy</a>.
-//               </p>
-//             </div>
-//           </motion.div>
-
-//           {/* -------------------------------------- */}
-//           {/* RIGHT FEATURE CARD */}
-//           {/* -------------------------------------- */}
-          
-//           <motion.div
-//             // initial={{ opacity: 0, x: 50 }}
-//             // animate={{ opacity: 1, x: 0 }}
-//             // transition={{ duration: 0.6, delay: 0.1 }}
-//             className="w-full max-w-[320px] rounded-[24px] p-7 lg:-rotate-y-[12deg] lg:-rotate-z-[1deg] lg:-translate-x-6 relative bg-[#090A10] pointer-events-auto"
-//             style={{
-//               background: "linear-gradient(#090A10, #090A10) padding-box, linear-gradient(180deg, rgba(234,179,8,0.6), rgba(234,179,8,0.1)) border-box",
-//               borderWidth: "1px",
-//               borderColor: "transparent",
-//               boxShadow: "10px 10px 40px rgba(234,179,8,0.05)",
-//             }}
-//           >
-//             <div className="flex flex-col items-center text-center">
-//               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#FACC15]/30 bg-[#FACC15]/5 text-[#FACC15] text-[10px] font-bold tracking-widest uppercase mb-7">
-//                 <Crown className="w-3 h-3" /> VIP ACCESS
-//               </div>
-              
-//               <Crown className="w-16 h-16 text-[#FACC15] mb-5 drop-shadow-[0_0_15px_rgba(234,179,8,0.4)]" />
-              
-//               <h3 className="text-white text-xl font-bold tracking-tight mb-3">
-//                 VIP COMMUNITY
-//               </h3>
-//               <p className="text-[#94A3B8] text-[13px] mb-8 leading-relaxed">
-//                 Premium access to elite tools, advanced education and exclusive content.
-//               </p>
-
-//               <div className="w-full flex flex-col gap-5 text-left mb-8">
-//                 <div className="flex items-center gap-3">
-//                   <div className="w-[18px] h-[18px] shrink-0 rounded-full border border-[#FACC15] flex items-center justify-center">
-//                     <Check className="w-2.5 h-2.5 text-[#FACC15]" />
-//                   </div>
-//                   <span className="text-[#CBD5E1] text-[13px] font-medium">Premium Reports & Research</span>
-//                 </div>
-//                 <div className="flex items-center gap-3">
-//                   <div className="w-[18px] h-[18px] shrink-0 rounded-full border border-[#FACC15] flex items-center justify-center">
-//                     <Check className="w-2.5 h-2.5 text-[#FACC15]" />
-//                   </div>
-//                   <span className="text-[#CBD5E1] text-[13px] font-medium">Advanced Education & Modules</span>
-//                 </div>
-//                 <div className="flex items-center gap-3">
-//                   <div className="w-[18px] h-[18px] shrink-0 rounded-full border border-[#FACC15] flex items-center justify-center">
-//                     <Check className="w-2.5 h-2.5 text-[#FACC15]" />
-//                   </div>
-//                   <span className="text-[#CBD5E1] text-[13px] font-medium">VIP Events & Analyst Access</span>
-//                 </div>
-//               </div>
-
-//               <button className="w-full h-12 bg-gradient-to-r from-[#FACC15] to-[#EAB308] hover:opacity-90 text-black font-bold rounded-xl flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(234,179,8,0.2)] transition-opacity">
-//                 <Crown className="w-4 h-4" />
-//                 Upgrade to VIP
-//               </button>
-//             </div>
-//           </motion.div>
-//         </div>
-
-//       </main>
-//     </div>
-//   );
-// }
-
-
-
-// "use client";
-
-// import React from "react";
-// import { motion } from "framer-motion";
-// import {
-//   User,
-//   LayoutGrid,
-//   Mail,
-//   Send,
-//   Lock,
-//   DollarSign,
-//   Gift,
-//   Crown,
-//   Check,
-//   ArrowRight,
-// } from "lucide-react";
-
-// // ==========================================
-// // Custom SVG Icons (Matches Reference)
-// // ==========================================
-// const TraderCityLogo = ({ className }: { className?: string }) => (
-//   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-//     <path d="M12 2.5L20 7v9l-8 4.5L4 16V7l8-4.5zM12 5.5L7 8.5v6l5 3 5-3v-6l-5-3z" />
-//   </svg>
-// );
-
-// const DiscordIcon = ({ className }: { className?: string }) => (
-//   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-//     <path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
-//   </svg>
-// );
-
-// const GoogleIcon = ({ className }: { className?: string }) => (
-//   <svg className={className} viewBox="0 0 24 24">
-//     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-//     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-//     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-//     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-//   </svg>
-// );
-
-// // ==========================================
-// // Main Component
-// // ==========================================
-// export default function LoginPage() {
-//   return (
-//     <div className="min-h-screen bg-[#050608] text-white font-sans overflow-x-hidden relative flex flex-col justify-center pb-20 pt-28">
-      
-//       {/* Background Ambient Glow */}
-//       <div className="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-[#050608] to-[#050608]"></div>
-
-//       {/* ========================================== */}
-//       {/* TOP HEADER */}
-//       {/* ========================================== */}
-//       <header className="absolute top-0 w-full px-6 lg:px-12 py-8 flex justify-between items-center z-50">
-//         <div className="flex items-center gap-3">
-//           <TraderCityLogo className="w-8 h-8 text-[#3B82F6]" />
-//           <span className="text-xl font-bold tracking-widest text-white">
-//             TRADERCITY
-//           </span>
-//         </div>
-
-//         <div className="hidden md:flex items-center gap-3 text-sm text-[#94A3B8]">
-//           <div className="flex items-center gap-2">
-//             <div className="w-7 h-7 rounded-full border border-gray-700 flex items-center justify-center">
-//               <User className="w-3.5 h-3.5 text-gray-400" />
-//             </div>
-//             <span>Login</span>
-//           </div>
-          
-//           <div className="flex gap-1">
-//             {[...Array(6)].map((_, i) => (
-//               <div key={i} className="w-[3px] h-[3px] rounded-full bg-gray-700" />
-//             ))}
-//           </div>
-          
-//           <div className="flex items-center gap-2">
-//             <div className="w-7 h-7 rounded-full border border-gray-700 flex items-center justify-center">
-//               <LayoutGrid className="w-3.5 h-3.5 text-gray-400" />
-//             </div>
-//             <span>Dashboard</span>
-//           </div>
-
-//           <div className="flex gap-1">
-//             {[...Array(6)].map((_, i) => (
-//               <div key={i} className="w-[3px] h-[3px] rounded-full bg-gray-700" />
-//             ))}
-//           </div>
-          
-//           <div className="flex items-center gap-2 text-white font-medium">
-//             <div className="relative flex items-center justify-center w-7 h-7 bg-[#5865F2] rounded-full">
-//               <DiscordIcon className="w-4 h-4 text-white" />
-//               <div className="absolute -top-1.5 -right-1.5 bg-[#A855F7] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-[#050608]">
-//                 2
-//               </div>
-//             </div>
-//             <span>Join Discord</span>
-//           </div>
-//         </div>
-//       </header>
-
-//       {/* ========================================== */}
-//       {/* 3D PERSPECTIVE LAYOUT */}
-//       {/* ========================================== */}
-//       <main className="relative z-10 max-w-[1200px] w-full mx-auto px-4 lg:px-8 flex flex-col items-center">
-        
-//         <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8 xl:gap-12 w-full perspective-[1400px]">
-          
-//           {/* -------------------------------------- */}
-//           {/* LEFT FEATURE CARD */}
-//           {/* -------------------------------------- */}
-//           <motion.div
-//             initial={{ opacity: 0, x: -50 }}
-//             animate={{ opacity: 1, x: 0 }}
-//             transition={{ duration: 0.6, delay: 0.1 }}
-//             className="w-full max-w-[320px] rounded-[24px] p-7 lg:rotate-y-[12deg] lg:rotate-z-[1deg] lg:translate-x-6 relative bg-[#090A10]"
-//             style={{
-//               background: "linear-gradient(#090A10, #090A10) padding-box, linear-gradient(180deg, rgba(56,189,248,0.6), rgba(168,85,247,0.3)) border-box",
-//               borderWidth: "1px",
-//               borderColor: "transparent",
-//               boxShadow: "-10px 10px 40px rgba(56,189,248,0.05)",
-//             }}
-//           >
-//             <div className="flex flex-col items-center text-center">
-//               <div className="w-14 h-14 bg-[#A855F7]/10 rounded-2xl flex items-center justify-center mb-5 border border-[#A855F7]/20">
-//                 <DiscordIcon className="w-8 h-8 text-[#A855F7]" />
-//               </div>
-//               <span className="text-[#A855F7] text-[10px] font-bold tracking-[0.15em] uppercase mb-1.5">
-//                 JOIN FREE
-//               </span>
-//               <h3 className="text-white text-xl font-bold tracking-tight mb-3">
-//                 DISCORD COMMUNITY
-//               </h3>
-//               <p className="text-[#94A3B8] text-[13px] mb-8 leading-relaxed">
-//                 Access our active community, market insights, analysis and connect with elite traders.
-//               </p>
-
-//               <div className="w-full flex flex-col gap-4">
-//                 {/* Feature 1 */}
-//                 <div className="rounded-xl border border-[#3B82F6]/30 bg-[#0C0E14] p-4 text-left relative overflow-hidden group">
-//                   <div className="absolute inset-0 bg-[#3B82F6]/5 group-hover:bg-[#3B82F6]/10 transition-colors"></div>
-//                   <div className="relative z-10 flex gap-4">
-//                     <div className="w-10 h-10 shrink-0 rounded-full border border-[#3B82F6]/50 bg-[#3B82F6]/10 flex items-center justify-center text-[#3B82F6]">
-//                       <DollarSign className="w-5 h-5" />
-//                     </div>
-//                     <div>
-//                       <span className="text-[#3B82F6] text-[10px] font-bold tracking-wider uppercase">RECEIVE</span>
-//                       <h4 className="text-white font-bold text-sm mb-1 leading-tight">$10 CREDIT</h4>
-//                       <p className="text-[#64748B] text-[11px] leading-relaxed">
-//                         Get $10 worth of subscription credit instantly after registration.
-//                       </p>
-//                     </div>
-//                   </div>
-//                 </div>
-
-//                 {/* Feature 2 */}
-//                 <div className="rounded-xl border border-[#A855F7]/30 bg-[#0C0E14] p-4 text-left relative overflow-hidden group">
-//                   <div className="absolute inset-0 bg-[#A855F7]/5 group-hover:bg-[#A855F7]/10 transition-colors"></div>
-//                   <div className="relative z-10 flex gap-4">
-//                     <div className="w-10 h-10 shrink-0 rounded-full border border-[#A855F7]/50 bg-[#A855F7]/10 flex items-center justify-center text-[#A855F7]">
-//                       <Gift className="w-5 h-5" />
-//                     </div>
-//                     <div>
-//                       <span className="text-[#A855F7] text-[10px] font-bold tracking-wider uppercase">EARN WITH</span>
-//                       <h4 className="text-white font-bold text-sm mb-1 leading-tight">REFERRAL REWARDS</h4>
-//                       <p className="text-[#64748B] text-[11px] leading-relaxed">
-//                         Unlock referral potential and earn commissions as you grow with TraderCity.
-//                       </p>
-//                     </div>
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-//           </motion.div>
-
-//           {/* -------------------------------------- */}
-//           {/* CENTER LOGIN CARD */}
-//           {/* -------------------------------------- */}
-//           <motion.div
-//             initial={{ opacity: 0, y: 20 }}
-//             animate={{ opacity: 1, y: 0 }}
-//             transition={{ duration: 0.5 }}
-//             className="w-full max-w-[420px] rounded-[24px] p-8 lg:p-10 z-20 bg-[#0A0C10] relative shadow-[0_0_50px_rgba(59,130,246,0.1)]"
-//             style={{
-//               background: "linear-gradient(#0A0C10, #0A0C10) padding-box, linear-gradient(135deg, rgba(56,189,248,0.7), rgba(168,85,247,0.5)) border-box",
-//               borderWidth: "1.5px",
-//               borderColor: "transparent",
-//             }}
-//           >
-//             <div className="flex flex-col items-center">
-//               <TraderCityLogo className="w-14 h-14 text-[#3B82F6] mb-6 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
-              
-//               <h2 className="text-[26px] font-bold text-white mb-2 tracking-tight">
-//                 Welcome to TraderCity
-//               </h2>
-//               <p className="text-[#94A3B8] text-[15px] mb-8 font-medium">
-//                 Register to activate your <span className="text-[#3B82F6]">Discord</span> link.
-//               </p>
-
-//               <button className="w-full h-12 bg-white hover:bg-gray-50 text-black font-semibold rounded-xl flex items-center justify-center gap-3 mb-7 transition-colors">
-//                 <GoogleIcon className="w-5 h-5" />
-//                 Continue with Google
-//               </button>
-
-//               <div className="flex items-center gap-4 w-full mb-7">
-//                 <div className="h-px bg-[#1F2129] flex-1"></div>
-//                 <span className="text-[#64748B] text-xs font-medium tracking-widest">OR</span>
-//                 <div className="h-px bg-[#1F2129] flex-1"></div>
-//               </div>
-
-//               <div className="w-full mb-6">
-//                 <label className="text-[#94A3B8] text-xs font-medium mb-2 block">
-//                   Email Address
-//                 </label>
-//                 <div className="relative">
-//                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#64748B]" />
-//                   <input
-//                     type="email"
-//                     className="w-full bg-[#0E1016] border border-[#1F2129] hover:border-[#2D313E] focus:border-[#3B82F6] transition-colors rounded-xl py-3.5 pl-12 pr-4 text-white text-sm outline-none"
-//                     placeholder="Enter your email address"
-//                   />
-//                 </div>
-//               </div>
-
-//               <button className="w-full h-12 bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] hover:opacity-90 text-white font-semibold rounded-xl flex items-center justify-center gap-2 mb-5 shadow-[0_0_20px_rgba(59,130,246,0.3)] transition-opacity">
-//                 <Send className="w-4 h-4" />
-//                 Send 4 Digit Code
-//               </button>
-
-//               <div className="flex items-center gap-2 text-[#64748B] text-xs mb-8">
-//                 <Lock className="w-3.5 h-3.5" />
-//                 <span>We'll send you a 4 digit code to your email</span>
-//               </div>
-
-//               <p className="text-[#94A3B8] text-[13px] font-medium">
-//                 Already have an account?{" "}
-//                 <a href="#" className="text-[#3B82F6] hover:text-[#60A5FA] transition-colors">
-//                   Login &rarr;
-//                 </a>
-//               </p>
-//             </div>
-//           </motion.div>
-
-//           {/* -------------------------------------- */}
-//           {/* RIGHT FEATURE CARD */}
-//           {/* -------------------------------------- */}
-//           <motion.div
-//             initial={{ opacity: 0, x: 50 }}
-//             animate={{ opacity: 1, x: 0 }}
-//             transition={{ duration: 0.6, delay: 0.1 }}
-//             className="w-full max-w-[320px] rounded-[24px] p-7 lg:-rotate-y-[12deg] lg:-rotate-z-[1deg] lg:-translate-x-6 relative bg-[#090A10]"
-//             style={{
-//               background: "linear-gradient(#090A10, #090A10) padding-box, linear-gradient(180deg, rgba(234,179,8,0.6), rgba(234,179,8,0.1)) border-box",
-//               borderWidth: "1px",
-//               borderColor: "transparent",
-//               boxShadow: "10px 10px 40px rgba(234,179,8,0.05)",
-//             }}
-//           >
-//             <div className="flex flex-col items-center text-center">
-//               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#FACC15]/30 bg-[#FACC15]/5 text-[#FACC15] text-[10px] font-bold tracking-widest uppercase mb-7">
-//                 <Crown className="w-3 h-3" /> VIP ACCESS
-//               </div>
-              
-//               <Crown className="w-16 h-16 text-[#FACC15] mb-5 drop-shadow-[0_0_15px_rgba(234,179,8,0.4)]" />
-              
-//               <h3 className="text-white text-xl font-bold tracking-tight mb-3">
-//                 VIP COMMUNITY
-//               </h3>
-//               <p className="text-[#94A3B8] text-[13px] mb-8 leading-relaxed">
-//                 Premium access to elite tools, advanced education and exclusive content.
-//               </p>
-
-//               <div className="w-full flex flex-col gap-5 text-left mb-8">
-//                 <div className="flex items-center gap-3">
-//                   <div className="w-[18px] h-[18px] shrink-0 rounded-full border border-[#FACC15] flex items-center justify-center">
-//                     <Check className="w-2.5 h-2.5 text-[#FACC15]" />
-//                   </div>
-//                   <span className="text-[#CBD5E1] text-[13px] font-medium">Premium Reports & Research</span>
-//                 </div>
-//                 <div className="flex items-center gap-3">
-//                   <div className="w-[18px] h-[18px] shrink-0 rounded-full border border-[#FACC15] flex items-center justify-center">
-//                     <Check className="w-2.5 h-2.5 text-[#FACC15]" />
-//                   </div>
-//                   <span className="text-[#CBD5E1] text-[13px] font-medium">Advanced Education & Modules</span>
-//                 </div>
-//                 <div className="flex items-center gap-3">
-//                   <div className="w-[18px] h-[18px] shrink-0 rounded-full border border-[#FACC15] flex items-center justify-center">
-//                     <Check className="w-2.5 h-2.5 text-[#FACC15]" />
-//                   </div>
-//                   <span className="text-[#CBD5E1] text-[13px] font-medium">VIP Events & Analyst Access</span>
-//                 </div>
-//               </div>
-
-//               <button className="w-full h-12 bg-gradient-to-r from-[#FACC15] to-[#EAB308] hover:opacity-90 text-black font-bold rounded-xl flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(234,179,8,0.2)] transition-opacity">
-//                 <Crown className="w-4 h-4" />
-//                 Upgrade to VIP
-//               </button>
-//             </div>
-//           </motion.div>
-//         </div>
-
-//         {/* ========================================== */}
-//         {/* BOTTOM COMMUNITY BANNER */}
-//         {/* ========================================== */}
-//         <motion.div 
-//           initial={{ opacity: 0, y: 20 }}
-//           animate={{ opacity: 1, y: 0 }}
-//           transition={{ duration: 0.6, delay: 0.3 }}
-//           className="w-full max-w-[800px] mt-12 rounded-[20px] border border-[#14B8A6]/20 bg-[#0A0C10]/80 p-5 lg:p-6 flex flex-col sm:flex-row justify-between items-center gap-6 backdrop-blur-md"
-//         >
-//           <div className="flex items-center gap-5 text-center sm:text-left flex-col sm:flex-row">
-//             <div className="w-[52px] h-[52px] shrink-0 rounded-full bg-[#14B8A6]/10 border border-[#14B8A6]/20 flex items-center justify-center">
-//               <DiscordIcon className="w-7 h-7 text-[#14B8A6]" />
-//             </div>
-//             <div>
-//               <h3 className="text-[#14B8A6] font-bold tracking-[0.1em] text-[13px] mb-1.5 uppercase">
-//                 DISCORD ACCESS
-//               </h3>
-//               <p className="text-[#94A3B8] text-[13px] leading-relaxed max-w-[380px]">
-//                 Join our active community, get insights, analysis and connect with elite traders.
-//               </p>
-//             </div>
-//           </div>
-//           <button className="shrink-0 border border-[#14B8A6]/40 hover:bg-[#14B8A6]/10 text-[#14B8A6] font-medium rounded-xl px-6 py-3 flex items-center gap-2 transition-colors text-[13px]">
-//             Learn More <ArrowRight className="w-4 h-4" />
-//           </button>
-//         </motion.div>
-
-//       </main>
-//     </div>
-//   );
-// }

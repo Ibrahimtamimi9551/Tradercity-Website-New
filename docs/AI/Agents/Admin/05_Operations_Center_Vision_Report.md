@@ -73,21 +73,22 @@ It should encourage **resolution**.
 **Scenario A — Everything healthy**
 
 ```text
-Open Dashboard → 0 Pending Verification → 0 Discord Issues → 0 Referral Requests → System Healthy → Close
+Open Dashboard → 0 Awaiting Admin Approval → 0 Verification Required → 0 Discord Issues → 0 Referral Requests → System Healthy → Close
 ```
 
 **Scenario B — Work exists**
 
 ```text
-Open Dashboard → Pending Verification: 3 → Click widget
+Open Dashboard → Awaiting Admin Approval: 3 → Click widget
         ↓
-Subscription Module opens (filter already applied: Pending Verification)
+Subscription Module opens (filter: Awaiting Admin Approval)
         ↓
-Admin resolves: Approve / Approve / Reject
+Admin opens ticket → Explorer → reviews TX → Approve / Approve / Reject
         ↓
 Dashboard counter returns to 0
 ```
 
+Also surface **Verification Required** and **Pending Verification** (in-flight / stuck) as separate widgets.
 This is **Action Driven Navigation** — the system takes the admin directly to work.
 
 ---
@@ -118,7 +119,7 @@ Subscription Module → Payment Verified → Database Updated
         ↓
 Discord Bot → Role Updated
         ↓
-User Profile → Subscription Card shows "Successful"
+User Profile → Subscription Card shows "Approved" / Membership Active
 ```
 
 The profile never decides anything. It displays the latest truth in the database.
@@ -292,7 +293,7 @@ Needs Attention (7)
 
 • 3 Pending Subscription Verifications
 • 1 Discord Sync Failure
-• 2 Referral Redemption Requests
+• 2 Referral Redeem Requests
 • 1 Membership Expired Today
 ```
 
@@ -306,7 +307,8 @@ Beyond monitoring statistics, show **workload**:
 
 | Widget | Purpose |
 |--------|---------|
-| Payments Waiting | Deep-link → Subscriptions (Pending Verification filter) |
+| Payments Waiting | Deep-link → Subscriptions (`Awaiting Admin Approval` filter) |
+
 | Discord Issues | Deep-link → Discord (Sync Issues filter) |
 | Referral Requests | Deep-link → Referrals (Pending Approval filter) |
 | Membership Expiring Today | Deep-link → Members (expiry filter) |
@@ -322,7 +324,9 @@ Every actionable widget deep-links with **pre-applied filters**.
 
 | Widget Click | Destination | Auto-Applied Filter |
 |--------------|-------------|---------------------|
-| Pending Verification: 4 | `/admin/subscriptions` | `?status=pending_verification` |
+| Awaiting Admin Approval: 4 | `/admin/subscriptions` | `?status=awaiting_admin_approval` |
+| Pending Verification: 1 | `/admin/subscriptions` | `?status=pending_verification` |
+| Verification Required: 1 | `/admin/subscriptions` | `?status=verification_required` |
 | Discord Issues: 2 | `/admin/discord` | `?sync=failed` |
 | Referral Requests: 5 | `/admin/referrals` | `?status=pending_approval` |
 | Action Required: 18 | `/admin/members` | `?health=needs_attention` |
@@ -355,7 +359,7 @@ Full UI contracts: [`03_Module_Specifications.md`](03_Module_Specifications.md)
 **Question:** *"How is TraderCity performing today — and what needs my attention?"*
 
 - Operational overview + Operations Queue
-- Widgets: Total Members, VIP Members, Revenue (monitoring), Pending Verification, Discord Issues, Referral Requests, Membership Expiring, Total Actions
+- Widgets: Total Members, VIP Members, Revenue (monitoring), Awaiting Admin Approval, Pending Verification, Verification Required, Discord Issues, Referral Requests, Membership Expiring, Total Actions
 - No detailed management — monitoring and routing only
 
 ### Members (`/admin/members`)
@@ -378,12 +382,13 @@ Full UI contracts: [`03_Module_Specifications.md`](03_Module_Specifications.md)
 
 ### Subscriptions (`/admin/subscriptions`)
 
-**Question:** *"What is the payment state — and what needs verification?"*
+**Question:** *"What is the payment state — and what needs Admin Approval?"*
 
-- **Owns all subscription actions**
-- Widgets: Successful, Pending Verification, Verification Required, Rejected
+- **Owns all subscription payment + approval actions**
+- Widgets: Awaiting Admin Approval, Pending Verification, Verification Required, Rejected, Approved
 - Table + details panel (desktop); list → detail page (mobile)
-- Actions: Approve, Resolve Dispute, Open Profile, BSC Explorer
+- Actions: Approve, Reject, Resolve Dispute, Open Profile, **BSC Explorer** (required in review workflow)
+- **Policy:** Auto-verified ≠ activated — Admin Approve is mandatory (Phase 1)
 
 ### Discord (`/admin/discord`) — Phase 5
 
@@ -429,24 +434,27 @@ Instead of checking four modules separately, the Members table shows one operati
 
 ## 12. Cross-Module Workflows
 
-### Workflow A — Payment Dispute
+### Workflow A — Payment approval (canonical)
 
 ```text
-User submits payment → Auto verification fails → Status: Pending Verification
+User submits payment → Automatic Verification
         ↓
-Dashboard: Pending Verification +1
-Members Table: System Health → Needs Attention
-User Profile: Subscription → Pending Verification
+Verified → Status: Awaiting Admin Approval
         ↓
-Admin clicks Pending Verification widget → Subscriptions (filtered)
+Dashboard: Awaiting Admin Approval +1
+Members Table: System Health → Needs Attention (until approved)
+User Profile: Subscription → Awaiting Admin Approval
         ↓
-Admin verifies on-chain → Approve
+Admin clicks Awaiting Admin Approval widget → Subscriptions (filtered)
         ↓
-Database → Subscription Active → Discord API → VIP Role
+Admin opens Explorer → reviews on-chain TX → Approve
+        ↓
+Database → Membership Activated → Discord API → VIP Role → Audit
         ↓
 Profile, Members Table, Dashboard all update automatically
 ```
 
+**Verification failure variant:** Auto verification fails → Status: **Verification Required** → same Admin Approve / Reject loop (still no Membership until Approve).
 ### Workflow B — Discord Disconnect
 
 ```text
@@ -462,19 +470,25 @@ Admin opens Discord Module → Sync Now or Send Invite
 Resolution → all views reflect
 ```
 
-### Workflow C — Referral Redemption
+### Workflow C — Referral Redeem
 
 ```text
-User completes 6 referrals → Backend → Referral Module: Eligible
-        ↓
-Dashboard: Referral Requests +1
-User Profile: Eligible
-Members Table: Healthy (no issue — referral is not a failure state)
-        ↓
-Admin opens Referral Module → Reviews → Approves
-        ↓
-Membership Extended → Subscription Updated → Discord Expiry Updated → Referral Reset
+Referral Eligible
+  → Referral Redeem Request
+  → Waiting Admin Approval
+  → Admin Approves Redeem
+  → Membership Activated / Extended
+  → Discord Sync
+  → Activity Timeline
+  → Dashboard
+  → User Profile
 ```
+
+Referrals do **not** update Subscription on redeem. Membership is the access SoT.
+Approve Redeem triggers the Membership lifecycle (activationSource = Referral Redeem).
+Reject Redeem leaves Membership unchanged.
+
+Dashboard queue label: **Referral Redeem Requests** → `/admin/referrals?progress=redeem_requests`
 
 ---
 

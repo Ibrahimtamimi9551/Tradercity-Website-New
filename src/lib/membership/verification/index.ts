@@ -34,8 +34,9 @@ export {
  * - Issue / persist Payment Quote when member starts payment
  * - Accept payment proof tied to that quote
  * - Validate received amount against quote.expectedAmountUsd (not a live recalculation)
- * - On success: activate membership, grant Discord VIP access, persist subscription
- * - Surface verification outcomes to member + admin UIs
+ * - On Verified: move ticket to Approval Pending (do NOT activate Membership)
+ * - On Admin Approve: activate membership, grant Discord VIP access, persist subscription, audit
+ * - Surface verification + approval outcomes to member + admin UIs
  *
  * Do not invent API paths, schemas, or chain-polling clients in this frontend.
  */

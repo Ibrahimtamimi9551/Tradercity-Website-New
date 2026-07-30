@@ -1,4 +1,5 @@
 import type { StatusTone } from "@/types/admin/common";
+import type { MembershipActivationSource } from "@/types/members/activation-source";
 import type {
   DirectoryMember,
   DiscordStatus,
@@ -39,11 +40,14 @@ export type ProfileNote = {
   createdAt: string;
 };
 
-export type DiscordRoleHistoryItem = {
+/** Shared lifecycle event shape for module timelines on the User Profile. */
+export type ProfileTimelineItem = {
   id: string;
   title: string;
+  description?: string;
   timestamp: string;
   status?: "complete" | "current" | "pending" | "error";
+  badge?: string;
 };
 
 export type MemberProfile = {
@@ -73,7 +77,9 @@ export type MemberProfile = {
     expiryDate: string | null;
     daysRemaining: number | null;
     renewalCount: number;
+    /** Display label for activation source (Membership reflection). */
     activatedVia: string | null;
+    activationSource: MembershipActivationSource | null;
     totalDuration: string;
   };
 
@@ -85,11 +91,35 @@ export type MemberProfile = {
     expiryDate: string | null;
     daysRemaining: number | null;
     renewalCount: number;
+    /** @deprecated Prefer activationSource — kept for Membership card label sync. */
     activatedVia: string | null;
+    /** How this membership period was activated / extended. */
+    activationSource: MembershipActivationSource | null;
     transactionHash: string | null;
     explorerUrl: string | null;
     paymentMethod: string | null;
     amountPaid: string | null;
+    /** Manual / grant notes (source-specific). */
+    notes: string | null;
+    approvedBy: string | null;
+    activationDate: string | null;
+    /** Manual Payment — bank/UPI/cash reference when available. */
+    referenceNumber: string | null;
+    /** Manual Payment — when funds were received (may differ from activation). */
+    receivedDate: string | null;
+    /** Manual Payment — administrator who recorded receipt. */
+    receivedBy: string | null;
+    /** Manual Payment — business reason label. */
+    reason: string | null;
+    /** Referral Redeem — credits applied on approval. */
+    creditsRedeemed: string | null;
+    /** Crypto — network display label. */
+    networkLabel: string | null;
+    /** Crypto — verification result label. */
+    verificationLabel: string | null;
+    verificationTone: StatusTone | null;
+    /** Crypto — approval decision label. */
+    approvalLabel: string | null;
   };
 
   discord: {
@@ -100,7 +130,8 @@ export type MemberProfile = {
     updatedAt: string | null;
     accountStatus: string;
     communityAccess: string;
-    roleHistory: DiscordRoleHistoryItem[];
+    /** Discord lifecycle — single source of truth on the profile card. */
+    timeline: ProfileTimelineItem[];
   };
 
   referral: {
@@ -111,6 +142,8 @@ export type MemberProfile = {
     creditPerReferral: number;
     redemptionLabel: string;
     redemptionTone: StatusTone;
+    /** Referral lifecycle — single source of truth on the profile card. */
+    timeline: ProfileTimelineItem[];
   };
 
   notes: ProfileNote[];

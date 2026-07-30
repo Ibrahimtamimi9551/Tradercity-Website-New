@@ -4,18 +4,64 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutGrid } from "lucide-react";
 import { cn } from "@/lib/admin/cn";
-import { MEMBER_MANAGEMENT_NAV, MOBILE_MORE_NAV } from "./nav-config";
+import {
+  MOBILE_MORE_DOMAINS,
+  MOBILE_PRIMARY_NAV,
+  isAdminNavItemActive,
+} from "./nav-config";
 import { useEffect, useState } from "react";
+import type { AdminNavItem } from "@/types/admin/navigation";
 
 type AdminMobileNavProps = {
   /** When the hamburger drawer is open, suppress bottom-nav hit targets. */
   drawerOpen?: boolean;
 };
 
+function MoreNavRow({
+  item,
+  onNavigate,
+}: {
+  item: AdminNavItem;
+  onNavigate: () => void;
+}) {
+  const pathname = usePathname();
+  const Icon = item.icon;
+
+  if (item.comingSoon) {
+    return (
+      <div
+        className="flex min-h-11 items-center gap-3 rounded-lg px-3 py-3 text-sm text-tc-muted/50"
+        aria-disabled
+      >
+        <Icon className="h-4 w-4 shrink-0" />
+        <span className="flex flex-1 items-center justify-between gap-2">
+          <span>{item.label}</span>
+          <span className="text-[10px] uppercase tracking-wide text-tc-muted/40">Soon</span>
+        </span>
+      </div>
+    );
+  }
+
+  const active = isAdminNavItemActive(pathname, item);
+
+  return (
+    <Link
+      href={item.href}
+      onClick={onNavigate}
+      className={cn(
+        "flex min-h-11 items-center gap-3 rounded-lg px-3 py-3 text-sm",
+        active ? "bg-tc-purple/20 text-white" : "text-tc-muted"
+      )}
+    >
+      <Icon className="h-4 w-4" />
+      {item.label}
+    </Link>
+  );
+}
+
 export function AdminMobileNav({ drawerOpen = false }: AdminMobileNavProps) {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
-  const primary = MEMBER_MANAGEMENT_NAV.filter((item) => item.mobilePrimary);
 
   useEffect(() => {
     setMoreOpen(false);
@@ -47,29 +93,26 @@ export function AdminMobileNav({ drawerOpen = false }: AdminMobileNavProps) {
 
       {moreOpen ? (
         <div
-          className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] left-4 right-4 z-50 rounded-xl border border-white/10 bg-[#0a1020] p-2 shadow-xl lg:hidden"
+          className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] left-4 right-4 z-50 max-h-[min(70vh,28rem)] overflow-y-auto rounded-xl border border-white/10 bg-[#0a1020] p-2 shadow-xl lg:hidden"
           role="dialog"
           aria-modal="true"
           aria-label="More admin modules"
         >
-          {MOBILE_MORE_NAV.map((item) => {
-            const Icon = item.icon;
-            const active = pathname.startsWith(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMoreOpen(false)}
-                className={cn(
-                  "flex min-h-11 items-center gap-3 rounded-lg px-3 py-3 text-sm",
-                  active ? "bg-tc-purple/20 text-white" : "text-tc-muted"
-                )}
-              >
-                <Icon className="h-4 w-4" />
-                {item.label}
-              </Link>
-            );
-          })}
+          {MOBILE_MORE_DOMAINS.map((domain, index) => (
+            <div key={domain.id} className={cn(index > 0 && "mt-2")}>
+              {index > 0 ? <div className="mb-2 border-t border-white/10" aria-hidden /> : null}
+              <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-tc-muted/70">
+                {domain.label}
+              </p>
+              {domain.items.map((item) => (
+                <MoreNavRow
+                  key={`${domain.id}-${item.label}-${item.href}`}
+                  item={item}
+                  onNavigate={() => setMoreOpen(false)}
+                />
+              ))}
+            </div>
+          ))}
         </div>
       ) : null}
 
@@ -81,10 +124,9 @@ export function AdminMobileNav({ drawerOpen = false }: AdminMobileNavProps) {
         aria-hidden={drawerOpen || undefined}
       >
         <ul className="grid grid-cols-4 gap-1 py-2">
-          {primary.map((item) => {
+          {MOBILE_PRIMARY_NAV.map((item) => {
             const Icon = item.icon;
-            const active =
-              item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
+            const active = isAdminNavItemActive(pathname, item);
             return (
               <li key={item.href}>
                 <Link

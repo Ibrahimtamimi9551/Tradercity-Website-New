@@ -1,8 +1,10 @@
 # Subscription Pricing & Payment Verification Architecture
 
-**Document Version:** 1.2  
+**Document Version:** 2.0  
 **Status:** Living Specification — frontend architecture & product behavior  
-**Authority for Admin agents:** read alongside [`04_Development_Rules.md`](04_Development_Rules.md)
+**Authority for Admin agents:** read alongside [`04_Development_Rules.md`](04_Development_Rules.md)  
+**Canonical activation policy:** [`docs/Member Management/02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md`](../../Member%20Management/02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md)  
+**Last Updated:** July 29, 2026
 
 ---
 
@@ -92,10 +94,16 @@ Payment Quote
 User Pays
         │
         ▼
-Verification Engine
+Verification Engine          ← system: payment validity only
         │
         ▼
-Membership Activation
+Awaiting Admin Approval      ← human checkpoint (Phase 1 mandatory)
+        │
+        ▼
+Admin Approve / Reject
+        │
+        ▼
+Membership Activation        ← only after Approve
         │
         ▼
 Discord Access
@@ -106,10 +114,20 @@ Discord Access
 | **Membership Catalog** | Official plan ids + list prices (Monthly $60 / Quarterly $150 / Yearly $500) | Promotions, blockchain |
 | **Pricing Engine** | Eligible adjustments → expected payable for a user/context | On-chain verification; persistence |
 | **Payment Quote** | Frozen pricing decision for one payment attempt (standard, adjustments, expected amount) | Recalculating later; verification algorithms |
-| **Payment Verification Engine** | Validate received payment matches the **Payment Quote** for that attempt | Catalog prices, promo rules, *how* chain data is fetched |
-| **Membership Activation** | VIP status, duration, renewals | Payment math |
+| **Payment Verification Engine** | Validate received payment matches the **Payment Quote** for that attempt | Membership activation; Discord roles; Admin Approval |
+| **Admin Approval** | Final authority to activate Membership after verification | Chain algorithms; inventing prices |
+| **Membership Activation** | VIP status, duration, renewals — **triggered only by Admin Approve** | Payment math; auto-activate on verify |
 | **Discord Access** | Role assignment after activation | Pricing or verification math |
-| **Admin Management** | Ticket queue, approve/reject UI, reporting on **standard** catalog prices | Inventing prices or chain logic |
+| **Admin Management** | Ticket queue, explorer review, approve/reject UI, reporting on **standard** catalog prices | Inventing prices or chain logic |
+
+### Verification vs Approval (locked)
+
+| Concept | Owner | Question | Output |
+|---------|-------|----------|--------|
+| **Verification** | System | Does this TX satisfy verification rules? | Verified · Verification Failed |
+| **Approval** | Administrator | Should TraderCity activate this membership? | Approved · Rejected |
+
+**Verified ≠ Activated.** Automatic verification alone must never grant Membership, Discord roles, access permissions, or entitlements.
 
 ---
 
@@ -215,11 +233,11 @@ Never re-run the Pricing Engine at verification time.
 
 #### User-specific examples (business scenarios)
 
-| User | Plan | Adjustments (on quote) | Quote expected | Received | Result |
-|------|------|------------------------|----------------|----------|--------|
-| A | Monthly | Welcome −$10 | $50 | $50 | Successful |
-| B | Monthly | None | $60 | $60 | Successful |
-| C | Monthly | Referral −$20 (future) | $40 | $40 | Successful |
+| User | Plan | Adjustments (on quote) | Quote expected | Received | Verification result | Next |
+|------|------|------------------------|----------------|----------|---------------------|------|
+| A | Monthly | Welcome −$10 | $50 | $50 | **Verified** | Awaiting Admin Approval |
+| B | Monthly | None | $60 | $60 | **Verified** | Awaiting Admin Approval |
+| C | Monthly | Referral −$20 (future) | $40 | $40 | **Verified** | Awaiting Admin Approval |
 
 Why this matters: Welcome Credits, Referral Credits, Coupons, Seasonal Campaigns, Wallet Credits, and Admin Credits can evolve **without** changing the verification *rule* (quote expected vs received). How the backend stores quotes, reads the chain, or runs jobs is out of frontend scope.
 
@@ -238,54 +256,87 @@ Frontend documents these as **required data concepts** (also reflected in shared
 
 See `PaymentQuote` (`pricing/quote.ts`) and `PaymentVerificationInput` (`verification/types.ts`) — frontend state / capability shapes, **not** DB or API contracts.
 
-#### Expected user journey (product flow)
+#### Expected user journey (product flow) — canonical
 
 ```text
-User Selects Membership
+User Selects Membership Plan
         ↓
 Pricing Engine
         ↓
-Payment Quote Created
+Payment Quote Generated
         ↓
-User Sends Crypto
+User Completes Crypto Payment
         ↓
-Transaction Submitted (TX hash + Discord username)
+Blockchain Detection
         ↓
-Payment proof accepted by the system
-        ↓
-Verification Engine
+Automatic Verification Engine
         ↓
 Load Payment Quote for this attempt
         ↓
 Compare Quote Expected Amount vs Received Amount
         ↓
-Valid → Activate Membership → Assign Discord Role → Persist Subscription
+Payment Verified
+        ↓
+Awaiting Admin Approval
+        ↓
+Admin Opens Subscription Ticket
+        ↓
+Transaction Hash + Explorer Link Available
+        ↓
+Admin Reviews Transaction
+        ↓
+Approve / Reject
+        ↓
+Membership Activated          ← Approve only
+        ↓
+Discord Synchronization
+        ↓
+Audit Event Recorded
 ```
 
-Steps after “Transaction Submitted” are backend capabilities. Frontend only defines outcomes the UI (member + admin) must eventually support.
+Steps after “User Completes Crypto Payment” are backend + Admin capabilities. Frontend defines outcomes the member + Admin UIs must support.
 
-#### Future result states (product / UI outcomes)
+**Failure path:** Verification Failed → Manual Review Required (`Verification Required`) → Admin Approve / Reject. Still no Membership until Approve.
 
-| Outcome | Meaning |
-|---------|---------|
-| `pending` | Waiting for payment confirmation |
-| `verifying` | Payment is being validated |
-| `successful` | Payment matches quote expected amount |
-| `underpaid` | Received below quote expected |
-| `overpaid` | Received above quote expected |
-| `expired` | Verification window / quote validity exceeded |
-| `failed` | Payment invalid or rejected |
-| `cancelled` | Activation cancelled before verification |
-| `refund_required` | Manual review / refund path |
+#### Verification engine outcomes (product / UI)
+
+| Outcome | Meaning | Advances to |
+|---------|---------|-------------|
+| `pending` | Waiting for payment confirmation | — |
+| `verifying` | Payment is being validated | — |
+| `verified` | Payment matches quote expected amount | **Awaiting Admin Approval** (not activation) |
+| `underpaid` | Received below quote expected | Manual Review Required |
+| `overpaid` | Received above quote expected | Manual Review Required |
+| `expired` | Verification window / quote validity exceeded | Manual Review Required |
+| `failed` | Payment invalid | Manual Review Required / Reject path |
+| `cancelled` | Activation cancelled before approval | Closed |
+| `refund_required` | Manual review / refund path | Manual Review Required |
+
+> Legacy name `successful` on the verification engine meant “amount matched.” Prefer **`verified`** so it is not confused with Admin **Approved** / Membership activated.
 
 **Do not implement verification algorithms in the frontend.**  
-Admin Phase 4 UI continues to use consolidated display states (`Successful`, `Pending Verification`, `Verification Required`, `Rejected`). Mapping hints: `ADMIN_DISPLAY_TO_VERIFICATION_OUTCOMES`.
+Admin Phase 4 UI display states:
+
+```text
+Pending Verification · Awaiting Admin Approval · Verification Required · Rejected · Approved (Successful)
+```
+
+Mapping hints: `ADMIN_DISPLAY_TO_VERIFICATION_OUTCOMES` (keep in sync with this policy).
 
 ### 5. Admin Management
 
-- Subscription tickets surface operational work  
+- Subscription tickets surface **Awaiting Admin Approval** as the primary work queue after auto-verify  
+- Admin must open explorer, compare verification result, then Approve / Reject  
 - Revenue / membership analytics use **standard catalog** prices  
-- Optional details panel may show: Standard Price · Adjustments · Paid Amount (quote expected / received) when the backend exposes those fields  
+- Details panel must show: Verification Result · Timestamp · Method · TX hash · Explorer link · Expected vs Actual amount · Network · Wallet · (future) Verification Notes  
+
+### 6. Phase 1 policy & future automation
+
+**Phase 1:** Manual Admin Approval is **mandatory** after every successful automatic verification — to validate the verification engine in production, build confidence, catch edge cases, and ensure human confirmation before access.
+
+**Future (allowed without redesign):** Risk Assessment may auto-approve low-risk verified payments while keeping high-risk tickets in Awaiting Admin Approval. Verification and Approval remain separate events; only the approval *policy* changes.
+
+Canonical write-up: [`SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md`](../../Member%20Management/02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md).
 
 ---
 

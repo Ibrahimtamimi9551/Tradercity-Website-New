@@ -1,23 +1,14 @@
 import { cn } from "@/lib/admin/cn";
+import { formatAdminDateTimeIst } from "@/lib/members/ist-datetime";
 
-/** Admin Control Center datetime display — matches Members directory style. */
+/** Admin Control Center datetime display — Indian Standard Time (Asia/Kolkata). */
 export function formatProfileDateTime(iso: string | null | undefined): string {
-  if (!iso) return "—";
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return "—";
-
-  const day = date.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-  const time = date.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-
-  return `${day}, ${time}`;
+  const formatted = formatAdminDateTimeIst(iso);
+  if (formatted === "—") return "—";
+  // Keep profile card punctuation style: "29 Jul 2026, 02:10 PM"
+  const match = formatted.match(/^(.+?)\s+(\d{1,2}:\d{2}\s?[AP]M)$/i);
+  if (match) return `${match[1]}, ${match[2]}`;
+  return formatted;
 }
 
 export function formatDaysRemaining(days: number | null | undefined): string {

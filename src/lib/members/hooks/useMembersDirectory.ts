@@ -11,7 +11,6 @@ import type {
   DirectoryFilters,
   DiscordStatus,
   MembershipTier,
-  ReferralStatus,
   SubscriptionStatus,
 } from "@/types/members/directory";
 import type { SystemHealthState } from "@/types/admin/common";
@@ -55,7 +54,15 @@ function parseDiscord(value: string | null): DirectoryFilters["discord"] {
 }
 
 function parseReferral(value: string | null): DirectoryFilters["referral"] {
-  if (value === "in_progress" || value === "eligible") return value;
+  if (
+    value === "in_progress" ||
+    value === "eligible" ||
+    value === "completed" ||
+    value === "waiting_admin_approval" ||
+    value === "redeem_requests"
+  ) {
+    return value === "waiting_admin_approval" ? "redeem_requests" : value;
+  }
   return "all";
 }
 
@@ -113,8 +120,11 @@ function matchesFilters(
   }
   if (filters.discord !== "all" && member.discord !== filters.discord) return false;
 
-  if (filters.referral === "eligible" && !member.referralEligible) return false;
-  if (filters.referral === "in_progress" && member.referralEligible) return false;
+  if (filters.referral === "redeem_requests") {
+    if (member.referralStatus !== "waiting_admin_approval") return false;
+  } else if (filters.referral !== "all" && member.referralStatus !== filters.referral) {
+    return false;
+  }
 
   if (filters.health !== "all" && member.systemHealth !== filters.health) return false;
 
@@ -263,7 +273,7 @@ export function useMembersDirectory() {
     [setFilters]
   );
   const setReferral = useCallback(
-    (referral: ReferralStatus | "all") => setFilters({ referral }),
+    (referral: DirectoryFilters["referral"]) => setFilters({ referral }),
     [setFilters]
   );
   const setHealth = useCallback(

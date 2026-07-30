@@ -27,8 +27,8 @@ type WidgetCardProps = {
   /** critical = stronger wash; important = medium; informational = softer */
   priority?: "critical" | "important" | "informational";
   /**
-   * Mobile-only ~30% denser card (members directory).
-   * sm+ keeps standard Dashboard sizing.
+   * Denser mobile typography/padding. md+ and lg+ still scale up for tablet/desktop.
+   * Prefer enabling on management dashboards for consistent mobile-first widgets.
    */
   compactMobile?: boolean;
   trend?: {
@@ -122,6 +122,10 @@ const accentStyles: Record<
   },
 };
 
+/**
+ * Responsive scale: mobile → tablet (md) → desktop (lg).
+ * Avoids jumping to full desktop proportions at the `sm` breakpoint.
+ */
 export function WidgetCard({
   label,
   value,
@@ -143,7 +147,7 @@ export function WidgetCard({
     <div
       className={cn(
         "group flex h-full flex-col justify-between rounded-xl border shadow-[0_1px_0_0_rgba(255,255,255,0.04)_inset,0_10px_28px_-16px_rgba(0,0,0,0.65)] transition-[border-color,filter]",
-        compactMobile ? "p-2 sm:p-5" : "p-3 sm:p-5",
+        compactMobile ? "p-2 md:p-3.5 lg:p-5" : "p-2.5 md:p-3.5 lg:p-5",
         isCritical || isImportant ? styles.surfaceCritical : styles.surface,
         isCritical || isImportant ? styles.borderCritical : styles.border,
         isCritical && "ring-1 ring-inset",
@@ -157,28 +161,31 @@ export function WidgetCard({
       <div>
         <div
           className={cn(
-            "flex items-center sm:gap-3",
-            compactMobile ? "gap-1.5" : "gap-2"
+            "flex items-center gap-1.5 md:gap-2.5 lg:gap-3",
+            compactMobile && "gap-1.5"
           )}
         >
           {Icon ? (
             <div
               className={cn(
-                "shrink-0 rounded-full sm:p-2.5",
-                compactMobile ? "p-1" : "p-1.5",
+                "shrink-0 rounded-full p-1.5 md:p-2 lg:p-2.5",
+                compactMobile && "p-1 md:p-2 lg:p-2.5",
                 styles.icon
               )}
             >
               <Icon
-                className={cn("sm:h-4 sm:w-4", compactMobile ? "h-2.5 w-2.5" : "h-3.5 w-3.5")}
+                className={cn(
+                  "h-3 w-3 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4",
+                  compactMobile && "h-2.5 w-2.5 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4"
+                )}
                 aria-hidden
               />
             </div>
           ) : null}
           <p
             className={cn(
-              "min-w-0 font-medium leading-snug sm:text-sm",
-              compactMobile ? "text-[10px]" : "text-xs",
+              "min-w-0 font-medium leading-snug text-[11px] md:text-xs lg:text-sm",
+              compactMobile && "text-[10px] md:text-xs lg:text-sm",
               isCritical || isImportant ? "text-white" : "text-white/85"
             )}
           >
@@ -186,17 +193,17 @@ export function WidgetCard({
           </p>
         </div>
 
-        <div className={cn("sm:mt-5", compactMobile ? "mt-2" : "mt-3")}>
+        <div className={cn("mt-2.5 md:mt-3.5 lg:mt-5", compactMobile && "mt-2 md:mt-3.5 lg:mt-5")}>
           <p
             className={cn(
               "font-semibold tracking-tight text-white tabular-nums leading-none",
               compactMobile
                 ? isCritical
-                  ? "text-lg sm:text-[2.5rem]"
-                  : "text-lg sm:text-4xl"
+                  ? "text-lg md:text-3xl lg:text-[2.5rem]"
+                  : "text-lg md:text-3xl lg:text-4xl"
                 : isCritical
-                  ? "text-2xl sm:text-[2.5rem]"
-                  : "text-2xl sm:text-4xl"
+                  ? "text-xl md:text-3xl lg:text-[2.5rem]"
+                  : "text-xl md:text-3xl lg:text-4xl"
             )}
           >
             {value}
@@ -204,8 +211,8 @@ export function WidgetCard({
           {hint ? (
             <p
               className={cn(
-                "line-clamp-2 leading-snug text-tc-muted sm:mt-2 sm:text-xs sm:leading-normal",
-                compactMobile ? "mt-1 text-[9px]" : "mt-1.5 text-[10px]"
+                "mt-1 line-clamp-2 leading-snug text-tc-muted text-[10px] md:mt-1.5 md:text-[11px] lg:mt-2 lg:text-xs lg:leading-normal",
+                compactMobile && "mt-1 text-[9px] md:mt-1.5 md:text-[11px] lg:mt-2 lg:text-xs"
               )}
             >
               {hint}
@@ -216,8 +223,8 @@ export function WidgetCard({
         {trend ? (
           <div
             className={cn(
-              "flex flex-wrap items-center gap-x-1.5 gap-y-0.5 sm:mt-4 sm:gap-2 sm:text-xs",
-              compactMobile ? "mt-1.5 text-[9px]" : "mt-2.5 text-[10px]"
+              "mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[10px] md:mt-3 md:gap-2 md:text-[11px] lg:mt-4 lg:text-xs",
+              compactMobile && "mt-1.5 text-[9px] md:mt-3 md:text-[11px] lg:mt-4 lg:text-xs"
             )}
           >
             <span
@@ -233,7 +240,7 @@ export function WidgetCard({
               )}
               {trend.value}%
             </span>
-            <span className="hidden text-tc-muted sm:inline">{trend.label}</span>
+            <span className="hidden text-tc-muted md:inline">{trend.label}</span>
           </div>
         ) : null}
       </div>
@@ -241,8 +248,8 @@ export function WidgetCard({
       {href ? (
         <div
           className={cn(
-            "border-t sm:mt-5 sm:pt-4",
-            compactMobile ? "mt-2 pt-1.5" : "mt-3 pt-2.5",
+            "mt-2.5 border-t pt-2 md:mt-4 md:pt-3 lg:mt-5 lg:pt-4",
+            compactMobile && "mt-2 pt-1.5 md:mt-4 md:pt-3 lg:mt-5 lg:pt-4",
             isCritical && accent === "amber" && "border-amber-500/25",
             isCritical && accent === "rose" && "border-rose-500/25",
             isImportant && "border-violet-500/20",
@@ -251,8 +258,8 @@ export function WidgetCard({
         >
           <p
             className={cn(
-              "font-medium transition-colors sm:text-sm",
-              compactMobile ? "text-[10px]" : "text-[11px]",
+              "font-medium transition-colors text-[11px] md:text-xs lg:text-sm",
+              compactMobile && "text-[10px] md:text-xs lg:text-sm",
               styles.link
             )}
           >

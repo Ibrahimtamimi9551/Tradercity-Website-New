@@ -1,6 +1,7 @@
 "use client";
 
 import { Users, Crown, Clock, AlertTriangle, UserPlus } from "lucide-react";
+import { AdminStatGrid } from "@/components/admin/directory";
 import { WidgetCard } from "@/components/admin/ui";
 import type { DirectoryStats } from "@/types/members/directory";
 
@@ -10,7 +11,7 @@ type DirectoryWidgetsProps = {
 
 export function DirectoryWidgets({ stats }: DirectoryWidgetsProps) {
   return (
-    <div className="grid grid-cols-2 gap-2 sm:gap-4 xl:grid-cols-5">
+    <AdminStatGrid mobileCols={2} mdCols={3} xlCols={5}>
       <WidgetCard
         label="Total Members"
         value={stats.totalMembers.toLocaleString()}
@@ -34,14 +35,14 @@ export function DirectoryWidgets({ stats }: DirectoryWidgetsProps) {
         linkText="View all"
       />
       <WidgetCard
-        label="Pending Verification"
+        label="Blockchain Verifying"
         value={stats.pendingVerification.toLocaleString()}
-        hint="Subscription pending"
+        hint="System verifying payments"
         icon={Clock}
         accent="blue"
         priority="informational"
         compactMobile
-        href="/admin/subscriptions?status=pending_verification"
+        href="/admin/subscriptions?status=blockchain_verifying"
         linkText="View all"
       />
       <WidgetCard
@@ -65,8 +66,8 @@ export function DirectoryWidgets({ stats }: DirectoryWidgetsProps) {
         compactMobile
         href="/admin/members"
         linkText="View all"
-        className="col-span-2 xl:col-span-1"
+        className="col-span-2 md:col-span-1 xl:col-span-1"
       />
-    </div>
+    </AdminStatGrid>
   );
 }

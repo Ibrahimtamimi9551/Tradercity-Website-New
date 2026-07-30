@@ -12,7 +12,7 @@ import type {
   ReferralFilters,
   ReferralMember,
   ReferralMembershipPlan,
-  ReferralProgressStatus,
+  ReferralProgressFilter,
   ReferralSort,
   ReferralSortKey,
 } from "@/types/members/referral";
@@ -45,7 +45,13 @@ function parseMembershipPlan(
 }
 
 function parseProgress(value: string | null): ReferralFilters["progress"] {
-  if (value === "in_progress" || value === "completed") return value;
+  if (
+    value === "in_progress" ||
+    value === "completed" ||
+    value === "redeem_requests"
+  ) {
+    return value;
+  }
   return "all";
 }
 
@@ -72,14 +78,27 @@ function parseSortDirection(value: string | null): ReferralSort["direction"] {
 
 function parseFiltersFromParams(searchParams: URLSearchParams): ReferralFilters {
   const status = searchParams.get("status");
+  /**
+   * Dashboard Operations Queue deep-link:
+   * `status=redeem_requests` (preferred) or legacy `status=pending` when paired
+   * with redeem queue intent via `progress=redeem_requests`.
+   * Pending referral invites still use `status=pending` alone.
+   */
+  const redeemFromStatus =
+    status === "redeem_requests" ||
+    searchParams.get("progress") === "redeem_requests";
+  const progress = redeemFromStatus
+    ? "redeem_requests"
+    : parseProgress(searchParams.get("progress"));
+
   return {
     search: searchParams.get("q") ?? "",
     membershipPlan: parseMembershipPlan(
       searchParams.get("plan") ?? searchParams.get("membership")
     ),
-    progress: parseProgress(searchParams.get("progress")),
+    progress,
     credit: parseCredit(searchParams.get("credit")),
-    pendingOnly: status === "pending",
+    pendingOnly: status === "pending" && progress !== "redeem_requests",
   };
 }
 
@@ -119,7 +138,16 @@ function matchesFilters(member: ReferralMember, filters: ReferralFilters): boole
     return false;
   }
 
-  if (filters.progress !== "all" && member.progressStatus !== filters.progress) {
+  if (filters.progress === "redeem_requests") {
+    // Operational queue — Waiting Admin Approval only
+    if (member.redeemRequestStatus !== "waiting_admin_approval") return false;
+  } else if (filters.progress === "completed") {
+    // Completed = redeem requested and admin already approved
+    if (member.redeemRequestStatus !== "approved") return false;
+  } else if (
+    filters.progress !== "all" &&
+    member.progressStatus !== filters.progress
+  ) {
     return false;
   }
 
@@ -206,8 +234,14 @@ export type UseReferralsDirectoryOptions = {
 /**
  * Referral Operations Dashboard — filters, sort, pagination, selection.
  *
+ * Referral NEVER activates memberships. Wallet / progress / analytics only.
+ * Redeem request approval lives in Membership Activation Center:
+ *   /admin/subscriptions?source=referral_redeem
+ *
+ * Legacy redeem queue URLs redirect to Subscriptions.
+ *
  * URL contract:
- *   /admin/referrals?status=pending
+ *   /admin/referrals?status=pending             (pending referral invites)
  *   /admin/referrals?progress=completed
  *   /admin/referrals?credit=has_credit
  *   /admin/referrals?member=<id>
@@ -222,6 +256,25 @@ export function useReferralsDirectory(options?: UseReferralsDirectoryOptions) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const searchKey = searchParams.toString();
+
+  // Legacy redeem queue → Membership Activation Center (single implementation).
+  useEffect(() => {
+    const status = searchParams.get("status");
+    const progress = searchParams.get("progress");
+    const isLegacyRedeem =
+      progress === "redeem_requests" || status === "redeem_requests";
+    if (!isLegacyRedeem) return;
+
+    const params = new URLSearchParams();
+    params.set("source", "referral_redeem");
+    const q = searchParams.get("q");
+    const member =
+      searchParams.get("member") ?? searchParams.get("memberId");
+    if (q) params.set("q", q);
+    if (member) params.set("member", member);
+    router.replace(`/admin/subscriptions?${params.toString()}`);
+  }, [router, searchParams]);
+
   const segment = pathname.startsWith(`${listPathname}/`)
     ? pathname.slice(listPathname.length + 1).split("/")[0] || null
     : null;
@@ -481,7 +534,14 @@ export function useReferralsDirectory(options?: UseReferralsDirectoryOptions) {
     [setFilters]
   );
   const setProgress = useCallback(
-    (progress: ReferralProgressStatus | "all") => setFilters({ progress }),
+    (progress: ReferralProgressFilter) =>
+      setFilters({
+        progress: progress === "redeem_requests" ? "all" : progress,
+        pendingOnly:
+          progress === "redeem_requests"
+            ? false
+            : filtersRef.current.pendingOnly,
+      }),
     [setFilters]
   );
   const setCredit = useCallback(

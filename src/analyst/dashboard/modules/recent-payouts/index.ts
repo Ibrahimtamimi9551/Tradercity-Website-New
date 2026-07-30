@@ -1,0 +1,1 @@
+export { RecentPayoutsModule } from "./RecentPayoutsModule";

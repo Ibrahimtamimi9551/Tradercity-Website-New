@@ -17,7 +17,7 @@ const membershipOptions = [
 const subscriptionOptions = [
   { value: "all", label: "Subscription (All)" },
   { value: "active", label: "Active" },
-  { value: "pending_verification", label: "Pending Verification" },
+  { value: "pending_verification", label: "Blockchain Verifying" },
   { value: "verification_required", label: "Verification Required" },
   { value: "none", label: "N/A" },
 ];
@@ -34,6 +34,8 @@ const referralOptions = [
   { value: "all", label: "Referral (All)" },
   { value: "in_progress", label: "In Progress" },
   { value: "eligible", label: "Eligible" },
+  { value: "redeem_requests", label: "Referral Redeem Requests" },
+  { value: "completed", label: "Completed" },
 ];
 
 const healthOptions = [

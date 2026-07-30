@@ -1,11 +1,9 @@
-﻿import { ModulePlaceholder } from "@/components/admin/layout/ModulePlaceholder";
+﻿import { SubscriptionsPage } from "@/components/members/sections/subscriptions";
 
-export default function SubscriptionsPage() {
-  return (
-    <ModulePlaceholder
-      title="Subscriptions"
-      subtitle="Payment verification, approval, and subscription tickets."
-      phase="Phase 4"
-    />
-  );
+/**
+ * Phase 4 — Membership Activation Center (Subscriptions route).
+ * Crypto · Manual · Referral Redeem — all activation sources that change membership status.
+ */
+export default function SubscriptionsRoutePage() {
+  return <SubscriptionsPage />;
 }

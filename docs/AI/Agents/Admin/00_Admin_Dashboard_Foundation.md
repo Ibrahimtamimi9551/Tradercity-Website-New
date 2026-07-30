@@ -46,6 +46,8 @@ The system is designed to evolve through **modular expansion** rather than archi
 | Document | Role |
 |----------|------|
 | **This file** | Foundation index, manifesto, reading order |
+| [`CROSS_MODULE_DATA_SYNCHRONIZATION_ARCHITECTURE.md`](../../04_Product_Architecture/CROSS_MODULE_DATA_SYNCHRONIZATION_ARCHITECTURE.md) | **Canonical** — domain ownership, Membership backend domain, sync matrix |
+| [`TRADERCITY_ADMIN_ECOSYSTEM_AND_USER_LIFECYCLE_ARCHITECTURE.md`](../../04_Product_Architecture/TRADERCITY_ADMIN_ECOSYSTEM_AND_USER_LIFECYCLE_ARCHITECTURE.md) | **Ecosystem map** — user lifecycle, module relationships, sync/reconciliation, maturity gaps |
 | [`05_Operations_Center_Vision_Report.md`](05_Operations_Center_Vision_Report.md) | **Master report** — workflows, Operations Queue, System Health, module summaries |
 | [`07_Vision_Before_Implementation.md`](07_Vision_Before_Implementation.md) | **Authoritative** — philosophy, scope (Phases 0–6), sidebar authority |
 | [`06_Application_Isolation_and_Folder_Architecture.md`](06_Application_Isolation_and_Folder_Architecture.md) | **Non-negotiable** — Admin vs Marketing isolation, folder structure |

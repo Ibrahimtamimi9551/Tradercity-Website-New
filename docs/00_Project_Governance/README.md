@@ -89,6 +89,7 @@ Foundation branches are history. They are not renamed. After Platform v2.0 they 
 |------|----------|
 | [ENGINEERING_PLATFORM_V2.md](./ENGINEERING_PLATFORM_V2.md) | **Master v2.0 plan — all five layers** |
 | [ENGINEERING_FREEZE.md](./ENGINEERING_FREEZE.md) | Pre-baseline freeze — no feature work |
+| [ENGINEERING_FREEZE_OVERRIDE_ANALYST_FOUNDATION.md](./ENGINEERING_FREEZE_OVERRIDE_ANALYST_FOUNDATION.md) | Temporary PO override — Analyst foundation UX (scoped) |
 | [PROJECT_ARCHITECTURE.md](./PROJECT_ARCHITECTURE.md) | Business domains and responsibilities |
 | [PROJECT_ROADMAP.md](./PROJECT_ROADMAP.md) | Master delivery roadmap (`feature/*` source) |
 | [MODULE_OWNERSHIP.md](./MODULE_OWNERSHIP.md) | Source ownership mirrors product domains |

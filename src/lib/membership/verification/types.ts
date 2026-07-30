@@ -20,11 +20,18 @@ import type { PriceBreakdown } from "@/lib/membership/pricing";
 
 /**
  * Product / UI verification outcomes (documentation states).
- * Admin UI today consolidates to a smaller display set; expand when backend exposes them.
+ * Admin UI consolidates to display tickets; expand when backend exposes them.
+ *
+ * IMPORTANT (Phase 1 product policy):
+ *   `verified` means the payment matched the quote — it does NOT activate Membership.
+ *   Membership activates only after Admin Approve (Approval Pending → Approved).
+ *   See docs/Member Management/02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md
  */
 export type PaymentVerificationOutcome =
   | "pending"
   | "verifying"
+  | "verified"
+  /** @deprecated Prefer `verified` — kept for migration; never means Membership activated */
   | "successful"
   | "overpaid"
   | "underpaid"
@@ -97,10 +104,12 @@ export type PaymentVerificationCapability = {
 };
 
 /**
- * Product rule as a type-level invariant:
- *   successful  ⇔  receivedAmountUsd === quote.expectedAmountUsd
- *   underpaid   ⇔  received < expected
- *   overpaid    ⇔  received > expected
+ * Product rule as a type-level invariant (Verification only):
+ *   verified   ⇔  receivedAmountUsd === quote.expectedAmountUsd
+ *   underpaid  ⇔  received < expected
+ *   overpaid   ⇔  received > expected
+ *
+ * Membership activation is a separate Approval event (Admin) — not this classifier.
  */
 export type PaymentAmountMatch =
   | { kind: "match"; expectedPayableUsd: number; receivedAmountUsd: number }
@@ -122,11 +131,12 @@ export function classifyPaymentAmountMatch(
 }
 
 /**
- * Admin Subscriptions display states today vs richer product outcomes later.
- * Expand Admin badges when the backend exposes more detail — do not invent UI states early.
+ * Admin Subscriptions display states vs verification-engine outcomes.
+ * Phase 1: engine `verified` / legacy `successful` → Approval Pending (not Approved).
  */
 export const ADMIN_DISPLAY_TO_VERIFICATION_OUTCOMES = {
-  pending_verification: ["pending", "verifying"] as const,
+  blockchain_verifying: ["pending", "verifying"] as const,
+  approval_pending: ["verified", "successful"] as const,
   verification_required: [
     "underpaid",
     "overpaid",
@@ -134,6 +144,7 @@ export const ADMIN_DISPLAY_TO_VERIFICATION_OUTCOMES = {
     "failed",
     "refund_required",
   ] as const,
-  successful: ["successful"] as const,
+  /** Membership activated path — set only after Admin Approve (not by verification engine) */
+  approved: [] as const,
   rejected: ["cancelled", "failed"] as const,
 } as const;

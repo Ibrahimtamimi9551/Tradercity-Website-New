@@ -440,10 +440,21 @@ Categories: Standard (plan-driven) | VIP (auto Lifetime, ∞ days, $0, forced Ac
 | Step | Member file | Admin mirror |
 |------|-------------|--------------|
 | Submit payment | PaymentSection: Discord Username, TXID, USDT wallet/QR | Payment Verification table: Merchant, hash (copy), plan, amount |
-| Await verification | VerificationSection: PENDING + timeline | Awaiting Approval stat card + VERIFIED_ON_CHAIN filter |
-| Approve | — | Approve modal → SUCCESS |
+| Await verification | VerificationSection: PENDING + timeline | Pending Verification widget |
+| Awaiting admin approval | Member waits for Admin | **Awaiting Admin Approval** widget (primary queue after Verified) |
+| Approve | — | Approve modal → APPROVED → Membership Activated → Discord |
 | Access granted | ResultSection: active → Enter VIP Dashboard | Members: Active status, plan, days remaining |
-| Issue | ResultSection: issue → Recheck / Submit New Hash | REJECTED badge + reject reason UI (TraderCity improvement) |
+| Issue | ResultSection: issue → Recheck / Submit New Hash | Verification Required + reject reason UI |
+
+Payment statuses (map to backend enums + member VerificationSection):
+- PENDING — member submitted, automatic verification not finished
+- VERIFIED / VERIFIED_ON_CHAIN — auto-verified, **Awaiting Admin Approval** (Membership not active)
+- APPROVED / SUCCESS — Admin approved; Membership activate → Discord
+- FAILED — on-chain or processing failure → Verification Required path
+- REJECTED — Admin rejected
+
+**Phase 1 policy:** Verification ≠ Approval. Membership activates only after Admin Approve. Canonical: `docs/Member Management/02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md`.
+
 
 ### Dashboard fields admin must manage
 From VipDashboardContent `mockMembership`: joinedDate, status, daysRemaining, paymentMethod, nextBillingDate, currentPlan, accessType.
@@ -457,11 +468,13 @@ Assume these already exist in NestJS — design frontend to consume them:
 - User roles: Guest, Free Member, VIP Member, Analyst, Admin
 
 Payment statuses (map to backend enums + member VerificationSection):
-- PENDING — member submitted, not yet on-chain verified
-- VERIFIED_ON_CHAIN — on-chain verified, admin sign-off pending (primary work queue)
-- SUCCESS — approved; member ResultSection → active
-- FAILED — on-chain or processing failure
-- REJECTED — admin rejected (design reject UI; stub if endpoint TODO)
+- PENDING — member submitted; automatic verification not finished
+- VERIFIED / VERIFIED_ON_CHAIN — auto-verified → **Awaiting Admin Approval** (primary work queue; Membership not active)
+- APPROVED / SUCCESS — Admin approved; Membership activate → Discord
+- FAILED — on-chain or processing failure → Verification Required
+- REJECTED — Admin rejected (design reject UI; stub if endpoint TODO)
+
+**Phase 1:** Verification ≠ Approval. See `docs/Member Management/02_Product_Architecture/SUBSCRIPTION_PAYMENT_APPROVAL_LIFECYCLE.md`.
 
 DO NOT:
 - Create mock localStorage databases

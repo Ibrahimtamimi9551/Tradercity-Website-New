@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Crown, FileText, MoreVertical } from "lucide-react";
+import { Crown, FileText } from "lucide-react";
 import {
   DataTable,
   StatusBadge,
@@ -8,6 +8,7 @@ import {
 } from "@/components/admin/ui";
 import { cn } from "@/lib/admin/cn";
 import type { DirectoryMember } from "@/types/members/directory";
+import { MemberRowActions } from "./MemberRowActions";
 
 const avatarToneStyles: Record<DirectoryMember["avatarTone"], string> = {
   discord: "bg-[#5865F2] text-white",
@@ -59,7 +60,7 @@ function SubscriptionCell({ status }: { status: DirectoryMember["subscription"] 
 
   const map = {
     active: { label: "Active", tone: "success" as const },
-    pending_verification: { label: "Pending Verification", tone: "warning" as const },
+    pending_verification: { label: "Blockchain Verifying", tone: "info" as const },
     verification_required: { label: "Verification Required", tone: "danger" as const },
   }[status];
 
@@ -78,9 +79,27 @@ function DiscordCell({ status }: { status: DirectoryMember["discord"] }) {
 }
 
 function ReferralProgressCell({ member }: { member: DirectoryMember }) {
-  const pct = Math.round((member.referralCurrent / member.referralTarget) * 100);
+  const pct = Math.round(
+    (member.referralCurrent / Math.max(member.referralTarget, 1)) * 100
+  );
+  const status = member.referralStatus;
   const barColor =
-    pct >= 100 ? "bg-emerald-400" : pct >= 50 ? "bg-amber-400" : "bg-rose-400";
+    status === "waiting_admin_approval"
+      ? "bg-amber-400"
+      : status === "completed" || status === "eligible"
+        ? "bg-violet-400"
+        : pct >= 50
+          ? "bg-amber-400"
+          : "bg-rose-400";
+
+  const badge =
+    status === "waiting_admin_approval"
+      ? { label: "Waiting Admin Approval", tone: "warning" as const }
+      : status === "completed"
+        ? { label: "Completed", tone: "vip" as const }
+        : status === "eligible"
+          ? { label: "Eligible", tone: "success" as const }
+          : null;
 
   return (
     <div className="min-w-[8.5rem]">
@@ -88,14 +107,17 @@ function ReferralProgressCell({ member }: { member: DirectoryMember }) {
         <span className="tabular-nums text-white/80">
           {member.referralCurrent} / {member.referralTarget}
         </span>
-        <span className="tabular-nums text-tc-muted">{pct}%</span>
+        <span className="tabular-nums text-tc-muted">{Math.min(pct, 100)}%</span>
       </div>
       <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
-        <div className={cn("h-full rounded-full", barColor)} style={{ width: `${pct}%` }} />
+        <div
+          className={cn("h-full rounded-full", barColor)}
+          style={{ width: `${Math.min(pct, 100)}%` }}
+        />
       </div>
-      {member.referralEligible ? (
+      {badge ? (
         <div className="mt-1.5">
-          <StatusBadge label="Eligible" tone="success" dot={false} />
+          <StatusBadge label={badge.label} tone={badge.tone} dot={false} />
         </div>
       ) : null}
     </div>
@@ -179,16 +201,8 @@ const columns: DataTableColumn<DirectoryMember>[] = [
     key: "actions",
     header: "Actions",
     className: "w-12",
-    render: () => (
-      <button
-        type="button"
-        className="rounded-lg p-1.5 text-tc-muted transition-colors hover:bg-white/[0.06] hover:text-white"
-        aria-label="Row actions"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <MoreVertical className="h-4 w-4" />
-      </button>
-    ),
+    stopRowClick: true,
+    render: (row) => <MemberRowActions member={row} />,
   },
 ];
 

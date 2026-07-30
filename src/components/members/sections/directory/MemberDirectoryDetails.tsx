@@ -134,12 +134,21 @@ export function MemberDirectoryDetails({
               <div
                 className={cn(
                   "h-full rounded-full",
-                  member.referralEligible ? "bg-violet-400" : "bg-amber-400"
+                  member.referralStatus === "waiting_admin_approval"
+                    ? "bg-amber-400"
+                    : member.referralStatus === "completed" ||
+                        member.referralStatus === "eligible"
+                      ? "bg-violet-400"
+                      : "bg-amber-400"
                 )}
                 style={{ width: `${Math.min(referralPct, 100)}%` }}
               />
             </div>
-            {member.referralEligible ? (
+            {member.referralStatus === "waiting_admin_approval" ? (
+              <StatusBadge label="Waiting Admin Approval" tone="warning" dot={false} />
+            ) : member.referralStatus === "completed" ? (
+              <StatusBadge label="Completed" tone="vip" dot={false} />
+            ) : member.referralStatus === "eligible" ? (
               <StatusBadge label="Eligible" tone="success" dot={false} />
             ) : null}
           </div>
@@ -184,7 +193,7 @@ function SubscriptionBadge({
   if (status === "none") return <span className="text-tc-muted">N/A</span>;
   const map = {
     active: { label: "Active", tone: "success" as const },
-    pending_verification: { label: "Pending Verification", tone: "warning" as const },
+    pending_verification: { label: "Blockchain Verifying", tone: "info" as const },
     verification_required: { label: "Verification Required", tone: "danger" as const },
   }[status];
   return <StatusBadge label={map.label} tone={map.tone} />;

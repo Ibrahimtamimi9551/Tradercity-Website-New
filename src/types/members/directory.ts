@@ -10,7 +10,18 @@ export type SubscriptionStatus =
 
 export type DiscordStatus = "connected" | "disconnected" | "action_required" | "suspended";
 
-export type ReferralStatus = "in_progress" | "eligible";
+/**
+ * Directory referral operational status — aligned with Referrals Progress filter.
+ * - in_progress: target not yet met
+ * - eligible: target met, redeem not yet requested
+ * - waiting_admin_approval: Referral Redeem Request pending
+ * - completed: redeem requested and admin already approved
+ */
+export type ReferralStatus =
+  | "in_progress"
+  | "eligible"
+  | "waiting_admin_approval"
+  | "completed";
 
 /** Account login/access state — independent from Discord connection status. */
 export type AccountStatus = "active" | "suspended";
@@ -26,7 +37,8 @@ export type DirectoryMember = {
   accountStatus: AccountStatus;
   referralCurrent: number;
   referralTarget: number;
-  referralEligible: boolean;
+  /** Operational referral status (not a boolean — Eligible ≠ Completed). */
+  referralStatus: ReferralStatus;
   joinedAt: string;
   systemHealth: SystemHealthState;
 };
@@ -36,7 +48,11 @@ export type DirectoryFilters = {
   membership: MembershipTier | "all";
   subscription: SubscriptionStatus | "all";
   discord: DiscordStatus | "all";
-  referral: ReferralStatus | "all";
+  /**
+   * `redeem_requests` maps to `waiting_admin_approval` rows
+   * (same queue as Referrals `progress=redeem_requests`).
+   */
+  referral: ReferralStatus | "redeem_requests" | "all";
   health: SystemHealthState | "all";
 };
 
