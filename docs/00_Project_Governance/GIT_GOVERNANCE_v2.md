@@ -1289,5 +1289,30 @@ git checkout -b release/v1.x
 
 ---
 
+## 28. Development Log — New Development Streams
+
+### New Development Stream (2026-07-31)
+
+**Feature Branch:**
+
+```text
+feature/super-admin-control-centre
+```
+
+**Purpose:**
+
+Development of the TraderCity **Super Admin Control Centre**, which will centralize executive-level management, platform finance, operational analytics, and cross-module administrative controls.
+
+**Status:**
+
+* Created from `develop`
+* Independent development stream
+* Will merge into `develop` after completion and verification
+* No impact on `master` until a future stable release
+
+This entry records stream creation only. It does **not** change repository strategy, permanent-branch policy, or the governance model.
+
+---
+
 *TraderCity Git Governance v2.3 — Phase 2 Option 2 (Latest Stable Platform on master)*  
-*Updated 2026-07-31 — branch preservation; no deletions*
+*Updated 2026-07-31 — branch preservation; no deletions; Super Admin Control Centre stream opened*
