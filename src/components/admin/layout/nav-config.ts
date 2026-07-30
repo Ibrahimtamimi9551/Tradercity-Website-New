@@ -13,6 +13,9 @@
   LineChart,
   Newspaper,
   Calendar,
+  Settings,
+  CircleHelp,
+  Library,
 } from "lucide-react";
 import type { AdminNavDomain, AdminNavItem } from "@/types/admin/navigation";
 
@@ -73,6 +76,21 @@ export const CONTENT_NAV: AdminNavItem[] = [
 /** @deprecated Use CONTENT_NAV. */
 export const WEBSITE_MANAGEMENT_NAV = CONTENT_NAV;
 
+/**
+ * Footer utilities — support / configuration, separate from operational domains.
+ * Settings and Need Help are IA placeholders until Phase 8+.
+ */
+export const ADMIN_UTILITY_NAV: AdminNavItem[] = [
+  {
+    label: "Admin Guide Center",
+    href: "/admin/guide",
+    icon: Library,
+    exactMatch: true,
+  },
+  { label: "Settings", href: "#settings", icon: Settings, comingSoon: true },
+  { label: "Need Help", href: "#need-help", icon: CircleHelp, comingSoon: true },
+];
+
 export const ADMIN_NAV_DOMAINS: AdminNavDomain[] = [
   {
     id: "members",
@@ -92,9 +110,12 @@ export const ADMIN_NAV_DOMAINS: AdminNavDomain[] = [
 ];
 
 /** Flat list of navigable items (excludes comingSoon). */
-export const ADMIN_NAV_ITEMS: AdminNavItem[] = ADMIN_NAV_DOMAINS.flatMap((domain) =>
-  domain.items.filter((item) => !item.comingSoon)
-);
+export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
+  ...ADMIN_NAV_DOMAINS.flatMap((domain) =>
+    domain.items.filter((item) => !item.comingSoon)
+  ),
+  ...ADMIN_UTILITY_NAV.filter((item) => !item.comingSoon),
+];
 
 /** Mobile bottom-bar primaries (Members section only). */
 export const MOBILE_PRIMARY_NAV = MEMBERS_NAV.filter((item) => item.mobilePrimary);
@@ -118,6 +139,11 @@ export const MOBILE_MORE_DOMAINS: AdminNavDomain[] = [
     id: "content",
     label: "Content",
     items: CONTENT_NAV,
+  },
+  {
+    id: "utilities",
+    label: "Support",
+    items: ADMIN_UTILITY_NAV,
   },
 ];
 

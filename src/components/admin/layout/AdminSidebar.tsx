@@ -6,6 +6,7 @@ import { PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
 import { cn } from "@/lib/admin/cn";
 import {
   ADMIN_NAV_DOMAINS,
+  ADMIN_UTILITY_NAV,
   isAdminNavItemActive,
 } from "./nav-config";
 import type { AdminNavItem } from "@/types/admin/navigation";
@@ -113,6 +114,34 @@ function NavLinks({
   );
 }
 
+function UtilityNav({
+  collapsed,
+  onNavigate,
+}: {
+  collapsed: boolean;
+  onNavigate?: () => void;
+}) {
+  return (
+    <div className="shrink-0 border-t border-white/10 px-3 py-3">
+      {!collapsed ? (
+        <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-tc-muted/70">
+          Support
+        </p>
+      ) : null}
+      <div className="flex flex-col gap-1">
+        {ADMIN_UTILITY_NAV.map((item) => (
+          <NavItemLink
+            key={`utility-${item.label}-${item.href}`}
+            item={item}
+            collapsed={collapsed}
+            onNavigate={onNavigate}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function AdminSidebar({
   collapsed,
   onToggleCollapse,
@@ -169,6 +198,8 @@ export function AdminSidebar({
         </div>
 
         <NavLinks collapsed={navCollapsed} onNavigate={onMobileClose} />
+
+        <UtilityNav collapsed={navCollapsed} onNavigate={onMobileClose} />
 
         <div className="hidden border-t border-white/10 p-3 lg:block">
           <button
