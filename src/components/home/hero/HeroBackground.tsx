@@ -1,76 +1,24 @@
+import { MARKETING_HERO_SURFACE_BG } from "../shared/marketing-surfaces";
 
-// Herobackground Grid Resolution from Antigravity , updating whole code here - iteration 2 , 4/6/26 ,4:26pm
-
-import React from 'react';
-
+/**
+ * Hero atmospheric surface — gradient stack + subtle static orbs.
+ * No grid, noise, grain, or animation (static by design).
+ */
 export default function HeroBackground() {
   return (
-    <div className="absolute inset-0 overflow-hidden bg-[#02030A]">
-      
-      {/* =========================================
-          1. AMBIENT LIGHTING
-          ========================================= */}
-      {/* Deep Purple Glow - Bottom Left (Reduced dominance) */}
-      <div 
-        className="absolute -bottom-[20%] -left-[10%] w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] rounded-full opacity-25 blur-[130px]"
-        style={{ background: 'radial-gradient(circle, #9B5DE5 0%, transparent 70%)' }}
-      />
-      
-      {/* Soft purple glow — top left, supports typography */}
-      <div
-        className="absolute -top-[5%] left-[10%] h-[45vw] w-[45vw] max-h-[600px] max-w-[600px] rounded-full opacity-15 blur-[140px]"
-        style={{ background: "radial-gradient(circle, #A855F7 0%, transparent 70%)" }}
-      />
-      
-      {/* Center Spotlight */}
-     {/* <div
-       className="absolute top-[15%] left-1/2 -translate-x-1/2
-       w-[800px] h-[800px]
-       opacity-20 blur-[120px]"
-       style={{
-       background:
-       "radial-gradient(circle, rgba(10,132,255,0.5) 0%, transparent 70%)",
-     }}
-/> */}
+    <div
+      className="absolute inset-0 overflow-hidden"
+      style={{ background: MARKETING_HERO_SURFACE_BG }}
+      aria-hidden
+    >
+      {/* Orb 1 — primary blue ~8% */}
+      <div className="pointer-events-none absolute left-1/4 top-[-80px] h-[280px] w-[280px] rounded-full bg-[rgba(59,130,246,0.08)] blur-[100px] sm:h-[380px] sm:w-[380px] sm:blur-[120px] md:h-[480px] md:w-[480px] md:blur-[140px]" />
 
-      {/* =========================================
-          2. PERSPECTIVE GRID FLOOR
-          ========================================= */}
-      <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
-        {/* 
-          Wrapper for horizon fade. 
-          Takes up the bottom 70% of the screen and smoothly fades to transparent at the top,
-          eliminating any hard lines or black bands.
-        */}
-        <div 
-          className="absolute bottom-0 left-0 right-0 h-[70vh]"
-          style={{
-            maskImage: 'linear-gradient(to top, white 10%, transparent 90%)',
-            WebkitMaskImage: 'linear-gradient(to top, white 10%, transparent 90%)', 
-          }}
-        >
-          {/* 3D Grid Lines */}
-          <div 
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[250%] h-[150%] origin-bottom opacity-60"
-            style={{
-              // Relaxed perspective (1000px) and rotation (60deg) for a natural, uncompressed depth
-              transform: 'perspective(1000px) rotateX(60deg) translateY(5%)',
-              background: 'linear-gradient(90deg, rgba(168,85,247,0.35) 0%, rgba(2,3,10,0) 50%, rgba(2,3,10,0) 100%)',
-              WebkitMaskImage: `
-                linear-gradient(to right, black 1px, transparent 1px),
-                linear-gradient(to bottom, black 1px, transparent 1px)
-              `,
-              WebkitMaskSize: '60px 60px',
-              maskImage: `
-                linear-gradient(to right, black 1px, transparent 1px),
-                linear-gradient(to bottom, black 1px, transparent 1px)
-              `,
-              maskSize: '60px 60px'
-            }}
-          />
-        </div>
-      </div>
+      {/* Orb 2 — purple #A855F7 at 8% */}
+      <div className="pointer-events-none absolute bottom-[-60px] right-1/4 h-[240px] w-[240px] rounded-full bg-[rgba(168,85,247,0.08)] blur-[90px] sm:h-[340px] sm:w-[340px] sm:blur-[110px] md:h-[420px] md:w-[420px] md:blur-[130px]" />
 
+      {/* Orb 3 — blue #3B82F6 at 5% */}
+      <div className="pointer-events-none absolute left-[-80px] top-1/2 h-[180px] w-[180px] -translate-y-1/2 rounded-full bg-[rgba(59,130,246,0.05)] blur-[80px] sm:h-[230px] sm:w-[230px] sm:blur-[90px] md:h-[280px] md:w-[280px] md:blur-[100px]" />
     </div>
   );
 }

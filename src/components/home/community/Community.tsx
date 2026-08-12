@@ -7,7 +7,7 @@ import GradientText from "../shared/GradientText";
 
 export default function Community() {
   return (
-    <section id="community" className="relative overflow-hidden bg-[#050816]">
+    <section id="community" className="relative overflow-hidden">
       <CommunityBackground />
 
       <div className="relative z-10">

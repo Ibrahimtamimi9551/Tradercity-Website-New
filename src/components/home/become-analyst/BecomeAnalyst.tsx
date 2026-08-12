@@ -1,17 +1,27 @@
 import Link from "next/link";
 import SectionEyebrow from "../shared/SectionEyebrow";
+import {
+  MARKETING_FOOTER_SURFACE_BG,
+  MARKETING_FOOTER_TOP_FADE,
+} from "../shared/marketing-surfaces";
 
 /**
  * Lightweight homepage CTA — Analyst opportunity teaser.
  * Full narrative lives on `/analysts`.
+ * Owns the marketing footer surface (closing band).
  */
 export default function BecomeAnalyst() {
   return (
     <section
       id="become-analyst"
-      className="relative overflow-hidden bg-[#050816] border-t border-white/[0.04]"
+      className="relative overflow-hidden border-t border-white/[0.04]"
+      style={{ background: MARKETING_FOOTER_SURFACE_BG }}
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.12),transparent_60%)]" />
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{ background: MARKETING_FOOTER_TOP_FADE }}
+        aria-hidden
+      />
       <div className="relative z-10 mx-auto max-w-[900px] px-6 py-16 text-center sm:px-8 sm:py-20 lg:py-24">
         <div className="mb-6 flex justify-center">
           <SectionEyebrow

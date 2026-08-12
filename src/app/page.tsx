@@ -11,7 +11,7 @@ import BecomeAnalyst from "@/components/home/become-analyst/BecomeAnalyst";
 
 export default function Page() {
   return (
-    <main className="home-shell relative">
+    <main className="home-shell relative bg-[#020617]">
       <div id="nav-scroll-sentinel" className="pointer-events-none absolute top-0 h-[50px] w-full" aria-hidden="true" />
       <HomepageNavigation />
       <Hero />
