@@ -13,8 +13,7 @@
   LineChart,
   Newspaper,
   Calendar,
-  Settings,
-  CircleHelp,
+  Crown,
   Library,
 } from "lucide-react";
 import type { AdminNavDomain, AdminNavItem } from "@/types/admin/navigation";
@@ -78,7 +77,6 @@ export const WEBSITE_MANAGEMENT_NAV = CONTENT_NAV;
 
 /**
  * Footer utilities — support / configuration, separate from operational domains.
- * Settings and Need Help are IA placeholders until Phase 8+.
  */
 export const ADMIN_UTILITY_NAV: AdminNavItem[] = [
   {
@@ -87,8 +85,12 @@ export const ADMIN_UTILITY_NAV: AdminNavItem[] = [
     icon: Library,
     exactMatch: true,
   },
-  { label: "Settings", href: "#settings", icon: Settings, comingSoon: true },
-  { label: "Need Help", href: "#need-help", icon: CircleHelp, comingSoon: true },
+  {
+    label: "Super Admin",
+    href: "/super-admin",
+    icon: Crown,
+    exactMatch: true,
+  },
 ];
 
 export const ADMIN_NAV_DOMAINS: AdminNavDomain[] = [
