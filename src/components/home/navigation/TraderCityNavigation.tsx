@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, User } from "lucide-react";
+import { ArrowRight, Search, User } from "lucide-react";
 import TraderCityLogo from "./TraderCityLogo";
 import { NAV_ITEMS, NAV_TRANSITION_MS, type NavItemConfig } from "./navConfig";
 import { isNavItemActive, useActiveSection } from "./useActiveSection";
@@ -28,17 +28,18 @@ function NavLink({ item, isActive, isCompact, isTablet }: NavLinkProps) {
         "hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tc-purple/60 focus-visible:ring-offset-2 focus-visible:ring-offset-black",
         useCompactStyle
           ? "gap-1 rounded-lg px-2 py-2 md:px-2.5 lg:gap-1.5 xl:px-3"
-          : "min-w-[72px] flex-col gap-1 rounded-xl px-2 py-2.5 xl:min-w-[84px] xl:px-3",
-        isActive ? "text-tc-purple" : "text-white/85 hover:text-white",
-        "hover:bg-white/[0.06]",
+          : "min-w-[70px] flex-col gap-1 rounded-full px-2.5 py-2 xl:min-w-[78px] xl:px-3",
+        isActive
+          ? "bg-[#9B5DE5]/20 text-white shadow-[0_0_16px_rgba(155,93,229,0.35)] ring-1 ring-[#9B5DE5]/40"
+          : "text-white/80 hover:bg-white/[0.06] hover:text-white",
       ].join(" ")}
       aria-current={isActive ? "page" : undefined}
     >
       <Icon
         className={[
           "shrink-0 transition-colors duration-200",
-          useCompactStyle ? "h-3.5 w-3.5 xl:h-4 xl:w-4" : "h-[18px] w-[18px] xl:h-5 xl:w-5",
-          isActive ? "text-tc-purple" : "text-white/80 group-hover:text-white",
+          useCompactStyle ? "h-3.5 w-3.5 xl:h-4 xl:w-4" : "h-[17px] w-[17px] xl:h-[18px] xl:w-[18px]",
+          isActive ? "text-[#C084FC]" : "text-white/75 group-hover:text-white",
         ].join(" ")}
         strokeWidth={1.75}
         aria-hidden="true"
@@ -48,6 +49,7 @@ function NavLink({ item, isActive, isCompact, isTablet }: NavLinkProps) {
         className={[
           "font-medium leading-none tracking-wide transition-colors duration-200",
           useCompactStyle ? "text-[10px] md:text-[11px] xl:text-xs" : "text-[10px] xl:text-[11px]",
+          isActive ? "text-white font-semibold" : "",
         ].join(" ")}
       >
         {item.label}
@@ -59,19 +61,19 @@ function NavLink({ item, isActive, isCompact, isTablet }: NavLinkProps) {
           aria-hidden="true"
         />
       ) : null}
-
-      {isActive ? (
-        <span
-          className={[
-            "pointer-events-none absolute rounded-full bg-gradient-to-r from-tc-purple via-[#5E5CE6] to-tc-cyan",
-            useCompactStyle
-              ? "bottom-0.5 left-1.5 right-1.5 h-[2px] shadow-[0_0_10px_rgba(155,93,229,0.65)]"
-              : "bottom-1 left-3 right-3 h-[2.5px] shadow-[0_0_12px_rgba(155,93,229,0.7)]",
-          ].join(" ")}
-          aria-hidden="true"
-        />
-      ) : null}
     </a>
+  );
+}
+
+function SearchButton() {
+  return (
+    <button
+      type="button"
+      aria-label="Search"
+      className="group flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/[0.12] bg-[#0a0c14]/70 text-white/80 shadow-[0_4px_20px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-white/25 hover:bg-[#0c0e16]/85 hover:text-white md:h-10 md:w-10"
+    >
+      <Search className="h-4 w-4 transition-transform duration-200 group-hover:scale-105" strokeWidth={2} />
+    </button>
   );
 }
 
@@ -209,7 +211,8 @@ export default function TraderCityNavigation() {
           </nav>
 
           {showExternalLogin ? (
-            <div className="justify-self-end">
+            <div className="flex items-center gap-2.5 justify-self-end">
+              <SearchButton />
               <LoginButton variant="external" />
             </div>
           ) : null}

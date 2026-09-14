@@ -69,7 +69,7 @@ export default function HeroContent() {
       mt-2
     "
   >
-    That's Why We Built TraderCity.
+    That&apos;s Why We Built TraderCity.
   </span>
 </h1>
 
