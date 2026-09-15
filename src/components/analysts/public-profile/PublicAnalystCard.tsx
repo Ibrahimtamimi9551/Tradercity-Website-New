@@ -244,7 +244,7 @@ export function PublicAnalystCard({
         "relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-white/[0.08] bg-[#0A0C12]",
         "shadow-[0_28px_90px_rgba(0,0,0,0.5)]",
         featured &&
-          "border-[#D4AF37]/35 shadow-[0_28px_90px_rgba(0,0,0,0.5),0_0_60px_rgba(212,175,55,0.12)]",
+        "border-[#D4AF37]/35 shadow-[0_28px_90px_rgba(0,0,0,0.5),0_0_60px_rgba(212,175,55,0.12)]",
         className
       )}
     >

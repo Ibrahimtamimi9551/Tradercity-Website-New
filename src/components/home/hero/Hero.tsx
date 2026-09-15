@@ -3,13 +3,12 @@ import HeroBackground from "./HeroBackground";
 import HeroLeftContent from "./HeroLeftContent";
 import IntelligenceStage from "./intelligence/IntelligenceStage";
 import HeroMetricsStrip from "./HeroMetricsStrip";
-import HeroScrollIndicator from "./HeroScrollIndicator";
 
 export default function Hero() {
   return (
     <section
       id="home"
-      className="relative flex min-h-[100svh] flex-col overflow-hidden pt-28 pb-16 sm:pt-32 sm:pb-20 md:pt-36 md:pb-24 lg:pt-36 xl:pt-40"
+      className="relative flex min-h-[100svh] flex-col overflow-hidden pt-28 pb-8 sm:pt-32 sm:pb-10 md:pt-36 md:pb-12 lg:pt-36 xl:pt-40"
     >
       {/* Untouched existing TraderCity background */}
       <HeroBackground />
@@ -29,10 +28,9 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Bottom Section: Metrics Strip + Scroll Indicator */}
-        <div className="mt-14 flex w-full flex-col items-center sm:mt-18 lg:mt-20">
+        {/* Bottom Section: Metrics Strip */}
+        <div className="mt-10 flex w-full flex-col items-center sm:mt-14 lg:mt-16">
           <HeroMetricsStrip />
-          <HeroScrollIndicator />
         </div>
       </div>
     </section>

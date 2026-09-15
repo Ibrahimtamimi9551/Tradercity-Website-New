@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowRight, User } from "lucide-react";
+import { ArrowRight, User, FileText } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 
 function DiscordIcon({ className }: { className?: string }) {
@@ -115,6 +115,21 @@ export default function HeroLeftContent() {
           </span>
           <ArrowRight
             className="h-4 w-4 shrink-0 opacity-60 transition-transform duration-200 group-hover:translate-x-1 group-hover:opacity-100"
+            strokeWidth={2}
+          />
+        </Link>
+
+        {/* Tertiary CTA: Explore Microstructure & Macro Reports */}
+        <Link
+          href="#research"
+          className="group inline-flex min-h-[50px] w-full items-center justify-between gap-3 rounded-2xl border border-white/[0.08] bg-[#0a0d18]/50 px-6 py-3.5 text-[14px] font-semibold text-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.03)] backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-white/20 hover:bg-[#0d1225]/70 hover:text-white/90 sm:min-h-[52px] sm:px-7 sm:text-[15px]"
+        >
+          <span className="flex items-center gap-3">
+            <FileText className="h-5 w-5 shrink-0 text-white/50 group-hover:text-white/80" strokeWidth={1.75} />
+            <span>Explore Microstructure &amp; Macro Reports</span>
+          </span>
+          <ArrowRight
+            className="h-4 w-4 shrink-0 opacity-40 transition-transform duration-200 group-hover:translate-x-1 group-hover:opacity-80"
             strokeWidth={2}
           />
         </Link>

@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 
 const blocks = [
   {
@@ -96,7 +96,7 @@ export default function TraderSolutionIllustration() {
         // className="w-[145%] h-auto max-w-none"
         
             viewBox="0 0 1300 800"
-            className="w-[1800px] h-auto"
+            className="w-full h-auto"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         style={{ fontFamily: 'inherit' }}
@@ -114,7 +114,7 @@ export default function TraderSolutionIllustration() {
           </filter>
 
           {/* Multicolor blended output line representing synthesis */}
-          <linearGradient id="synthGrad" x1="0" y1="0" x2="1" y2="0">
+          <linearGradient id="synthGrad" x1="725" y1="400" x2="950" y2="400" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stopColor="#C86EFF" />
             <stop offset="25%" stopColor="#5D9BFF" />
             <stop offset="50%" stopColor="#31E8FF" />
@@ -127,6 +127,12 @@ export default function TraderSolutionIllustration() {
             <stop offset="50%" stopColor="#03040C" />
             <stop offset="100%" stopColor="#1A1A2E" />
           </radialGradient>
+          {/* TraderCity Hexagonal Logo Gradient */}
+          <linearGradient id="tcLogoGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop stopColor="#06D6F7" />
+            <stop offset="0.5" stopColor="#0A84FF" />
+            <stop offset="1" stopColor="#9B5DE5" />
+          </linearGradient>
         </defs>
 
         {/* ==================== LEFT SPECIALIST BLOCKS ==================== */}
@@ -141,13 +147,6 @@ export default function TraderSolutionIllustration() {
             {/* --- TEXT CONTENT --- */}
             <text x="120" y={b.y - 10} fill="white" fontSize="13" fontWeight="700" letterSpacing="1.2">{b.title1}</text>
             <text x="120" y={b.y + 6} fill="white" fontSize="13" fontWeight="700" letterSpacing="1.2">{b.title2}</text>
-            
-            {/* {b.bullets.map((bullet, i) => (
-              <text key={i} x="120" y={b.y + 19 + (i * 18)} fill="#94A3B8" fontSize="11" letterSpacing="0.3">
-                <tspan fill="white">â€¢ </tspan>
-                <tspan>{bullet}</tspan>
-              </text>
-            ))} */}
 
             {/* --- CONNECTION DOT (LEFT) --- */}
             <circle cx="400" cy={b.y} r="3.5" fill={b.color} filter="url(#neonGlow)" />
@@ -189,15 +188,44 @@ export default function TraderSolutionIllustration() {
         <circle cx="650" cy="400" r="75" fill="url(#hubGrad)" stroke="#E2E8F0" strokeWidth="1" filter="url(#neonGlow)" opacity="0.8" />
         <circle cx="650" cy="400" r="75" fill="none" stroke="white" strokeWidth="1" />
 
-        {/* Hub Typography */}
-        <text x="650" y="405" fill="white" fontSize="46" fontWeight="700" textAnchor="middle" letterSpacing="1">TC</text>
-        <text x="650" y="430" fill="#94A3B8" fontSize="10" fontWeight="600" textAnchor="middle" letterSpacing="4">TRADERCITY</text>
+        {/* Central TraderCity Hexagonal Symbol */}
+        <g transform="translate(650, 400) scale(0.92) translate(-40, -40)">
+          {/* Soft Optical Glow */}
+          <path
+            d="M40 0L74.641 20V60L40 80L5.35898 60V20L40 0ZM40 15L60.641 27V51L40 63L19.359 51V27L40 15Z"
+            fillRule="evenodd"
+            fill="url(#tcLogoGrad)"
+            opacity="0.4"
+            filter="url(#neonGlow)"
+          />
+          {/* Sharp Vector Symbol */}
+          <path
+            d="M40 0L74.641 20V60L40 80L5.35898 60V20L40 0ZM40 15L60.641 27V51L40 63L19.359 51V27L40 15Z"
+            fillRule="evenodd"
+            fill="url(#tcLogoGrad)"
+          />
+        </g>
 
         {/* ==================== RIGHT OUTPUT ==================== */}
         
         {/* Synthesis Output Line */}
-        <line x1="735" y1="400" x2="950" y2="400" stroke="url(#synthGrad)" strokeWidth="8" opacity="0.08" filter="url(#neonGlow)" strokeLinecap="round" />
-        <line x1="950" y1="400" x2="950" y2="400" stroke="url(#synthGrad)" strokeWidth="2.5" opacity="1" strokeLinecap="round" />
+        <path
+          d="M 725 400 L 950 400"
+          fill="none"
+          stroke="url(#synthGrad)"
+          strokeWidth="4"
+          opacity="0.2"
+          strokeLinecap="round"
+          filter="url(#neonGlow)"
+        />
+        <path
+          d="M 725 400 L 950 400"
+          fill="none"
+          stroke="url(#synthGrad)"
+          strokeWidth="1.5"
+          opacity="0.95"
+          strokeLinecap="round"
+        />
 
         {/* Better Decisions Node */}
         <circle cx="950" cy="400" r="10" stroke="#FF9B3F" strokeWidth="2.5" fill="#03040C" filter="url(#neonGlow)" />

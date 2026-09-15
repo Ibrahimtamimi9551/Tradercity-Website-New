@@ -5,8 +5,6 @@ import { motion, useReducedMotion } from "framer-motion";
 import MainMarketDashboard from "./MainMarketDashboard";
 import MacroViewPanel from "./MacroViewPanel";
 import AnalystInsightsPanel from "./AnalystInsightsPanel";
-import FloatingIntelligenceCards from "./FloatingIntelligenceCards";
-import HeroCarouselControls from "../HeroCarouselControls";
 
 export default function IntelligenceStage() {
   const shouldReduceMotion = useReducedMotion();
@@ -18,23 +16,15 @@ export default function IntelligenceStage() {
 
   return (
     <div className="relative flex w-full flex-col items-center justify-center">
-      {/* 3D Perspective Stage Container */}
-      <div className="relative w-full max-w-[800px] lg:max-w-[860px] xl:max-w-[920px] pt-12 pb-4">
-        {/* Orbiting Floating Node Cards & Connectors */}
-        <motion.div
-          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={transition(0.65)}
-        >
-          <FloatingIntelligenceCards />
-        </motion.div>
+      {/* Stage container — wider (+40%) and shorter (-20% vertical padding) */}
+      <div className="relative w-full max-w-[1120px] lg:max-w-[1200px] xl:max-w-[1290px] pt-4 pb-2">
 
         {/* 3D Perspective Layer */}
         <div
           className="relative flex items-center justify-center"
           style={{ perspective: "1500px" }}
         >
-          {/* 1. LEFT PANEL: Macro View (Layered behind left edge) */}
+          {/* 1. LEFT PANEL: Macro View */}
           <motion.div
             initial={{ opacity: 0, x: shouldReduceMotion ? 0 : 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -62,7 +52,7 @@ export default function IntelligenceStage() {
             <MainMarketDashboard />
           </motion.div>
 
-          {/* 3. RIGHT PANEL: Analyst Insights (Layered behind right edge) */}
+          {/* 3. RIGHT PANEL: Analyst Insights */}
           <motion.div
             initial={{ opacity: 0, x: shouldReduceMotion ? 0 : -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -77,22 +67,12 @@ export default function IntelligenceStage() {
           </motion.div>
         </div>
 
-        {/* Mobile / Tablet View: Secondary panels shown below dashboard if needed */}
+        {/* Mobile / Tablet: Secondary panels shown below dashboard */}
         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 lg:hidden">
           <MacroViewPanel />
           <AnalystInsightsPanel />
         </div>
       </div>
-
-      {/* Carousel Controls */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={transition(0.75)}
-        className="mt-8 flex justify-center w-full"
-      >
-        <HeroCarouselControls currentSlide={1} totalSlides={4} />
-      </motion.div>
     </div>
   );
 }
