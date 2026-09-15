@@ -2,7 +2,6 @@
 
 import React from 'react';
 import SectionContainer from '../shared/SectionContainer';
-import SectionEyebrow from '../shared/SectionEyebrow';
 import GradientText from '../shared/GradientText';
 
 /* ------------------------------------------------------------------ */
@@ -115,30 +114,32 @@ export default function ProblemAwarenessContent() {
 
         {/* ── LEFT: Eyebrow + Large Headline + supporting copy ────── */}
         <div className="flex flex-col flex-1">
-          <SectionEyebrow
-            number="02"
-            label="The Trader's Reality"
-            accentColor="#A855F7"
-            variant="muted-label"
-            className="mb-7"
-          />
+          <div className="flex items-center gap-4 mb-7 opacity-90">
+            <span className="font-semibold text-sm tracking-[0.2em] text-[#FF5C7A]">
+              02
+            </span>
+            <div className="w-12 h-px bg-[#FF5C7A]/40" />
+            <span className="uppercase text-[13px] sm:text-sm font-semibold tracking-[0.22em] text-[#D07286]">
+              The Trader&apos;s Reality
+            </span>
+          </div>
 
           {/* EDITORIAL HEADLINE — ~30% smaller than previous implementation */}
           <h2 className="text-[28px] sm:text-[36px] lg:text-[40px] xl:text-[44px] font-bold leading-[1.08] tracking-tight text-white mb-7">
             The market wasn&apos;t the hard part.
             <br />
-            <GradientText from="#C084FC" to="#A855F7">
+            <GradientText from="#FF758F" to="#FF3B5C">
               Finding clarity was.
             </GradientText>
           </h2>
 
           {/* Supporting copy — two compact statements */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 max-w-2xl">
-            <p className="text-tc-muted text-[15px] leading-relaxed">
+            <p className="text-[#9CA3AF] text-[15px] leading-relaxed">
               Every trader starts with the same goal:{' '}
-              <span className="text-white/80">learn, improve, and become consistently profitable.</span>
+              <span className="text-white/85">learn, improve, and become consistently profitable.</span>
             </p>
-            <p className="text-tc-muted text-[15px] leading-relaxed">
+            <p className="text-[#9CA3AF] text-[15px] leading-relaxed">
               Information is everywhere — across analysts, groups, strategies and narratives.
             </p>
           </div>
@@ -146,11 +147,11 @@ export default function ProblemAwarenessContent() {
 
         {/* ── RIGHT: Accent statement ──────────────────────────────── */}
         <div className="flex-shrink-0 lg:w-[220px] xl:w-[240px] flex flex-col justify-end lg:pt-[calc(1.75rem+36px+20px)] xl:pt-[calc(1.75rem+44px+20px)]">
-          <p className="text-[11px] font-bold tracking-[0.18em] uppercase text-tc-muted leading-relaxed">
+          <p className="text-[11px] font-bold tracking-[0.18em] uppercase text-[#9AA2B2] leading-relaxed">
             Most traders don&apos;t lack effort.
           </p>
           <p className="text-[18px] sm:text-[20px] font-bold tracking-[0.04em] uppercase leading-snug mt-2">
-            <GradientText from="#C084FC" to="#A855F7">
+            <GradientText from="#FF758F" to="#FF3B5C">
               They lack context.
             </GradientText>
           </p>
@@ -164,7 +165,7 @@ export default function ProblemAwarenessContent() {
         {PROBLEM_CARDS.map((card) => (
           <div
             key={card.num}
-            className="relative flex flex-col gap-4 rounded-2xl border border-white/[0.08] bg-[#080c18] p-6 transition-colors hover:border-white/[0.14] hover:bg-[#0a0f1e]"
+            className="relative flex flex-col gap-4 rounded-2xl border border-white/[0.07] bg-[#0B080A]/95 p-6 transition-colors hover:border-white/[0.13] hover:bg-[#110D10]"
           >
             {/* ── Number + Icon ── */}
             <div className="flex items-center justify-between">
@@ -192,37 +193,14 @@ export default function ProblemAwarenessContent() {
             </h4>
 
             {/* ── Description ── */}
-            <p className="text-tc-muted text-[13px] leading-relaxed whitespace-pre-line">
+            <p className="text-[#9CA3AF] text-[13px] leading-relaxed whitespace-pre-line">
               {card.desc}
             </p>
           </div>
         ))}
       </div>
 
-      {/* ══════════════════════════════════════════════════════════════
-          BLOCK C — BRIDGE DIVIDER
-          ══════════════════════════════════════════════════════════════ */}
-      <div className="flex flex-col items-center mt-14 mb-0 gap-3">
-        <div className="h-px w-full max-w-[480px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
-        <p className="text-[10px] font-semibold tracking-[0.38em] text-tc-muted uppercase mt-4">
-          There&apos;s a Better Way
-        </p>
-        <svg
-          width="14"
-          height="9"
-          viewBox="0 0 14 9"
-          fill="none"
-          className="text-tc-muted mt-1.5"
-        >
-          <path
-            d="M1 1.5L7 7.5L13 1.5"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </div>
+
 
     </SectionContainer>
   );

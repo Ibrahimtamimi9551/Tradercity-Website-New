@@ -67,11 +67,7 @@ export default function IntelligenceStage() {
           </motion.div>
         </div>
 
-        {/* Mobile / Tablet: Secondary panels shown below dashboard */}
-        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 lg:hidden">
-          <MacroViewPanel />
-          <AnalystInsightsPanel />
-        </div>
+
       </div>
     </div>
   );

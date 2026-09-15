@@ -194,7 +194,7 @@ export default function TraderSolutionContent() {
       {/* ══════════════════════════════════════════════════════════════
           BLOCK B — INTELLIGENCE POINTS (3-column compact list)
           ══════════════════════════════════════════════════════════════ */}
-      <div className="border-t border-white/[0.07] pt-8 mb-12 lg:mb-14">
+      <div className="border-t border-white/[0.07] pt-8 mb-4 lg:mb-5">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-8 xl:gap-x-12">
           {INTEL_COLS.map((col, ci) => (
             <div key={ci} className="flex flex-col">
@@ -231,33 +231,15 @@ export default function TraderSolutionContent() {
       </div>
 
       {/* ══════════════════════════════════════════════════════════════
-          BLOCK C — TC CONVERGENCE ILLUSTRATION (proportional size)
+          BLOCK C — TC CONVERGENCE ILLUSTRATION (full-width panel)
+          Illustration is now full-width so the MARKET CLARITY copy
+          panel embedded inside the SVG has room to breathe.
           ══════════════════════════════════════════════════════════════ */}
-      <div className="w-full flex items-center justify-center overflow-hidden border-t border-white/[0.05] pt-10 mb-10 lg:mb-12">
-        {/* Constrain the illustration to 55% of section width on desktop */}
-        <div className="w-full max-w-[700px] xl:max-w-[800px]">
-          <TraderSolutionIllustration />
-        </div>
+      <div className="w-full overflow-hidden border-t border-white/[0.05] pt-4 mb-4 lg:mb-6">
+        <TraderSolutionIllustration />
       </div>
 
-      {/* ══════════════════════════════════════════════════════════════
-          BLOCK D — MARKET CLARITY FOOTER
-          ══════════════════════════════════════════════════════════════ */}
-      <div className="flex flex-col items-center text-center gap-2">
-
-        <h3 className="text-[36px] sm:text-[46px] lg:text-[56px] font-bold uppercase tracking-[0.3em] md:tracking-[0.38em] leading-tight">
-          <GradientText from="#8B5CF6" via="#3B82F6" to="#06B6D4">
-            MARKET CLARITY
-          </GradientText>
-        </h3>
-
-        {/* Divider */}
-        <div className="flex items-center justify-center w-full max-w-[480px] mt-6 opacity-60">
-          <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/10" />
-          <div className="mx-4 w-2 h-2 rounded-full bg-gradient-to-br from-[#A855F7] to-[#F59E0B]" />
-          <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/10" />
-        </div>
-      </div>
+      {/* BLOCK D removed — MARKET CLARITY is now embedded in the SVG illustration panel */}
 
     </SectionContainer>
   );

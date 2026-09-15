@@ -1,8 +1,9 @@
-import React from "react";
+﻿import React from "react";
 import HeroBackground from "./HeroBackground";
 import HeroLeftContent from "./HeroLeftContent";
 import IntelligenceStage from "./intelligence/IntelligenceStage";
 import HeroMetricsStrip from "./HeroMetricsStrip";
+import HeroCTAGroup from "./HeroCTAGroup";
 
 export default function Hero() {
   return (
@@ -25,6 +26,9 @@ export default function Hero() {
           {/* Right 3D Intelligence Stage */}
           <div className="w-full flex-[1.4] overflow-visible lg:pt-2">
             <IntelligenceStage />
+
+            {/* Mobile-only CTAs â€” appear directly below the card */}
+            <HeroCTAGroup className="mt-5 lg:hidden" />
           </div>
         </div>
 
@@ -36,3 +40,4 @@ export default function Hero() {
     </section>
   );
 }
+
